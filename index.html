@@ -71,9 +71,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);background:var(
 .divider{height:1px;background:var(--sand);margin:16px 0;}
 .empty{text-align:center;padding:40px 20px;}.empty-icon{font-size:40px;margin-bottom:12px;}
 .empty h3{font-size:16px;font-weight:600;color:var(--black);margin-bottom:6px;}.empty p{font-size:14px;color:var(--mid);}
-.bottom-nav{display:flex;background:var(--black);border-top:1px solid #222;padding:8px 0 24px;flex-shrink:0;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:9px;font-weight:600;text-transform:uppercase;}
-.nav-btn.active{color:var(--pink-light);}.nav-icon{font-size:20px;}
 .loc-box{background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px;font-size:14px;line-height:1.6;margin-bottom:16px;}
 .loc-box.success{border-color:var(--success);background:#F0FBF4;}.loc-box.error{border-color:var(--danger);background:#FEF0F0;}
 .chore-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--sand);}.chore-item:last-child{border-bottom:none;}
@@ -85,37 +82,37 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);background:var(
 .event-date-badge{display:inline-block;background:var(--pink);color:var(--white);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-bottom:6px;}
 .event-title{font-size:15px;font-weight:600;}.event-meta{font-size:12px;color:var(--mid);margin-top:2px;}
 .curfew-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--sand);}.curfew-row:last-child{border-bottom:none;}
-.curfew-name{font-size:14px;font-weight:600;flex:1;}
-.house-section{margin-bottom:20px;}
-.house-section-title{font-size:15px;font-weight:800;color:var(--black);padding:8px 0 6px;border-bottom:2px solid var(--pink);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
-/* DASHBOARD STYLES */
-.dash-section{margin-bottom:20px;}
-.dash-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);margin-bottom:10px;}
-.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.quick-btn{background:var(--white);border:none;border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:transform 0.1s;}
-.quick-btn:active{transform:scale(0.97);}
-.quick-btn-icon{font-size:24px;margin-bottom:6px;}
-.quick-btn-label{font-size:12px;font-weight:700;color:var(--charcoal);}
-.curfew-status-card{border-radius:var(--radius);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;}
-.curfew-status-card.home{background:#F0FBF4;border:1.5px solid var(--success);}
-.curfew-status-card.out{background:#FEF9C3;border:1.5px solid var(--warn);}
-.curfew-status-card.late{background:#FEF0F0;border:1.5px solid var(--danger);}
-.curfew-status-card.excused{background:#DBEAFE;border:1.5px solid #3B82F6;}
-.curfew-status-card.unknown{background:var(--cream);border:1.5px solid var(--sand);}
-.curfew-icon{font-size:24px;flex-shrink:0;}
-.curfew-info{flex:1;}
+/* TOP TABS */
+.top-tabs{display:flex;background:var(--black);border-bottom:1px solid #333;flex-shrink:0;}
+.top-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;border-bottom:2px solid transparent;transition:color 0.15s;}
+.top-tab.active{color:var(--pink-light);border-bottom-color:var(--pink-light);}
+.top-tab-icon{font-size:18px;}
+/* RESIDENT BOTTOM NAV */
+.bottom-nav{display:flex;background:var(--black);border-top:1px solid #222;padding:8px 0 24px;flex-shrink:0;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:9px;font-weight:600;text-transform:uppercase;}
+.nav-btn.active{color:var(--pink-light);}.nav-icon{font-size:20px;}
+/* HOUSE SELECTOR */
+.house-selector-bar{background:var(--black);padding:8px 16px 12px;flex-shrink:0;}
+.house-select{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);border-radius:10px;color:var(--white);font-size:14px;font-weight:600;padding:10px 14px;width:100%;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='white' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+/* DASHBOARD */
+.curfew-status-card{border-radius:var(--radius);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;border:1.5px solid transparent;}
+.curfew-status-card.home{background:#F0FBF4;border-color:var(--success);}
+.curfew-status-card.out{background:#FEF9C3;border-color:var(--warn);}
+.curfew-status-card.late{background:#FEF0F0;border-color:var(--danger);}
+.curfew-status-card.excused{background:#DBEAFE;border-color:#3B82F6;}
+.curfew-status-card.unknown{background:var(--cream);border-color:var(--sand);}
+.curfew-icon{font-size:22px;flex-shrink:0;}
 .curfew-res-name{font-size:15px;font-weight:700;}
 .curfew-res-detail{font-size:12px;color:var(--mid);margin-top:2px;}
-.attendance-bar{height:6px;border-radius:3px;background:var(--sand);margin-top:6px;overflow:hidden;}
-.attendance-fill{height:100%;border-radius:3px;background:var(--pink);}
-.house-overview-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;cursor:pointer;}
-.house-overview-name{font-size:18px;font-weight:800;color:var(--black);margin-bottom:8px;}
-.house-overview-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
-.house-mini-stat{text-align:center;background:var(--cream);border-radius:8px;padding:10px 6px;}
-.house-mini-num{font-size:20px;font-weight:800;color:var(--pink);}
-.house-mini-label{font-size:10px;color:var(--mid);font-weight:600;}
-.refresh-btn{background:none;border:1.5px solid var(--sand);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--mid);cursor:pointer;display:flex;align-items:center;gap:6px;}
-.refresh-btn:active{background:var(--sand);}
+.attendance-bar{height:6px;border-radius:3px;background:var(--sand);margin-top:5px;overflow:hidden;}
+.attendance-fill{height:100%;border-radius:3px;}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px;}
+.quick-btn{background:var(--white);border:none;border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:transform 0.1s;}
+.quick-btn:active{transform:scale(0.96);}
+.quick-btn-icon{font-size:22px;margin-bottom:5px;}
+.quick-btn-label{font-size:11px;font-weight:700;color:var(--charcoal);line-height:1.2;}
+.refresh-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);cursor:pointer;}
+.refresh-btn:active{background:rgba(255,255,255,0.2);}
 .owner-card{border:2px solid var(--gold)!important;}.owner-title{color:var(--gold)!important;}
 .mt8{margin-top:8px;}.mt16{margin-top:16px;}.text-center{text-align:center;}.text-mid{color:var(--mid);font-size:13px;}
 .flex-between{display:flex;justify-content:space-between;align-items:center;}
@@ -128,12 +125,7 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <div class="login-logo">Step<span>In</span></div>
 <div class="login-tagline">The Turning Point<br>Transitional &amp; Sober Living<br>One day at a time.</div>
 <div class="login-card"><h2>Sign in</h2>
-<div class="toggle-row">
-<button class="toggle-btn active" id="toggle-resident" onclick="setLoginRole('resident')">Resident</button>
-<button class="toggle-btn" id="toggle-manager" onclick="setLoginRole('manager')">Manager</button>
-<button class="toggle-btn" id="toggle-owner" onclick="setLoginRole('owner')">Tanya</button>
-</div>
-<div class="field"><label>Your ID</label><input type="text" id="login-name" placeholder="Your ID" autocomplete="name"></div>
+<div class="field"><label>Your ID</label><input type="text" id="login-name" placeholder="Your name or ID" autocomplete="name"></div>
 <div class="field"><label>PIN</label><input type="password" id="login-pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric"></div>
 <div id="login-error" style="color:var(--danger);font-size:13px;margin-bottom:12px;display:none"></div>
 <button class="btn btn-primary" id="login-btn" onclick="doLogin()">Sign in</button>
@@ -144,6 +136,14 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <!-- RESIDENT SCREEN -->
 <div id="screen-resident" class="screen">
 <div class="topbar"><div><div class="logo">Step<span>In</span></div><div class="sub" id="res-greeting"></div></div><div class="topbar-right"><span class="badge-role">Resident</span><button class="btn-ghost" onclick="logout()">Sign out</button></div></div>
+<div class="bottom-nav">
+  <button class="nav-btn active" id="res-nav-home" onclick="resTab('home',this)"><span class="nav-icon">&#127968;</span>Home</button>
+  <button class="nav-btn" id="res-nav-curfew" onclick="resTab('curfew',this)"><span class="nav-icon">&#128274;</span>Curfew</button>
+  <button class="nav-btn" id="res-nav-chores" onclick="resTab('chores',this)"><span class="nav-icon">&#129529;</span>Chores</button>
+  <button class="nav-btn" id="res-nav-calendar" onclick="resTab('calendar',this)"><span class="nav-icon">&#128197;</span>Events</button>
+  <button class="nav-btn" id="res-nav-history" onclick="resTab('history',this)"><span class="nav-icon">&#128203;</span>History</button>
+  <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
+</div>
 <div class="body" id="res-tab-home">
   <div class="stats-grid" id="res-stats"></div>
   <div id="res-sticky-note"></div>
@@ -164,14 +164,6 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 </div>
 <div class="body" id="res-tab-history" style="display:none"><div class="card"><div class="card-title">All my meetings</div><div id="res-history-list"></div></div></div>
 <div class="body" id="res-tab-pin" style="display:none"><div class="card"><div class="card-title">Change my PIN</div><div class="field"><label>Current PIN</label><input type="password" id="pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm new PIN</label><input type="password" id="pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMyPin()">Update PIN</button></div></div>
-<div class="bottom-nav">
-  <button class="nav-btn active" id="res-nav-home" onclick="resTab('home',this)"><span class="nav-icon">&#127968;</span>Home</button>
-  <button class="nav-btn" id="res-nav-curfew" onclick="resTab('curfew',this)"><span class="nav-icon">&#128274;</span>Curfew</button>
-  <button class="nav-btn" id="res-nav-chores" onclick="resTab('chores',this)"><span class="nav-icon">&#129529;</span>Chores</button>
-  <button class="nav-btn" id="res-nav-calendar" onclick="resTab('calendar',this)"><span class="nav-icon">&#128197;</span>Events</button>
-  <button class="nav-btn" id="res-nav-history" onclick="resTab('history',this)"><span class="nav-icon">&#128203;</span>History</button>
-  <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
-</div>
 </div>
 
 <!-- CHECK-IN SCREEN -->
@@ -185,120 +177,85 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">Check-in recorded</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Saved to cloud. Cannot be altered.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Back to home</button></div></div>
 </div></div>
 
-<!-- MANAGER SCREEN — DASHBOARD REDESIGN -->
+<!-- MANAGER / OWNER SCREEN -->
 <div id="screen-manager" class="screen">
 <div class="topbar">
   <div><div class="logo">Step<span>In</span></div><div class="sub" id="mgr-greeting"></div></div>
-  <div class="topbar-right">
-    <button class="refresh-btn" onclick="refreshDashboard()">&#8635; Refresh</button>
-    <span class="badge-role" id="mgr-badge">Manager</span>
-    <button class="btn-ghost" onclick="logout()">Sign out</button>
-  </div>
+  <div class="topbar-right"><button class="refresh-btn" onclick="refreshDashboard()">&#8635; Refresh</button><span class="badge-role" id="mgr-badge">Manager</span><button class="btn-ghost" onclick="logout()">Sign out</button></div>
+</div>
+<!-- Tanya house selector -->
+<div class="house-selector-bar" id="house-selector-bar" style="display:none">
+  <select class="house-select" id="house-dropdown" onchange="onHouseChange()">
+    <option value="">All houses</option>
+  </select>
+</div>
+<!-- TOP TABS -->
+<div class="top-tabs">
+  <button class="top-tab active" id="mgr-tab-dash" onclick="mgrTab('dash',this)"><span class="top-tab-icon">&#127968;</span>Home</button>
+  <button class="top-tab" id="mgr-tab-residents" onclick="mgrTab('residents',this)"><span class="top-tab-icon">&#128101;</span>Residents</button>
+  <button class="top-tab" id="mgr-tab-tools" onclick="mgrTab('tools',this)"><span class="top-tab-icon">&#9881;</span>Tools</button>
+  <button class="top-tab" id="mgr-tab-report" onclick="mgrTab('report',this)"><span class="top-tab-icon">&#128202;</span>Report</button>
 </div>
 
-<!-- MANAGER BOTTOM NAV -->
-<div class="bottom-nav" id="mgr-bottom-nav">
-  <button class="nav-btn active" id="mgr-nav-dash" onclick="mgrNav('dash',this)"><span class="nav-icon">&#127968;</span>Home</button>
-  <button class="nav-btn" id="mgr-nav-residents" onclick="mgrNav('residents',this)"><span class="nav-icon">&#128101;</span>Residents</button>
-  <button class="nav-btn" id="mgr-nav-tools" onclick="mgrNav('tools',this)"><span class="nav-icon">&#9881;</span>Tools</button>
-  <button class="nav-btn" id="mgr-nav-report" onclick="mgrNav('report',this)"><span class="nav-icon">&#128202;</span>Report</button>
-  <button class="nav-btn" id="mgr-nav-more" onclick="mgrNav('more',this)" style="display:none"><span class="nav-icon">&#127968;</span>Houses</button>
-</div>
-
-<!-- DASHBOARD PANE -->
-<div class="body" id="mgr-pane-dash" style="order:-1">
+<!-- DASHBOARD -->
+<div class="body" id="mgr-pane-dash">
   <div id="dash-sticky-note"></div>
-
-  <!-- Curfew section -->
-  <div class="dash-section">
-    <div class="flex-between" style="margin-bottom:10px">
-      <span class="dash-section-title" style="margin:0">&#128274; Tonight&#8217;s curfew</span>
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:12px">
+      <span class="card-title" style="margin:0">&#128274; Tonight&#8217;s curfew</span>
       <span id="dash-curfew-time" style="font-size:12px;color:var(--mid)"></span>
     </div>
     <div id="dash-curfew-list"></div>
   </div>
-
-  <!-- Attendance section -->
-  <div class="dash-section">
-    <div class="dash-section-title">&#128203; This week&#8217;s attendance</div>
+  <div class="card">
+    <div class="card-title">&#128203; This week&#8217;s attendance</div>
     <div id="dash-attendance-list"></div>
   </div>
-
-  <!-- Quick actions -->
-  <div class="dash-section">
-    <div class="dash-section-title">Quick actions</div>
-    <div class="quick-actions">
+  <div class="card">
+    <div class="card-title">Quick actions</div>
+    <div class="quick-actions" id="quick-actions-grid">
       <button class="quick-btn" onclick="openAddResident()"><div class="quick-btn-icon">&#128101;</div><div class="quick-btn-label">Add resident</div></button>
       <button class="quick-btn" onclick="openPostAnnouncement()"><div class="quick-btn-icon">&#128204;</div><div class="quick-btn-label">Post note</div></button>
-      <button class="quick-btn" onclick="mgrNav('tools',document.getElementById('mgr-nav-tools'));setTimeout(()=>openAddChore(),100)"><div class="quick-btn-icon">&#129529;</div><div class="quick-btn-label">Add chore</div></button>
-      <button class="quick-btn" onclick="mgrNav('tools',document.getElementById('mgr-nav-tools'));setTimeout(()=>openExcuse(),100)"><div class="quick-btn-icon">&#128338;</div><div class="quick-btn-label">Excuse resident</div></button>
-      <button class="quick-btn" onclick="mgrNav('tools',document.getElementById('mgr-nav-tools'));setTimeout(()=>openAddEvent(),100)"><div class="quick-btn-icon">&#128197;</div><div class="quick-btn-label">Add event</div></button>
-      <button class="quick-btn" id="qa-houses-btn" onclick="mgrNav('more',document.getElementById('mgr-nav-more'))" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">All houses</div></button>
+      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddChore,100)"><div class="quick-btn-icon">&#129529;</div><div class="quick-btn-label">Add chore</div></button>
+      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(scrollToExcuse,100)"><div class="quick-btn-icon">&#128338;</div><div class="quick-btn-label">Excuse resident</div></button>
+      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddEvent,100)"><div class="quick-btn-icon">&#128197;</div><div class="quick-btn-label">Add event</div></button>
+      <button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
     </div>
   </div>
 </div>
 
-<!-- RESIDENTS PANE -->
+<!-- RESIDENTS -->
 <div class="body" id="mgr-pane-residents" style="display:none">
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">Residents</span><button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button></div><div id="mgr-resident-list"></div></div>
 </div>
 
-<!-- TOOLS PANE -->
+<!-- TOOLS -->
 <div class="body" id="mgr-pane-tools" style="display:none">
-  <!-- Chores -->
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div>
-    <div id="mgr-chore-list"></div>
-  </div>
-  <!-- Events -->
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div>
-    <div id="mgr-event-list"></div>
-  </div>
-  <!-- Sticky note -->
+  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
+  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span><button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button></div><div id="mgr-announcement-status"></div></div>
-  <!-- Excuse -->
-  <div class="card" id="excuse-card">
-    <div class="card-title">&#128338; Excuse a resident</div>
-    <div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div>
-    <div class="field"><label>Date</label><input type="date" id="excuse-date"></div>
-    <div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work, medical, family..."></div>
-    <button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button>
-  </div>
-  <!-- Settings -->
-  <div class="card"><div class="card-title">&#128273; Reset a resident&#8217;s PIN</div><div class="field"><select id="reset-pin-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetResidentPin()">Reset PIN</button></div>
+  <div class="card" id="excuse-card"><div class="card-title">&#128338; Excuse a resident</div><div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Date</label><input type="date" id="excuse-date"></div><div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work, medical, family..."></div><button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button></div>
+  <div class="card"><div class="card-title">&#128273; Reset resident PIN</div><div class="field"><select id="reset-pin-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetResidentPin()">Reset PIN</button></div>
   <div class="card"><div class="card-title">Set resident phase</div><div class="field"><select id="phase-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Phase</label><select id="phase-value"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-navy" onclick="setResidentPhase()">Update phase</button></div>
   <div class="card"><div class="card-title">Remove resident</div><div class="field"><select id="remove-select"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-danger" onclick="removeResident()">Remove resident</button></div>
   <div class="card"><div class="card-title">Change my PIN</div><div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm</label><input type="password" id="mgr-pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMgrPin()">Update my PIN</button></div>
-  <div id="owner-settings" style="display:none">
-    <div class="card owner-card"><div class="card-title owner-title">&#9881; House settings (Owner only)</div>
-    <div class="field"><label>Weekly meetings required</label><select id="set-req"><option value="2">2 meetings</option><option value="3">3 meetings</option><option value="4">4 meetings</option><option value="5">5 meetings</option><option value="7">7 meetings (daily)</option></select></div>
-    <div class="field"><label>Organization name</label><input type="text" id="set-house-name" placeholder="e.g. The Turning Point"></div>
-    <button class="btn btn-gold" onclick="saveSettings()">Save settings</button></div>
-    <div class="card owner-card"><div class="card-title owner-title">&#128274; Reset a manager&#8217;s PIN</div><div class="field"><select id="reset-mgr-pin-select"><option value="">Select manager&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-mgr-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetManagerPin()">Reset PIN</button></div>
-    <div class="card owner-card"><div class="card-title owner-title">Remove manager</div><div class="field"><select id="remove-mgr-select"><option value="">Select manager&#8230;</option></select></div><button class="btn btn-danger" onclick="removeManager()">Remove manager</button></div>
+  <div id="owner-tools" style="display:none">
+    <div class="card owner-card"><div class="card-title owner-title">&#9881; Organization settings</div><div class="field"><label>Weekly meetings required</label><select id="set-req"><option value="2">2 meetings</option><option value="3">3 meetings</option><option value="4">4 meetings</option><option value="5">5 meetings</option><option value="7">7 meetings (daily)</option></select></div><div class="field"><label>Organization name</label><input type="text" id="set-house-name" placeholder="e.g. The Turning Point"></div><button class="btn btn-gold" onclick="saveSettings()">Save settings</button></div>
+    <div class="card owner-card"><div class="card-title owner-title">&#128274; Reset manager PIN</div><div class="field"><select id="reset-mgr-pin-select"><option value="">Select manager&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-mgr-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetManagerPin()">Reset PIN</button></div>
+    <div class="card owner-card"><div class="card-title owner-title">Manage houses</div><div class="flex-between" style="margin-bottom:12px"><span class="text-mid">All houses</span><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add house</button></div><div id="owner-house-list"></div><div class="divider"></div><div class="card-title" style="margin-top:8px">Remove manager</div><div class="field"><select id="remove-mgr-select"><option value="">Select manager&#8230;</option></select></div><button class="btn btn-danger" onclick="removeManager()">Remove manager</button></div>
   </div>
 </div>
 
-<!-- REPORT PANE -->
+<!-- REPORT -->
 <div class="body" id="mgr-pane-report" style="display:none">
   <div class="report-header"><div class="report-title">Weekly Attendance Report</div><div class="report-date" id="report-date-range"></div></div>
   <div id="report-rows"></div>
   <button class="btn btn-outline mt16" onclick="window.print()">Print / Save as PDF</button>
 </div>
-
-<!-- MORE / HOUSES PANE (Owner only) -->
-<div class="body" id="mgr-pane-more" style="display:none">
-  <div class="card owner-card">
-    <div class="flex-between" style="margin-bottom:14px"><span class="card-title owner-title" style="margin:0">&#127968; All houses</span><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add house</button></div>
-    <div id="owner-houses-list"></div>
-  </div>
-  <div id="owner-house-detail"></div>
-</div>
 </div>
 
 <!-- MODALS -->
-<div class="modal-bg" id="modal-post-announcement"><div class="modal"><div class="modal-handle"></div><h2>&#128204; Post sticky note</h2><p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p><div class="field"><label>Message</label><textarea id="announcement-text" placeholder="e.g. House meeting tonight at 7pm." style="height:100px;resize:none"></textarea></div><div id="mgr-ann-preview" style="margin-bottom:12px"></div><button class="btn btn-primary" id="announcement-btn" onclick="postAnnouncement()">Post note</button><button class="btn btn-outline mt8" onclick="closeModal('modal-post-announcement')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-post-announcement"><div class="modal"><div class="modal-handle"></div><h2>&#128204; Post sticky note</h2><p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p><div class="field"><label>Message</label><textarea id="announcement-text" placeholder="e.g. House meeting tonight at 7pm." style="height:100px;resize:none"></textarea></div><button class="btn btn-primary" id="announcement-btn" onclick="postAnnouncement()">Post note</button><button class="btn btn-outline mt8" onclick="closeModal('modal-post-announcement')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-resident"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Serenity House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Serenity House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-chore"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
@@ -309,17 +266,26 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentUser=null,loginRole='resident',sigCanvas,sigCtx,sigDrawing=false,sigHasMark=false,checkinData={},
-    cachedResidents=[],cachedManagers=[],cachedCheckins=[],cachedSettings={required:3,house_name:''},
-    cachedChores=[],cachedEvents=[],cachedCurfewLog=[],cachedAnnouncement=null,cachedAcks=[];
+let currentUser=null,sigCanvas,sigCtx,sigDrawing=false,sigHasMark=false,checkinData={},
+    allResidents=[],allManagers=[],allCheckins=[],allCurfewLog=[],allChores=[],allEvents=[],
+    cachedSettings={required:3,house_name:''},cachedAnnouncement=null,cachedAcks=[],
+    selectedHouse=null; // Owner's currently selected house (null = show all)
+
 const isOwner=()=>currentUser&&currentUser.role==='owner';
 const isStaff=()=>currentUser&&(currentUser.role==='manager'||currentUser.role==='owner');
-const myHouse=()=>currentUser&&currentUser.house;
+const myHouse=()=>isOwner()?(selectedHouse||null):currentUser&&currentUser.house;
+
+// Filtered views
+const residents=()=>isOwner()&&selectedHouse?allResidents.filter(r=>r.house===selectedHouse):isOwner()?allResidents:allResidents.filter(r=>r.house===currentUser.house);
+const checkins=()=>isOwner()&&selectedHouse?allCheckins.filter(c=>c.house===selectedHouse):isOwner()?allCheckins:allCheckins.filter(c=>c.house===currentUser.house);
+const curfewLog=()=>isOwner()&&selectedHouse?allCurfewLog.filter(l=>l.house===selectedHouse):isOwner()?allCurfewLog:allCurfewLog.filter(l=>l.house===currentUser.house);
+const chores=()=>isOwner()&&selectedHouse?allChores.filter(c=>c.house===selectedHouse):isOwner()?allChores:allChores.filter(c=>c.house===currentUser.house);
+const events=()=>isOwner()&&selectedHouse?allEvents.filter(e=>e.house===selectedHouse||!e.house):isOwner()?allEvents:allEvents.filter(e=>e.house===currentUser.house||!e.house);
 
 function getCurfewTime(phase,date){const day=date.getDay();const isWeekend=day===0||day===6;return phase===1?(isWeekend?22:21):(isWeekend?23:22);}
 function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h===21?'9:00 PM':h===22?'10:00 PM':'11:00 PM';}
 function isPastCurfew(phase){const now=new Date();return now.getHours()>=getCurfewTime(phase,now);}
-function getResidentStatus(){const today=new Date().toDateString();const todayLogs=cachedCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!todayLogs.length)return{status:'unknown',last:null};const last=todayLogs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
+function getMyStatus(){const today=new Date().toDateString();const logs=allCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!logs.length)return{status:'unknown',last:null};const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
 
 window.onload=async()=>{try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}};
 
@@ -327,45 +293,28 @@ async function loadAllData(){
   try{
     const{data:sData}=await sb.from('settings').select('*').eq('id',1).single();if(sData)cachedSettings=sData;
     const today=new Date().toISOString().split('T')[0];
-    let evQuery=sb.from('events').select('*').gte('event_date',today).order('event_date',{ascending:true});
-    if(!isOwner()&&isStaff())evQuery=evQuery.or(`house.eq.${myHouse()},house.is.null`);
-    const{data:evData}=await evQuery;cachedEvents=evData||[];
+    const{data:evData}=await sb.from('events').select('*').gte('event_date',today).order('event_date',{ascending:true});allEvents=evData||[];
     const weekStart=getWeekStartDate();
-    let choreQuery=sb.from('chores').select('*').eq('week_start',weekStart);
-    if(!isOwner()&&isStaff())choreQuery=choreQuery.eq('house',myHouse());
-    const{data:chData}=await choreQuery;cachedChores=chData||[];
     const{data:annData}=await sb.from('announcements').select('*').order('created_at',{ascending:false}).limit(1);
     cachedAnnouncement=annData&&annData.length?annData[0]:null;
-    if(cachedAnnouncement){const{data:ackData}=await sb.from('announcement_acks').select('*').eq('announcement_id',cachedAnnouncement.id);cachedAcks=ackData||[];}else{cachedAcks=[];}
+    if(cachedAnnouncement){const{data:ackData}=await sb.from('announcement_acks').select('*').eq('announcement_id',cachedAnnouncement.id);cachedAcks=ackData||[];}else cachedAcks=[];
     const sevenDaysAgo=new Date();sevenDaysAgo.setDate(sevenDaysAgo.getDate()-7);
     if(isStaff()){
-      let rQuery=sb.from('residents').select('id,name,role,phase,house').eq('role','resident');
-      if(!isOwner())rQuery=rQuery.eq('house',myHouse());
-      const{data:rData}=await rQuery;cachedResidents=rData||[];
-      const{data:mData}=await sb.from('residents').select('id,name,role,house').eq('role','manager');cachedManagers=mData||[];
-      let cQuery=sb.from('checkins').select('*').order('ts',{ascending:false});
-      if(!isOwner())cQuery=cQuery.eq('house',myHouse());
-      const{data:cData}=await cQuery;cachedCheckins=cData||[];
-      let clQuery=sb.from('curfew_log').select('*').gte('ts',sevenDaysAgo.toISOString()).order('ts',{ascending:false});
-      if(!isOwner())clQuery=clQuery.eq('house',myHouse());
-      const{data:clData}=await clQuery;cachedCurfewLog=clData||[];
+      const{data:rData}=await sb.from('residents').select('id,name,role,phase,house').eq('role','resident');allResidents=rData||[];
+      const{data:mData}=await sb.from('residents').select('id,name,role,house').eq('role','manager');allManagers=mData||[];
+      const{data:cData}=await sb.from('checkins').select('*').order('ts',{ascending:false});allCheckins=cData||[];
+      const{data:clData}=await sb.from('curfew_log').select('*').gte('ts',sevenDaysAgo.toISOString()).order('ts',{ascending:false});allCurfewLog=clData||[];
+      const{data:chData}=await sb.from('chores').select('*').eq('week_start',weekStart);allChores=chData||[];
     }else{
-      const{data:cData}=await sb.from('checkins').select('*').eq('resident_id',currentUser.id).order('ts',{ascending:false});cachedCheckins=cData||[];
-      const{data:clData}=await sb.from('curfew_log').select('*').eq('resident_id',currentUser.id).gte('ts',sevenDaysAgo.toISOString()).order('ts',{ascending:false});cachedCurfewLog=clData||[];
+      const{data:cData}=await sb.from('checkins').select('*').eq('resident_id',currentUser.id).order('ts',{ascending:false});allCheckins=cData||[];
+      const{data:clData}=await sb.from('curfew_log').select('*').eq('resident_id',currentUser.id).gte('ts',sevenDaysAgo.toISOString()).order('ts',{ascending:false});allCurfewLog=clData||[];
+      const{data:chData}=await sb.from('chores').select('*').eq('week_start',weekStart);allChores=chData||[];
       const{data:uData}=await sb.from('residents').select('*').eq('id',currentUser.id).single();if(uData){currentUser={...currentUser,...uData};localStorage.setItem('si_user',JSON.stringify(currentUser));}
     }
-  }catch(e){console.log('loadAllData err',e);}
-}
-
-async function refreshDashboard(){
-  const btn=document.querySelector('.refresh-btn');if(btn){btn.textContent='&#8635; Refreshing...';btn.disabled=true;}
-  await loadAllData();renderManagerDashboard();
-  if(btn){btn.innerHTML='&#8635; Refresh';btn.disabled=false;}
-  toast('Updated.');
+  }catch(e){console.log('err',e);}
 }
 
 function hideLoading(){document.getElementById('loading').style.display='none';}
-function setLoginRole(role){loginRole=role;['resident','manager','owner'].forEach(r=>{const b=document.getElementById('toggle-'+r);b.classList.toggle('active',r===role);b.classList.toggle('is-owner',r===role&&role==='owner');});document.getElementById('login-btn').className='btn '+(role==='owner'?'btn-gold':'btn-primary');}
 
 async function doLogin(){
   const name=document.getElementById('login-name').value.trim();const pin=document.getElementById('login-pin').value.trim();
@@ -375,62 +324,58 @@ async function doLogin(){
   try{
     const res=await fetch(`${SUPABASE_URL}/rest/v1/residents?name=ilike.${encodeURIComponent(name)}&pin=eq.${pin}&select=*`,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
     const data=await res.json();
-    if(!data||!data.length){showErr(err,'ID or PIN not found.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
-    let match;
-    if(loginRole==='owner')match=data.find(r=>r.role==='owner');
-    else if(loginRole==='manager')match=data.find(r=>r.role==='manager');
-    else match=data.find(r=>r.role==='resident');
-    if(!match){showErr(err,'Account not found for that role.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
+    if(!data||!data.length){showErr(err,'ID or PIN not found. Check with your house manager.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
+    // Pick best match — owner first, then manager, then resident
+    const match=data.find(r=>r.role==='owner')||data.find(r=>r.role==='manager')||data.find(r=>r.role==='resident');
+    if(!match){showErr(err,'Account not found.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
     currentUser=match;localStorage.setItem('si_user',JSON.stringify(match));
     await loadAllData();btn.textContent='Sign in';btn.classList.remove('btn-disabled');enterApp();
   }catch(e){showErr(err,'Connection error: '+e.message);btn.textContent='Sign in';btn.classList.remove('btn-disabled');}
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
-function logout(){currentUser=null;cachedResidents=[];cachedCheckins=[];cachedManagers=[];cachedCurfewLog=[];localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
+function logout(){currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];selectedHouse=null;localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
 function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident();}
 
 // ── RESIDENT ──
-async function enterResident(){show('screen-resident');const h=new Date().getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';document.getElementById('res-greeting').textContent=g+', '+currentUser.name.split(' ')[0];await loadAllData();renderResidentHome();}
+async function enterResident(){
+  show('screen-resident');const h=new Date().getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('res-greeting').textContent=g+', '+currentUser.name.split(' ')[0];
+  await loadAllData();renderResidentHome();
+}
 
 function renderResidentHome(){
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();const thisWeek=cachedCheckins.filter(c=>new Date(c.ts)>=weekStart);
-  document.getElementById('res-stats').innerHTML=`<div class="stat-box"><div class="stat-num">${thisWeek.length}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${cachedCheckins.length}</div><div class="stat-label">Total</div></div>`;
+  const req=cachedSettings.required||3;const weekStart=getWeekStart();const thisWeek=allCheckins.filter(c=>new Date(c.ts)>=weekStart);
+  document.getElementById('res-stats').innerHTML=`<div class="stat-box"><div class="stat-num">${thisWeek.length}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${allCheckins.length}</div><div class="stat-label">Total</div></div>`;
   const remaining=Math.max(0,req-thisWeek.length);
   document.getElementById('req-status').innerHTML=remaining===0?`<span class="pill pill-green">\u2713 ${thisWeek.length}/${req} complete</span>`:`<span class="pill pill-yellow">${thisWeek.length}/${req} \u2014 ${remaining} more needed</span>`;
-  renderLogList(document.getElementById('res-log-list'),cachedCheckins.slice(0,5),false);
-  renderLogList(document.getElementById('res-history-list'),cachedCheckins,false);
+  renderLogList(document.getElementById('res-log-list'),allCheckins.slice(0,5),false);
+  renderLogList(document.getElementById('res-history-list'),allCheckins,false);
   renderStickyNote();renderCurfewAction();renderResChores();renderResCalendar();
-  if(cachedEvents.length>0){document.getElementById('res-upcoming-events-card').style.display='block';renderEventList(document.getElementById('res-upcoming-events'),cachedEvents.slice(0,3),false);}
+  if(events().length>0){document.getElementById('res-upcoming-events-card').style.display='block';renderEventList(document.getElementById('res-upcoming-events'),events().slice(0,3),false);}
   else document.getElementById('res-upcoming-events-card').style.display='none';
 }
 
 function renderStickyNote(){
   const el=document.getElementById('res-sticky-note');if(!el)return;
-  if(!cachedAnnouncement){el.innerHTML='';return;}
-  if(cachedAcks.some(a=>a.resident_id===currentUser.id)){el.innerHTML='';return;}
+  if(!cachedAnnouncement||cachedAcks.some(a=>a.resident_id===currentUser.id)){el.innerHTML='';return;}
   el.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:2px 3px 8px rgba(0,0,0,0.15)"><div style="font-size:13px;font-weight:700;color:#7B6000;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">&#128204; Notice from management</div><div style="font-size:15px;color:#3A3000;line-height:1.6;margin-bottom:14px">${cachedAnnouncement.message}</div><button class="btn btn-navy btn-sm" onclick="ackAnnouncement()" style="background:#7B6000">Got it &#10003;</button></div>`;
 }
-
 async function ackAnnouncement(){if(!cachedAnnouncement)return;const record={id:'ack-'+Date.now(),announcement_id:cachedAnnouncement.id,resident_id:currentUser.id,resident_name:currentUser.name};const{error}=await sb.from('announcement_acks').insert(record);if(error){toast('Could not acknowledge.');return;}cachedAcks.push(record);renderStickyNote();toast('Got it!');}
 
 function renderCurfewAction(){
   const el=document.getElementById('res-curfew-action');if(!el)return;
   const phase=currentUser.phase||1;const now=new Date();const curfewLabel=getCurfewLabel(phase,now);
-  const{status,last}=getResidentStatus();const todayStr=now.toISOString().split('T')[0];
-  const excused=cachedCurfewLog.find(l=>l.resident_id===currentUser.id&&l.excused&&new Date(l.ts).toISOString().split('T')[0]===todayStr);
+  const{status,last}=getMyStatus();const todayStr=now.toISOString().split('T')[0];
+  const excused=allCurfewLog.find(l=>l.resident_id===currentUser.id&&l.excused&&new Date(l.ts).toISOString().split('T')[0]===todayStr);
   let html='';
   if(excused){html=`<div class="card" style="border:2px solid var(--warn);background:#FEF9C3"><div style="font-size:14px;font-weight:600;color:var(--warn)">&#128338; Excused tonight</div><div style="font-size:12px;color:var(--mid);margin-top:4px">${excused.excused_reason||''}</div></div>`;}
-  else if(status==='out'){
-    const late=isPastCurfew(phase);const bc=late?'var(--danger)':'var(--warn)';const bg=late?'#FEF0F0':'#FEF9C3';
-    html=`<div class="card" style="border:2px solid ${bc};background:${bg}">${late?'<div style="font-size:12px;color:var(--danger);font-weight:600;margin-bottom:8px">&#9888; You are past curfew!</div>':''}<div style="font-size:13px;color:var(--warn);font-weight:600;margin-bottom:8px">&#128682; You are signed out &mdash; Curfew: ${curfewLabel}</div><button class="btn btn-success" onclick="doCurfewAction('in','')">&#127968; Sign in &mdash; I&#8217;m home</button></div>`;
-  }else{
-    html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4"><div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You are home &mdash; Phase ${phase} curfew: ${curfewLabel}</div><div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going?" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; Sign out</button></div>`;
-  }
+  else if(status==='out'){const late=isPastCurfew(phase);const bc=late?'var(--danger)':'var(--warn)';const bg=late?'#FEF0F0':'#FEF9C3';html=`<div class="card" style="border:2px solid ${bc};background:${bg}">${late?'<div style="font-size:12px;color:var(--danger);font-weight:600;margin-bottom:8px">&#9888; You are past curfew!</div>':''}<div style="font-size:13px;color:var(--warn);font-weight:600;margin-bottom:8px">&#128682; You are signed out &mdash; Curfew: ${curfewLabel}</div><button class="btn btn-success" onclick="doCurfewAction('in','')">&#127968; Sign in &mdash; I&#8217;m home</button></div>`;}
+  else{html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4"><div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You are home &mdash; Phase ${phase} curfew: ${curfewLabel}</div><div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going?" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; Sign out</button></div>`;}
   el.innerHTML=html;
 }
 
-async function doSignOut(){const dest=document.getElementById('signout-destination');const destination=dest?dest.value.trim():'';if(!destination){toast('Please enter where you are going.');return;}await doCurfewAction('out',destination);}
+async function doSignOut(){const dest=document.getElementById('signout-destination');const d=dest?dest.value.trim():'';if(!d){toast('Please enter where you are going.');return;}await doCurfewAction('out',d);}
 
 async function doCurfewAction(action,destination){
   if(!navigator.geolocation){alert('Location required.');return;}
@@ -438,7 +383,7 @@ async function doCurfewAction(action,destination){
     const now=new Date();const phase=currentUser.phase||1;const isLate=action==='in'&&now.getHours()>=getCurfewTime(phase,now);
     const record={id:'cl-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,action,ts:now.toISOString(),lat:pos.coords.latitude.toFixed(6),lng:pos.coords.longitude.toFixed(6),late:isLate,excused:false,destination:destination||null,house:currentUser.house||null};
     const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.');return;}
-    cachedCurfewLog.unshift(record);
+    allCurfewLog.unshift(record);
     if(action==='out')toast('Signed out. Be home by '+getCurfewLabel(phase,now)+'.');
     else if(isLate)toast('Signed in \u2014 marked late.');
     else toast('Signed in. Welcome home!');
@@ -451,25 +396,25 @@ function renderResCurfewDetail(){
   const phase=currentUser.phase||1;
   el.innerHTML=`<div class="card"><div class="card-title">My curfew</div><div style="font-size:14px"><strong>Phase ${phase}</strong><br>Weekday: ${phase===1?'9:00 PM':'10:00 PM'}<br>Weekend: ${phase===1?'10:00 PM':'11:00 PM'}</div></div>`;
   const histEl=document.getElementById('res-curfew-history');if(!histEl)return;
-  if(!cachedCurfewLog.length){histEl.innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><h3>No curfew history</h3></div>';return;}
-  histEl.innerHTML=cachedCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';return`<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;}).join('');
+  if(!allCurfewLog.length){histEl.innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><h3>No curfew history</h3></div>';return;}
+  histEl.innerHTML=allCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';return`<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;}).join('');
 }
 
-function renderResChores(){const el=document.getElementById('res-chore-list');if(!el)return;if(!cachedChores.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#129529;</div><h3>No chores assigned</h3></div>';return;}el.innerHTML=cachedChores.map(c=>{const isMe=c.resident_id===currentUser.id;const doneClass=c.completed?'done':'';const checkIcon=c.completed?'\u2713':'';const onclick=isMe&&!c.completed?`onclick="completeChore('${c.id}')" style="cursor:pointer"`:'';return`<div class="chore-item"><div class="chore-check ${doneClass}" ${onclick}>${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${c.completed?'text-decoration:line-through;color:var(--mid)':''}">${c.title}</div><div class="chore-who">${c.resident_name}${c.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div></div>`;}).join('');}
-function renderResCalendar(){const el=document.getElementById('res-calendar-list');if(!el)return;renderEventList(el,cachedEvents,false);}
+function renderResChores(){const el=document.getElementById('res-chore-list');if(!el)return;if(!allChores.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#129529;</div><h3>No chores assigned</h3></div>';return;}el.innerHTML=allChores.map(c=>{const isMe=c.resident_id===currentUser.id;const doneClass=c.completed?'done':'';const checkIcon=c.completed?'\u2713':'';const onclick=isMe&&!c.completed?`onclick="completeChore('${c.id}')" style="cursor:pointer"`:'';return`<div class="chore-item"><div class="chore-check ${doneClass}" ${onclick}>${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${c.completed?'text-decoration:line-through;color:var(--mid)':''}">${c.title}</div><div class="chore-who">${c.resident_name}${c.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div></div>`;}).join('');}
+function renderResCalendar(){const el=document.getElementById('res-calendar-list');if(!el)return;renderEventList(el,events(),false);}
 
-function renderEventList(el,events,showDelete){
-  if(!events.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128197;</div><h3>No upcoming events</h3></div>';return;}
-  el.innerHTML=events.map(e=>{const d=new Date(e.event_date+'T12:00:00');const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});const timeStr=e.event_time?` at ${fmtTimeStr(e.event_time)}`:'';const deleteBtn=showDelete?`<button onclick="deleteEvent('${e.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button>`:'';return`<div class="event-item"><div class="flex-between"><div><span class="event-date-badge">${dateStr}${timeStr}</span><div class="event-title">${e.title}</div>${e.notes?`<div class="event-meta">${e.notes}</div>`:''}</div>${deleteBtn}</div></div>`;}).join('');
+function renderEventList(el,evts,showDelete){
+  if(!evts.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128197;</div><h3>No upcoming events</h3></div>';return;}
+  el.innerHTML=evts.map(e=>{const d=new Date(e.event_date+'T12:00:00');const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});const timeStr=e.event_time?` at ${fmtTimeStr(e.event_time)}`:'';const deleteBtn=showDelete?`<button onclick="deleteEvent('${e.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button>`:'';return`<div class="event-item"><div class="flex-between"><div><span class="event-date-badge">${dateStr}${timeStr}</span><div class="event-title">${e.title}</div>${e.notes?`<div class="event-meta">${e.notes}</div>`:''}</div>${deleteBtn}</div></div>`;}).join('');
 }
 
-async function completeChore(id){const now=new Date().toISOString();const{error}=await sb.from('chores').update({completed:true,completed_at:now}).eq('id',id);if(error){toast('Could not update chore.');return;}cachedChores=cachedChores.map(c=>c.id===id?{...c,completed:true,completed_at:now}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore marked complete!');}
+async function completeChore(id){const now=new Date().toISOString();const{error}=await sb.from('chores').update({completed:true,completed_at:now}).eq('id',id);if(error){toast('Could not update.');return;}allChores=allChores.map(c=>c.id===id?{...c,completed:true,completed_at:now}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore marked complete!');}
 
 function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','curfew','chores','calendar','history','pin'].forEach(t=>document.getElementById('res-tab-'+t).style.display=t===tab?'block':'none');}
 
-function renderLogList(el,checkins,showName){
-  if(!checkins.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No meetings yet</h3><p>Check in after your next meeting.</p></div>';return;}
-  el.innerHTML=checkins.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div style="flex:1">${showName?`<div style="font-size:12px;color:var(--mid);font-weight:600">${c.resident_name}${c.house?' &bull; '+c.house:''}</div>`:''}<div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}<br>${c.address||''}</div><div class="log-sig">\u270d\ufe0f Signed by ${c.signer_name||'Unknown'}${mapLink}</div></div></div>`;}).join('');
+function renderLogList(el,ckins,showName){
+  if(!ckins.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No meetings yet</h3><p>Check in after your next meeting.</p></div>';return;}
+  el.innerHTML=ckins.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div style="flex:1">${showName?`<div style="font-size:12px;color:var(--mid);font-weight:600">${c.resident_name}${c.house?' &bull; '+c.house:''}</div>`:''}<div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}<br>${c.address||''}</div><div class="log-sig">\u270d\ufe0f Signed by ${c.signer_name||'Unknown'}${mapLink}</div></div></div>`;}).join('');
 }
 
 async function changeMyPin(){const cur=document.getElementById('pin-current').value.trim();const nw=document.getElementById('pin-new').value.trim();const cf=document.getElementById('pin-confirm').value.trim();if(cur!==currentUser.pin){toast('Current PIN is incorrect.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('PINs do not match.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.');return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('pin-current').value='';document.getElementById('pin-new').value='';document.getElementById('pin-confirm').value='';}
@@ -481,191 +426,172 @@ function locProceed(){if(!checkinData.lat){toast('Location not ready.');return;}
 function cancelCheckin(){if(confirm('Cancel this check-in?')){show('screen-resident');renderResidentHome();}}
 async function finishCheckin(){await loadAllData();show('screen-resident');renderResidentHome();}
 function ciDetails(){const type=document.getElementById('ci-type').value;const name=document.getElementById('ci-name').value.trim();const addr=document.getElementById('ci-addr').value.trim();if(!type){toast('Please select a meeting type.');return;}if(!name){toast('Please enter the meeting name.');return;}checkinData.meeting_type=type;checkinData.meeting_name=name;checkinData.address=addr;checkinData.ts=new Date().toISOString();document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');setTimeout(initSigCanvas,200);}
-async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
+async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
 function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const dpr=window.devicePixelRatio||1;sigCanvas.width=rect.width*dpr;sigCanvas.height=180*dpr;sigCtx.scale(dpr,dpr);sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
 function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
-// ── MANAGER ──
+// ── MANAGER / OWNER ──
 function enterManager(){
   show('screen-manager');
   const badge=document.getElementById('mgr-badge');
-  if(isOwner()){badge.textContent='Tanya';badge.classList.add('badge-owner');document.getElementById('mgr-greeting').textContent='Hey Tanya!';}
-  else{badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';}
-  // Show Houses tab for owner
-  document.getElementById('mgr-nav-more').style.display=isOwner()?'flex':'none';
-  document.getElementById('qa-houses-btn').style.display=isOwner()?'block':'none';
-  document.getElementById('owner-settings').style.display=isOwner()?'block':'none';
-  if(isOwner()){loadSettings();populateOwnerSelects();}
-  mgrNav('dash',document.getElementById('mgr-nav-dash'));
+  if(isOwner()){
+    badge.textContent='Tanya';badge.classList.add('badge-owner');
+    document.getElementById('mgr-greeting').textContent='Hey Tanya!';
+    document.getElementById('house-selector-bar').style.display='block';
+    document.getElementById('owner-tools').style.display='block';
+    document.getElementById('qa-add-house').style.display='block';
+    buildHouseDropdown();
+    loadSettings();
+  }else{
+    badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');
+    document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';
+    document.getElementById('house-selector-bar').style.display='none';
+    document.getElementById('owner-tools').style.display='none';
+    document.getElementById('qa-add-house').style.display='none';
+  }
+  mgrTab('dash',document.getElementById('mgr-tab-dash'));
 }
 
-function mgrNav(pane,btn){
-  document.querySelectorAll('#screen-manager .nav-btn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  ['dash','residents','tools','report','more'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===pane?'block':'none';});
-  if(pane==='dash')renderManagerDashboard();
-  if(pane==='residents')renderMgrResidents();
-  if(pane==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateResidentSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
-  if(pane==='report')renderReport();
-  if(pane==='more')renderOwnerHouses();
+function buildHouseDropdown(){
+  const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
+  const sel=document.getElementById('house-dropdown');
+  sel.innerHTML='<option value="">All houses</option>'+houses.map(h=>`<option value="${h}">${h}</option>`).join('');
+  if(selectedHouse)sel.value=selectedHouse;
+}
+
+function onHouseChange(){
+  selectedHouse=document.getElementById('house-dropdown').value||null;
+  renderManagerDashboard();
+  renderMgrResidents();
+  renderMgrChores();
+  renderMgrCalendar();
+  renderMgrAnnouncementStatus();
+  populateSelects();
+  if(document.getElementById('mgr-pane-report').style.display!=='none')renderReport();
+}
+
+async function refreshDashboard(){
+  const btn=document.querySelector('.refresh-btn');if(btn){btn.textContent='&#8635; Refreshing...';btn.disabled=true;}
+  await loadAllData();
+  renderManagerDashboard();
+  if(isOwner())buildHouseDropdown();
+  if(btn){btn.innerHTML='&#8635; Refresh';btn.disabled=false;}
+  toast('Updated.');
+}
+
+function mgrTab(tab,btn){
+  document.querySelectorAll('.top-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
+  ['dash','residents','tools','report'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
+  if(tab==='dash')renderManagerDashboard();
+  if(tab==='residents'){renderMgrResidents();}
+  if(tab==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];if(isOwner())renderOwnerHouseList();}
+  if(tab==='report')renderReport();
 }
 
 function renderManagerDashboard(){
-  // Sticky note for manager
+  // Sticky note preview for manager
   const sn=document.getElementById('dash-sticky-note');
-  if(sn&&cachedAnnouncement){sn.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE</div><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div><div style="font-size:11px;color:#7B6000;margin-top:6px">&#10003; ${cachedAcks.length}/${cachedResidents.length} acknowledged</div></div>`;}
+  if(sn&&cachedAnnouncement)sn.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE &mdash; ${cachedAcks.length}/${residents().length} acknowledged</div><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div>`;
   else if(sn)sn.innerHTML='';
 
-  // Curfew time display
-  const now=new Date();const timeEl=document.getElementById('dash-curfew-time');
-  if(timeEl)timeEl.textContent=now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  document.getElementById('dash-curfew-time').textContent=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 
   // Curfew status cards
-  const curfewEl=document.getElementById('dash-curfew-list');
-  if(!curfewEl)return;
-  const today=now.toDateString();
-  if(!cachedResidents.length){curfewEl.innerHTML='<p class="text-mid">No residents yet.</p>';return;}
+  const curfewEl=document.getElementById('dash-curfew-list');if(!curfewEl)return;
+  const res=residents();
+  if(!res.length){curfewEl.innerHTML='<p class="text-mid">No residents yet.</p>';return;}
+  const today=new Date().toDateString();
+  const mapped=res.map(r=>{
+    const phase=r.phase||1;const todayLogs=curfewLog().filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
+    const excused=todayLogs.find(l=>l.excused);const lastLog=todayLogs.filter(l=>!l.excused).sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];
+    let sc='unknown',icon='&#9711;',detail='No action yet',label='';
+    if(excused){sc='excused';icon='&#128338;';detail=excused.excused_reason||'Excused';label='Excused';}
+    else if(lastLog&&lastLog.action==='in'){sc=lastLog.late?'late':'home';icon=lastLog.late?'&#9888;&#65039;':'&#127968;';detail=(lastLog.late?'Late in':'Home')+' '+fmtTime(new Date(lastLog.ts));label=lastLog.late?'Late':'Home';}
+    else if(lastLog&&lastLog.action==='out'){sc='out';icon='&#128682;';detail=(lastLog.destination||'Out')+' since '+fmtTime(new Date(lastLog.ts));label='Out';}
+    else{const curfewHour=getCurfewTime(phase,new Date());if(new Date().getHours()>=curfewHour){sc='late';icon='&#9888;&#65039;';detail='Past curfew \u2014 no check-in';label='Missing';}}
+    return{r,sc,icon,detail,label,phase};
+  }).sort((a,b)=>({late:0,unknown:1,out:2,excused:3,home:4}[a.sc]||5)-({late:0,unknown:1,out:2,excused:3,home:4}[b.sc]||5));
 
-  const resWithStatus=cachedResidents.map(r=>{
-    const phase=r.phase||1;
-    const todayLogs=cachedCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
-    const excused=todayLogs.find(l=>l.excused);
-    const lastLog=todayLogs.filter(l=>!l.excused).sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];
-    let statusClass='unknown',icon='&#9711;',detail='No action yet',statusLabel='';
-    if(excused){statusClass='excused';icon='&#128338;';detail=excused.excused_reason||'Excused';statusLabel='Excused';}
-    else if(lastLog&&lastLog.action==='in'){
-      if(lastLog.late){statusClass='late';icon='&#9888;&#65039;';detail='Late — signed in '+fmtTime(new Date(lastLog.ts));statusLabel='Late';}
-      else{statusClass='home';icon='&#127968;';detail='Home since '+fmtTime(new Date(lastLog.ts));statusLabel='Home';}
-    }else if(lastLog&&lastLog.action==='out'){
-      statusClass='out';icon='&#128682;';
-      detail=(lastLog.destination||'Out')+' since '+fmtTime(new Date(lastLog.ts));statusLabel='Out';
-    }else{
-      const curfewHour=getCurfewTime(phase,now);
-      if(now.getHours()>=curfewHour){statusClass='late';icon='&#9888;&#65039;';detail='Past curfew — no check-in';statusLabel='Missing';}
-    }
-    return{r,statusClass,icon,detail,statusLabel,phase};
-  });
-
-  // Sort: late/missing first, then out, then unknown, then home
-  const order={late:0,unknown:1,out:2,excused:3,home:4};
-  resWithStatus.sort((a,b)=>(order[a.statusClass]||5)-(order[b.statusClass]||5));
-
-  if(isOwner()){
-    const houses=[...new Set(cachedResidents.map(r=>r.house||'Unassigned'))].sort();
-    curfewEl.innerHTML=houses.map(house=>{
-      const houseItems=resWithStatus.filter(x=>(x.r.house||'Unassigned')===house);
-      return`<div class="house-section"><div class="house-section-title"><span>${house}</span></div>${houseItems.map(x=>`<div class="curfew-status-card ${x.statusClass}" onclick="viewResident('${x.r.id}')"><div class="curfew-icon">${x.icon}</div><div class="curfew-info"><div class="curfew-res-name">${x.r.name}</div><div class="curfew-res-detail">${x.detail} &bull; Phase ${x.phase}</div></div>${x.statusLabel?`<span class="pill ${x.statusClass==='home'?'pill-green':x.statusClass==='late'?'pill-red':x.statusClass==='out'?'pill-yellow':x.statusClass==='excused'?'pill-blue':'pill-gray'}">${x.statusLabel}</span>`:''}</div>`).join('')}</div>`;
-    }).join('');
-  }else{
-    curfewEl.innerHTML=resWithStatus.map(x=>`<div class="curfew-status-card ${x.statusClass}" onclick="viewResident('${x.r.id}')"><div class="curfew-icon">${x.icon}</div><div class="curfew-info"><div class="curfew-res-name">${x.r.name}</div><div class="curfew-res-detail">${x.detail} &bull; Phase ${x.phase}</div></div>${x.statusLabel?`<span class="pill ${x.statusClass==='home'?'pill-green':x.statusClass==='late'?'pill-red':x.statusClass==='out'?'pill-yellow':x.statusClass==='excused'?'pill-blue':'pill-gray'}">${x.statusLabel}</span>`:''}</div>`).join('');
-  }
+  const pillClass={home:'pill-green',late:'pill-red',out:'pill-yellow',excused:'pill-blue',unknown:'pill-gray'};
+  curfewEl.innerHTML=mapped.map(x=>`<div class="curfew-status-card ${x.sc}" onclick="viewResident('${x.r.id}')"><div class="curfew-icon">${x.icon}</div><div style="flex:1"><div class="curfew-res-name">${x.r.name}</div><div class="curfew-res-detail">${x.detail} &bull; Phase ${x.phase}</div></div>${x.label?`<span class="pill ${pillClass[x.sc]||'pill-gray'}">${x.label}</span>`:''}</div>`).join('');
 
   // Attendance bars
   const attEl=document.getElementById('dash-attendance-list');if(!attEl)return;
   const req=cachedSettings.required||3;const weekStart=getWeekStart();
-  if(isOwner()){
-    const houses=[...new Set(cachedResidents.map(r=>r.house||'Unassigned'))].sort();
-    attEl.innerHTML=houses.map(house=>{
-      const hRes=cachedResidents.filter(r=>(r.house||'Unassigned')===house);
-      const rows=hRes.map(r=>{const wc=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pct=Math.min(100,Math.round(wc/req*100));const color=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';return`<div style="margin-bottom:10px"><div class="flex-between" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${r.name}</span><span style="font-size:12px;color:var(--mid)">${wc}/${req}</span></div><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%;background:${color}"></div></div></div>`;}).join('');
-      return`<div class="house-section"><div class="house-section-title"><span>${house}</span></div>${rows}</div>`;
-    }).join('');
-  }else{
-    attEl.innerHTML=cachedResidents.map(r=>{const wc=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pct=Math.min(100,Math.round(wc/req*100));const color=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';return`<div style="margin-bottom:10px"><div class="flex-between" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${r.name}</span><span style="font-size:12px;color:var(--mid)">${wc}/${req}</span></div><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%;background:${color}"></div></div></div>`;}).join('');
-  }
+  attEl.innerHTML=res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pct=Math.min(100,Math.round(wc/req*100));const color=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';return`<div style="margin-bottom:10px"><div class="flex-between" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${r.name}</span><span style="font-size:12px;color:var(--mid)">${wc}/${req}</span></div><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%;background:${color}"></div></div></div>`;}).join('');
 }
 
 function renderMgrResidents(){
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();
-  const el=document.getElementById('mgr-resident-list');
-  if(!cachedResidents.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udc65</div><h3>No residents yet</h3></div>';return;}
+  const req=cachedSettings.required||3;const weekStart=getWeekStart();const el=document.getElementById('mgr-resident-list');
+  const res=residents();
+  if(!res.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udc65</div><h3>No residents yet</h3></div>';return;}
+  el.innerHTML=res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pill=wc>=req?`<span class="pill pill-green">${wc}/${req} \u2713</span>`:`<span class="pill pill-yellow">${wc}/${req}</span>`;return`<div class="resident-row" onclick="viewResident('${r.id}')" style="cursor:pointer"><div class="avatar">${r.name[0]}</div><div><div class="resident-name">${r.name}</div><div class="resident-sub">Phase ${r.phase||1}${r.house?' &bull; '+r.house:''}</div></div><div class="resident-right">${pill}</div></div>`;}).join('');
+}
+
+function populateSelects(){
+  const res=residents();
+  const opts=res.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  const optsWithName=res.map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');
+  document.getElementById('remove-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
+  document.getElementById('reset-pin-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
+  document.getElementById('phase-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+res.map(r=>`<option value="${r.id}">${r.name} (Phase ${r.phase||1})</option>`).join('');
+  document.getElementById('excuse-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
+  document.getElementById('chore-resident').innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
   if(isOwner()){
-    const houses=[...new Set(cachedResidents.map(r=>r.house||'Unassigned'))].sort();
-    el.innerHTML=houses.map(house=>{const hRes=cachedResidents.filter(r=>(r.house||'Unassigned')===house);const rows=hRes.map(r=>{const wc=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pill=wc>=req?`<span class="pill pill-green">${wc}/${req} \u2713</span>`:`<span class="pill pill-yellow">${wc}/${req}</span>`;return`<div class="resident-row" onclick="viewResident('${r.id}')" style="cursor:pointer"><div class="avatar">${r.name[0]}</div><div><div class="resident-name">${r.name}</div><div class="resident-sub">Phase ${r.phase||1}</div></div><div class="resident-right">${pill}</div></div>`;}).join('');return`<div class="house-section"><div class="house-section-title"><span>${house}</span></div>${rows}</div>`;}).join('');
-  }else{
-    el.innerHTML=cachedResidents.map(r=>{const wc=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pill=wc>=req?`<span class="pill pill-green">${wc}/${req} \u2713</span>`:`<span class="pill pill-yellow">${wc}/${req}</span>`;return`<div class="resident-row" onclick="viewResident('${r.id}')" style="cursor:pointer"><div class="avatar">${r.name[0]}</div><div><div class="resident-name">${r.name}</div><div class="resident-sub">Phase ${r.phase||1}</div></div><div class="resident-right">${pill}</div></div>`;}).join('');
+    document.getElementById('reset-mgr-pin-select').innerHTML='<option value="">Select manager\u2026</option>'+allManagers.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
+    document.getElementById('remove-mgr-select').innerHTML='<option value="">Select manager\u2026</option>'+allManagers.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
   }
 }
 
-function populateResidentSelects(){
-  const opts=cachedResidents.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
-  document.getElementById('remove-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
-  document.getElementById('reset-pin-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
-  document.getElementById('phase-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+cachedResidents.map(r=>`<option value="${r.id}">${r.name} (Phase ${r.phase||1})</option>`).join('');
-  document.getElementById('excuse-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+cachedResidents.map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');
+function renderMgrChores(){const el=document.getElementById('mgr-chore-list');const c=chores();if(!c.length){el.innerHTML='<p class="text-mid">No chores this week. Add one above.</p>';return;}el.innerHTML=c.map(ch=>{const doneClass=ch.completed?'done':'';const checkIcon=ch.completed?'\u2713':'';return`<div class="chore-item"><div class="chore-check ${doneClass}">${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${ch.completed?'text-decoration:line-through;color:var(--mid)':''}">${ch.title}</div><div class="chore-who">${ch.resident_name}${ch.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div><button onclick="deleteChore('${ch.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button></div>`;}).join('');}
+function renderMgrCalendar(){renderEventList(document.getElementById('mgr-event-list'),events(),true);}
+function renderMgrAnnouncementStatus(){const el=document.getElementById('mgr-announcement-status');if(!el)return;const res=residents();if(!cachedAnnouncement){el.innerHTML='<p class="text-mid">No active note.</p>';return;}const notAcked=res.filter(r=>!cachedAcks.some(a=>a.resident_id===r.id));el.innerHTML=`<div style="background:#FFF9C4;border:1.5px solid #F0D000;border-radius:10px;padding:14px;margin-bottom:12px"><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div><div style="font-size:13px;color:var(--mid);margin-bottom:8px">&#10003; ${cachedAcks.length}/${res.length} acknowledged</div>${notAcked.length?`<div style="font-size:12px;color:var(--danger);margin-bottom:8px">Not seen: ${notAcked.map(r=>r.name).join(', ')}</div>`:'<div style="font-size:12px;color:var(--success);margin-bottom:8px">All acknowledged.</div>'}<button class="btn btn-danger btn-sm" onclick="deleteAnnouncement()">Remove note</button>`;}
+
+function renderOwnerHouseList(){
+  const el=document.getElementById('owner-house-list');if(!el)return;
+  const houses=[...new Set([...allResidents.map(r=>r.house),...allManagers.map(m=>m.house)].filter(Boolean))].sort();
+  const req=cachedSettings.required||3;const weekStart=getWeekStart();
+  el.innerHTML=houses.map(house=>{const hRes=allResidents.filter(r=>r.house===house);const hMgr=allManagers.find(m=>m.house===house);const onTrack=hRes.filter(r=>allCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=req).length;return`<div class="report-row"><div><div class="report-name">${house}</div><div class="report-count">${hMgr?hMgr.name:'No manager'} &bull; ${hRes.length} residents &bull; ${onTrack}/${hRes.length} on track</div></div></div>`;}).join('')||'<p class="text-mid">No houses yet.</p>';
 }
 
-function populateOwnerSelects(){
-  if(!isOwner())return;
-  document.getElementById('reset-mgr-pin-select').innerHTML='<option value="">Select manager\u2026</option>'+cachedManagers.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-  document.getElementById('remove-mgr-select').innerHTML='<option value="">Select manager\u2026</option>'+cachedManagers.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
-}
-
-function renderMgrChores(){const el=document.getElementById('mgr-chore-list');if(!cachedChores.length){el.innerHTML='<p class="text-mid">No chores this week. Add one above.</p>';return;}el.innerHTML=cachedChores.map(c=>{const doneClass=c.completed?'done':'';const checkIcon=c.completed?'\u2713':'';return`<div class="chore-item"><div class="chore-check ${doneClass}">${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${c.completed?'text-decoration:line-through;color:var(--mid)':''}">${c.title}</div><div class="chore-who">${c.resident_name}${c.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div><button onclick="deleteChore('${c.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button></div>`;}).join('');}
-function renderMgrCalendar(){renderEventList(document.getElementById('mgr-event-list'),cachedEvents,true);}
-
-function renderMgrAnnouncementStatus(){
-  const el=document.getElementById('mgr-announcement-status');if(!el)return;
-  if(!cachedAnnouncement){el.innerHTML='<p class="text-mid">No active note. Post one above.</p>';return;}
-  const notAcked=cachedResidents.filter(r=>!cachedAcks.some(a=>a.resident_id===r.id));
-  el.innerHTML=`<div style="background:#FFF9C4;border:1.5px solid #F0D000;border-radius:10px;padding:14px;margin-bottom:12px"><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div><div style="font-size:13px;color:var(--mid);margin-bottom:8px">&#10003; ${cachedAcks.length}/${cachedResidents.length} acknowledged</div>${notAcked.length?`<div style="font-size:12px;color:var(--danger);margin-bottom:8px">Not seen: ${notAcked.map(r=>r.name).join(', ')}</div>`:'<div style="font-size:12px;color:var(--success);margin-bottom:8px">All residents acknowledged.</div>'}<button class="btn btn-danger btn-sm" onclick="deleteAnnouncement()">Remove note</button>`;
-}
-
-function openExcuse(){document.getElementById('excuse-card').scrollIntoView({behavior:'smooth'});}
+function scrollToExcuse(){document.getElementById('excuse-card').scrollIntoView({behavior:'smooth'});}
 function openPostAnnouncement(){document.getElementById('announcement-text').value='';renderMgrAnnouncementStatus();document.getElementById('modal-post-announcement').classList.add('open');}
-
 async function postAnnouncement(){const msg=document.getElementById('announcement-text').value.trim();if(!msg){toast('Please enter a message.');return;}const btn=document.getElementById('announcement-btn');btn.textContent='Posting\u2026';btn.classList.add('btn-disabled');if(cachedAnnouncement){await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);}const newA={id:'ann-'+Date.now(),message:msg,created_by:currentUser.name};const{error}=await sb.from('announcements').insert(newA);if(error){toast('Could not post.');btn.textContent='Post note';btn.classList.remove('btn-disabled');return;}cachedAnnouncement=newA;cachedAcks=[];btn.textContent='Post note';btn.classList.remove('btn-disabled');closeModal('modal-post-announcement');toast('Note posted.');renderMgrAnnouncementStatus();renderManagerDashboard();}
 async function deleteAnnouncement(){if(!cachedAnnouncement||!confirm('Remove this note?'))return;await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);cachedAnnouncement=null;cachedAcks=[];toast('Note removed.');renderMgrAnnouncementStatus();renderManagerDashboard();}
 
-async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.');return;}const[resId,resName]=val.split('|');const r=cachedResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.');return;}cachedCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
+async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.');return;}const[resId,resName]=val.split('|');const r=allResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.');return;}allCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
+async function setResidentPhase(){const id=document.getElementById('phase-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update.');return;}allResidents=allResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
 
-async function setResidentPhase(){const id=document.getElementById('phase-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update phase.');return;}cachedResidents=cachedResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
-
-function openAddChore(){document.getElementById('chore-title').value='';document.getElementById('chore-resident').innerHTML='<option value="">Select resident\u2026</option>'+cachedResidents.map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');document.getElementById('modal-add-chore').classList.add('open');}
-async function saveNewChore(){const title=document.getElementById('chore-title').value.trim();const resVal=document.getElementById('chore-resident').value;if(!title){toast('Please enter a chore description.');return;}if(!resVal){toast('Please select a resident.');return;}const[resId,resName]=resVal.split('|');const btn=document.getElementById('chore-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const weekStart=getWeekStartDate();const r=cachedResidents.find(x=>x.id===resId);const newC={id:'ch-'+Date.now(),resident_id:resId,resident_name:resName,title,completed:false,week_start:weekStart,house:r?r.house:(myHouse()||null)};const{error}=await sb.from('chores').insert(newC);if(error){toast('Could not add chore.');btn.textContent='Add chore';btn.classList.remove('btn-disabled');return;}cachedChores.push(newC);btn.textContent='Add chore';btn.classList.remove('btn-disabled');closeModal('modal-add-chore');toast('Chore added.');renderMgrChores();}
-async function deleteChore(id){if(!confirm('Remove this chore?'))return;const{error}=await sb.from('chores').delete().eq('id',id);if(error){toast('Could not remove.');return;}cachedChores=cachedChores.filter(c=>c.id!==id);toast('Chore removed.');renderMgrChores();}
+function openAddChore(){document.getElementById('chore-title').value='';populateSelects();document.getElementById('modal-add-chore').classList.add('open');}
+async function saveNewChore(){const title=document.getElementById('chore-title').value.trim();const resVal=document.getElementById('chore-resident').value;if(!title){toast('Please enter a chore.');return;}if(!resVal){toast('Select a resident.');return;}const[resId,resName]=resVal.split('|');const btn=document.getElementById('chore-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const weekStart=getWeekStartDate();const r=allResidents.find(x=>x.id===resId);const newC={id:'ch-'+Date.now(),resident_id:resId,resident_name:resName,title,completed:false,week_start:weekStart,house:r?r.house:(myHouse()||null)};const{error}=await sb.from('chores').insert(newC);if(error){toast('Could not add.');btn.textContent='Add chore';btn.classList.remove('btn-disabled');return;}allChores.push(newC);btn.textContent='Add chore';btn.classList.remove('btn-disabled');closeModal('modal-add-chore');toast('Chore added.');renderMgrChores();}
+async function deleteChore(id){if(!confirm('Remove this chore?'))return;const{error}=await sb.from('chores').delete().eq('id',id);if(error){toast('Could not remove.');return;}allChores=allChores.filter(c=>c.id!==id);toast('Chore removed.');renderMgrChores();}
 
 function openAddEvent(){document.getElementById('event-title').value='';document.getElementById('event-date').value='';document.getElementById('event-time').value='';document.getElementById('event-notes').value='';document.getElementById('modal-add-event').classList.add('open');}
-async function saveNewEvent(){const title=document.getElementById('event-title').value.trim();const date=document.getElementById('event-date').value;const time=document.getElementById('event-time').value;const notes=document.getElementById('event-notes').value.trim();if(!title){toast('Please enter an event title.');return;}if(!date){toast('Please select a date.');return;}const btn=document.getElementById('event-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newE={id:'ev-'+Date.now(),title,event_date:date,event_time:time||null,notes:notes||null,created_by:currentUser.name,house:myHouse()||null};const{error}=await sb.from('events').insert(newE);if(error){toast('Could not add event.');btn.textContent='Add event';btn.classList.remove('btn-disabled');return;}cachedEvents.push(newE);cachedEvents.sort((a,b)=>a.event_date.localeCompare(b.event_date));btn.textContent='Add event';btn.classList.remove('btn-disabled');closeModal('modal-add-event');toast('Event added.');renderMgrCalendar();}
-async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.');return;}cachedEvents=cachedEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
+async function saveNewEvent(){const title=document.getElementById('event-title').value.trim();const date=document.getElementById('event-date').value;const time=document.getElementById('event-time').value;const notes=document.getElementById('event-notes').value.trim();if(!title){toast('Please enter a title.');return;}if(!date){toast('Please select a date.');return;}const btn=document.getElementById('event-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newE={id:'ev-'+Date.now(),title,event_date:date,event_time:time||null,notes:notes||null,created_by:currentUser.name,house:myHouse()||null};const{error}=await sb.from('events').insert(newE);if(error){toast('Could not add.');btn.textContent='Add event';btn.classList.remove('btn-disabled');return;}allEvents.push(newE);allEvents.sort((a,b)=>a.event_date.localeCompare(b.event_date));btn.textContent='Add event';btn.classList.remove('btn-disabled');closeModal('modal-add-event');toast('Event added.');renderMgrCalendar();}
+async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.');return;}allEvents=allEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
 
 function renderReport(){
   const req=cachedSettings.required||3;const weekStart=getWeekStart();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
-  document.getElementById('report-date-range').textContent=`Week of ${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)}`;
-  const el=document.getElementById('report-rows');
-  if(isOwner()){const houses=[...new Set(cachedResidents.map(r=>r.house||'Unassigned'))].sort();el.innerHTML=houses.map(house=>{const hRes=cachedResidents.filter(r=>(r.house||'Unassigned')===house);return`<div class="house-section"><div class="house-section-title"><span>&#127968; ${house}</span></div>${hRes.map(r=>buildReportRow(r,weekStart,req)).join('')}</div>`;}).join('');}
-  else{el.innerHTML=cachedResidents.map(r=>buildReportRow(r,weekStart,req)).join('');}
+  const label=selectedHouse?selectedHouse:(isOwner()?'All houses':(currentUser.house||''));
+  document.getElementById('report-date-range').textContent=`Week of ${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)} \u00b7 ${label}`;
+  document.getElementById('report-rows').innerHTML=residents().map(r=>buildReportRow(r,weekStart,req)).join('')||'<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No residents</h3></div>';
 }
 
-function buildReportRow(r,weekStart,req){const wc=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const status=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';const label=wc>=req?'Complete':wc>0?'In progress':'None';const meetings=cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart);const meetingRows=meetings.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink-light);font-size:11px">\ud83d\udccd map</a>`:'';return`<div style="font-size:12px;color:var(--mid);padding:6px 0;border-bottom:1px solid var(--sand)">${c.meeting_type} \u2014 ${c.meeting_name} \u00b7 ${fmtDate(d)} at ${fmtTime(d)}<br>\u270d\ufe0f ${c.signer_name}${mapLink}${c.sig_data_url?`<br><img src="${c.sig_data_url}" style="max-width:180px;border:1px solid var(--sand);border-radius:6px;margin-top:4px" alt="sig">`:''}</div>`;}).join('');return`<div class="card" style="margin-bottom:12px"><div class="report-row"><div><div class="report-name">${r.name}</div><div class="report-count">${wc} of ${req} required</div></div><span class="pill ${status}">${label}</span></div>${meetingRows}</div>`;}
+function buildReportRow(r,weekStart,req){const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const status=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';const label=wc>=req?'Complete':wc>0?'In progress':'None';const meetings=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart);const meetingRows=meetings.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink-light);font-size:11px">\ud83d\udccd map</a>`:'';return`<div style="font-size:12px;color:var(--mid);padding:6px 0;border-bottom:1px solid var(--sand)">${c.meeting_type} \u2014 ${c.meeting_name} \u00b7 ${fmtDate(d)} at ${fmtTime(d)}<br>\u270d\ufe0f ${c.signer_name}${mapLink}${c.sig_data_url?`<br><img src="${c.sig_data_url}" style="max-width:180px;border:1px solid var(--sand);border-radius:6px;margin-top:4px" alt="sig">`:''}</div>`;}).join('');return`<div class="card" style="margin-bottom:12px"><div class="report-row"><div><div class="report-name">${r.name}</div><div class="report-count">${wc} of ${req} required</div></div><span class="pill ${status}">${label}</span></div>${meetingRows}</div>`;}
 
-function viewResident(id){const r=cachedResidents.find(x=>x.id===id);if(!r)return;const checkins=cachedCheckins.filter(c=>c.resident_id===id);const wc=checkins.filter(c=>new Date(c.ts)>=getWeekStart()).length;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=`<p style="font-size:13px;color:var(--mid);margin-bottom:14px">${r.house||''} &bull; Phase ${r.phase||1} &bull; Curfew: ${getCurfewLabel(r.phase||1,new Date())}</p><div class="stats-grid" style="margin-bottom:14px"><div class="stat-box"><div class="stat-num">${wc}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${checkins.length}</div><div class="stat-label">Total</div></div></div><div class="card-title" style="margin-bottom:8px">Recent meetings</div>${checkins.slice(0,5).map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div><div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}</div><div class="log-sig">\u270d\ufe0f ${c.signer_name}${mapLink}</div>${c.sig_data_url?`<img src="${c.sig_data_url}" class="sig-img" alt="Signature">`:''}</div></div>`;}).join('')||'<p class="text-mid">No meetings recorded.</p>'}`;document.getElementById('modal-resident-detail').classList.add('open');}
-
-function renderOwnerHouses(){
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();
-  const houses=[...new Set([...cachedResidents.map(r=>r.house),...cachedManagers.map(m=>m.house)].filter(Boolean))].sort();
-  const el=document.getElementById('owner-houses-list');
-  if(!houses.length){el.innerHTML='<p class="text-mid">No houses yet. Add one above.</p>';return;}
-  el.innerHTML=houses.map(house=>{
-    const hRes=cachedResidents.filter(r=>r.house===house);const hMgr=cachedManagers.find(m=>m.house===house);
-    const onTrack=hRes.filter(r=>cachedCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=req).length;
-    const today=new Date().toDateString();
-    const homeCount=hRes.filter(r=>{const logs=cachedCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.action==='in'&&!last.late;}).length;
-    return`<div class="house-overview-card"><div class="house-overview-name">&#127968; ${house}</div><div style="font-size:12px;color:var(--mid);margin-bottom:10px">Manager: ${hMgr?hMgr.name:'None assigned'}</div><div class="house-overview-grid"><div class="house-mini-stat"><div class="house-mini-num">${hRes.length}</div><div class="house-mini-label">Residents</div></div><div class="house-mini-stat"><div class="house-mini-num" style="color:var(--success)">${onTrack}</div><div class="house-mini-label">On track</div></div><div class="house-mini-stat"><div class="house-mini-num" style="color:var(--pink)">${homeCount}</div><div class="house-mini-label">Home tonight</div></div></div></div>`;
-  }).join('');
-}
+function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=`<p style="font-size:13px;color:var(--mid);margin-bottom:14px">${r.house||''} &bull; Phase ${r.phase||1} &bull; Curfew: ${getCurfewLabel(r.phase||1,new Date())}</p><div class="stats-grid" style="margin-bottom:14px"><div class="stat-box"><div class="stat-num">${wc}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${ckins.length}</div><div class="stat-label">Total</div></div></div><div class="card-title" style="margin-bottom:8px">Recent meetings</div>${ckins.slice(0,5).map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div><div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}</div><div class="log-sig">\u270d\ufe0f ${c.signer_name}${mapLink}</div>${c.sig_data_url?`<img src="${c.sig_data_url}" class="sig-img" alt="Signature">`:''}</div></div>`;}).join('')||'<p class="text-mid">No meetings recorded.</p>'}`;document.getElementById('modal-resident-detail').classList.add('open');}
 
 function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';}
 async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.');return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
 async function changeMgrPin(){const cur=document.getElementById('mgr-pin-current').value.trim();const nw=document.getElementById('mgr-pin-new').value.trim();const cf=document.getElementById('mgr-pin-confirm').value.trim();if(cur!==currentUser.pin){toast('Current PIN is incorrect.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('PINs do not match.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.');return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('mgr-pin-current').value='';document.getElementById('mgr-pin-new').value='';document.getElementById('mgr-pin-confirm').value='';}
-async function resetResidentPin(){const id=document.getElementById('reset-pin-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const r=cachedResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.');return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
-async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const m=cachedManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Reset PIN for ${m.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.');return;}toast(`${m.name}'s PIN updated.`);document.getElementById('reset-mgr-pin-value').value='';}
+async function resetResidentPin(){const id=document.getElementById('reset-pin-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.');return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
+async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Reset PIN for ${m.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset.');return;}toast(`${m.name}'s PIN updated.`);document.getElementById('reset-mgr-pin-value').value='';}
 function openAddResident(){document.getElementById('add-name').value='';document.getElementById('add-pin').value='';document.getElementById('modal-add-resident').classList.add('open');}
 function openAddManager(){document.getElementById('add-mgr-name').value='';document.getElementById('add-mgr-id').value='';document.getElementById('add-mgr-pin').value='';document.getElementById('modal-add-manager').classList.add('open');}
-async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}if(cachedResidents.find(r=>r.name.toLowerCase()===name.toLowerCase())){toast('That name already exists.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house:myHouse()||null};const{error}=await sb.from('residents').insert(newR);if(error){toast('Could not add: '+error.message);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}cachedResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house:newR.house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
-async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.');return;}if(!mgrId){toast('Please enter a manager ID.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}cachedManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);populateOwnerSelects();renderOwnerHouses();}
-async function removeResident(){const id=document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=cachedResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}cachedResidents=cachedResidents.filter(x=>x.id!==id);toast(`${r.name} removed.`);renderManagerDashboard();populateResidentSelects();}
-async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=cachedManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}cachedManagers=cachedManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateOwnerSelects();renderOwnerHouses();}
+async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house};const{error}=await sb.from('residents').insert(newR);if(error){toast('Could not add: '+error.message);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
+async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.');return;}if(!mgrId){toast('Please enter a manager ID.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
+async function removeResident(){const id=document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allResidents=allResidents.filter(x=>x.id!==id);toast(`${r.name} removed.`);renderManagerDashboard();populateSelects();}
+async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
