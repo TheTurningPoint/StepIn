@@ -178,10 +178,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);background:var(
 
 <div class="body" id="mgr-pane-curfew" style="display:none">
   <div class="card"><div class="card-title">&#128274; Tonight&#8217;s curfew status</div><div id="mgr-curfew-tonight"></div></div>
-  <div class="card"><div class="card-title">Excuse a resident (work)</div>
+  <div class="card"><div class="card-title">Excuse a resident</div>
     <div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div>
     <div class="field"><label>Date</label><input type="date" id="excuse-date"></div>
-    <div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work shift"></div>
+    <div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work, medical appointment, family..."></div>
     <button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button>
   </div>
   <div class="card"><div class="card-title">Recent curfew log</div><div id="mgr-curfew-log"></div></div>
@@ -361,7 +361,7 @@ function renderCurfewAction(){
   }else if(status==='in'||status==='unknown'&&!last){
     html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4">
       <div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You are home &mdash; Phase ${phase} curfew: ${curfewLabel}</div>
-      <button class="btn btn-warn" onclick="doCurfewAction('out')">&#128682; Sign out</button>
+      <div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going?" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; Sign out</button>
     </div>`;
   }else if(status==='out'){
     const late=isPastCurfew(phase);
@@ -377,13 +377,27 @@ function renderCurfewAction(){
     // Default - not signed out yet today
     html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4">
       <div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You are home &mdash; Phase ${phase} curfew: ${curfewLabel}</div>
-      <button class="btn btn-warn" onclick="doCurfewAction('out')">&#128682; Sign out</button>
+      <div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going?" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; Sign out</button>
     </div>`;
   }
   el.innerHTML=html;
 }
 
-async function doCurfewAction(action){
+async function doSignOut(){
+  const dest=document.getElementById('signout-destination');
+  const destination=dest?dest.value.trim():'';
+  if(!destination){toast('Please enter where you are going.');return;}
+  await doCurfewAction('out',destination);
+  if(dest)dest.value='';
+}
+async function doSignOut2(){
+  const dest=document.getElementById('signout-destination2');
+  const destination=dest?dest.value.trim():'';
+  if(!destination){toast('Please enter where you are going.');return;}
+  await doCurfewAction('out',destination);
+  if(dest)dest.value='';
+}
+async function doCurfewAction(action,destination=''){
   if(!navigator.geolocation){alert('Location required for curfew check.');return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const now=new Date();
@@ -399,7 +413,8 @@ async function doCurfewAction(action){
       lat:pos.coords.latitude.toFixed(6),
       lng:pos.coords.longitude.toFixed(6),
       late:isLate,
-      excused:false
+      excused:false,
+      destination:destination||null
     };
     const{error}=await sb.from('curfew_log').insert(record);
     if(error){toast('Could not save. Try again.');return;}
@@ -422,7 +437,7 @@ function renderResCurfewDetail(){
   histEl.innerHTML=cachedCurfewLog.slice(0,20).map(l=>{
     const d=new Date(l.ts);
     const icon=l.action==='out'?'&#128682;':'&#127968;';
-    const label=l.action==='out'?'Signed out':'Signed in';
+    const label=l.action==='out'?('Signed out'+(l.destination?' → '+l.destination:'')):('Signed in');
     const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';
     const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';
     return `<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;
@@ -543,7 +558,7 @@ function renderMgrCurfew(){
   if(!cachedCurfewLog.filter(l=>!l.excused).length){logEl.innerHTML='<p class="text-mid">No curfew activity.</p>';return;}
   logEl.innerHTML=cachedCurfewLog.filter(l=>!l.excused).slice(0,30).map(l=>{
     const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';
-    const label=l.action==='out'?'Signed out':'Signed in';
+    const label=l.action==='out'?('Signed out'+(l.destination?' → '+l.destination:'')):('Signed in');
     const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';
     const mapLink=l.lat?` <a href="https://maps.google.com/?q=${l.lat},${l.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';
     return `<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${l.resident_name} &mdash; ${label}${lateTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}${mapLink}</div></div></div>`;
@@ -563,7 +578,7 @@ async function excuseResident(){
   const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false};
   const{error}=await sb.from('curfew_log').insert(record);
   if(error){toast('Could not save.');return;}
-  cachedCurfewLog.unshift(record);toast(`${resName} excused for ${date}.`);
+  cachedCurfewLog.unshift(record);toast(`${resName} marked as excused.`);
   document.getElementById('excuse-reason').value='';renderMgrCurfew();
 }
 
