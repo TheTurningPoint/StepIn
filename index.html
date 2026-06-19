@@ -671,9 +671,14 @@ function renderMgrDashboard(){
   
 
   // Curfew status cards
-  const curfewEl=document.getElementById('dash-curfew-list');if(!curfewEl)return;
+  const curfewEl=document.getElementById('dash-curfew-list');
   const res=residents();
-  if(!res.length){curfewEl.innerHTML='<p class="text-mid">No residents yet.</p>';return;}
+  if(!res.length){
+    if(curfewEl)curfewEl.innerHTML='<p class="text-mid">No residents yet.</p>';
+    const attEl2=document.getElementById('dash-attendance-list');
+    if(attEl2)attEl2.innerHTML='<p class="text-mid">No residents yet.</p>';
+    return;
+  }
   const today=new Date().toDateString();
   const mapped=res.map(r=>{
     const phase=r.phase||1;const todayLogs=curfewLog().filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
@@ -692,7 +697,17 @@ function renderMgrDashboard(){
   // Attendance bars
   const attEl=document.getElementById('dash-attendance-list');if(!attEl)return;
   const req=cachedSettings.required||3;const weekStart=getWeekStart();
-  attEl.innerHTML=res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pct=Math.min(100,Math.round(wc/req*100));const color=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';return`<div style="margin-bottom:10px"><div class="flex-between" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${r.name}</span><span style="font-size:12px;color:var(--mid)">${wc}/${req}</span></div><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%;background:${color}"></div></div></div>`;}).join('');
+  const req2=cachedSettings.required||3;const weekStart2=getWeekStart();
+  attEl.innerHTML=res.map(r=>{
+    const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart2).length;
+    const pct=Math.min(100,Math.round(wc/req2*100));
+    const color=wc>=req2?'var(--success)':wc>0?'var(--warn)':'var(--danger)';
+    const pill=wc>=req2?'pill-green':wc>0?'pill-yellow':'pill-red';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--sand)">'+
+      '<div style="flex:1;font-size:14px;font-weight:600">'+r.name+'</div>'+
+      '<span class="pill '+pill+'" style="font-size:12px;min-width:40px;text-align:center">'+wc+'/'+req2+'</span>'+
+      '</div>';
+  }).join('');
 }
 
 function renderMgrResidents(){
