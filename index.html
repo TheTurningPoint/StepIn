@@ -1426,10 +1426,13 @@ async function saveDrugTest(){
     resident_name:resName,
     test_date:date,
     test_time:time,
+    created_at:new Date().toISOString(),
     test_types:testTypes.join(' + '),
     result:overallResult,
-    notes:(parts.join(' | ')+(notes?' | '+notes:'')),
-    administered_by:currentUser.name,
+    notes:parts.join(' | ')+'| Observed: '+(dtObserved?'Yes':'No')+(notes?' | '+notes:''),
+    administered_by:adminName,
+    admin_sig:dtAdminSigCanvas?dtAdminSigCanvas.toDataURL():null,
+    resident_sig:dtResSigCanvas?dtResSigCanvas.toDataURL():null,
     house:r?r.house:(myHouse()||null)
   };
   let dtSaveErr;try{const{error:e2}=await sb.from('drug_tests').insert(record);dtSaveErr=e2;}catch(e){dtSaveErr={message:e.message};}
@@ -1488,7 +1491,7 @@ function renderDtHistory(){
     const rRef=r.tests.filter(function(t){return t.result==='refused';}).length;
     const testRows=r.tests.map(function(t){
       const notes=t.notes||'';
-      const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'—';
+      const observed=(notes||'').includes('Observed: Yes')?'Yes':(notes||'').includes('Observed: No')?'No':'Not recorded';
       const cleanNotes=notes.replace(/Urine:\s*\w+\s*\|?\s*/g,'').replace(/Breath:\s*\w+\s*\|?\s*/g,'').replace(/Observed:\s*\w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
       return '<div style="border:1px solid var(--sand);border-radius:10px;margin-bottom:10px;overflow:hidden">'+
         // Test header row
@@ -1576,7 +1579,7 @@ function printDrugTestPDF(tests,label){
 
   const rows=tests.map(function(t){
     const notes=t.notes||'';
-    const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'Unknown';
+    const observed=(notes||'').includes('Observed: Yes')?'Yes':(notes||'').includes('Observed: No')?'No':'Not recorded';
     const cleanNotes=notes.replace(/Urine:\s*\w+\s*\|?\s*/g,'').replace(/Breath:\s*\w+\s*\|?\s*/g,'').replace(/Observed:\s*\w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
     return '<div style="border:1.5px solid #ddd;border-radius:8px;margin-bottom:16px;page-break-inside:avoid;overflow:hidden">'+
       '<div style="background:'+(resultBg[t.result]||'#f5f5f5')+';padding:12px 16px;display:flex;justify-content:space-between;align-items:center">'+
@@ -1861,7 +1864,7 @@ function renderDtReport(range){
         r.tests.map(function(t,i){
           const bg=i%2===0?'var(--white)':'#FAFAFA';
           const notes=t.notes||'';
-          const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'Unknown';
+          const observed=(notes||'').includes('Observed: Yes')?'Yes':(notes||'').includes('Observed: No')?'No':'Not recorded';
           const cleanNotes=notes.replace(/Urine: \w+\s*\|?\s*/g,'').replace(/Breath: \w+\s*\|?\s*/g,'').replace(/Observed: \w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
           return '<div style="padding:14px 18px;border-bottom:1px solid var(--sand);background:'+bg+';display:flex;gap:14px;align-items:flex-start">' +
             // Result badge
@@ -2018,7 +2021,7 @@ function makeDemoDrugTests(){
       test_date:d.toISOString().split('T')[0],
       test_time:(9+i%8)+':'+((i%3)*15===0?'00':(i%3)*15),
       test_types:p.types,result:p.result,notes:p.notes,
-      administered_by:admins[i%3],admin_sig:null,resident_sig:null,house:p.house
+      administered_by:admins[i%3],admin_sig:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjxwYXRoIGQ9Ik0xMCw0MCBDMzAsMjAgNTAsNTAgODAsMzAgQzEwMCwxNSAxMjAsNDUgMTUwLDI1IEMxNjUsMTggMTc1LDMwIDE5MCwyNSIgc3Ryb2tlPSIjMEEwQTBBIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==',resident_sig:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iNjAiPjxwYXRoIGQ9Ik0xMCwzNSBDMjUsMTUgNDUsNTUgNzAsMzUgQzg1LDIyIDEwNSw0OCAxMzAsMzAgQzE1MCwxNiAxNzAsNDIgMTkwLDI4IiBzdHJva2U9IiMwQTBBMEEiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+',house:p.house
     });
   });
   return tests;
