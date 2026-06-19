@@ -710,6 +710,8 @@ function populateSelects(){
   document.getElementById('reset-pin-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
   document.getElementById('phase-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+res.map(r=>`<option value="${r.id}">${r.name} (Phase ${r.phase||1})</option>`).join('');
   document.getElementById('excuse-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
+  const mrs=document.getElementById('manage-resident-select');
+  if(mrs){const prev=mrs.value;mrs.innerHTML='<option value="">Choose a resident\u2026</option>'+opts;if(prev)mrs.value=prev;}
   document.getElementById('chore-resident').innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
   if(isOwner()){
     document.getElementById('reset-mgr-pin-select').innerHTML='<option value="">Select manager\u2026</option>'+allManagers.map(m=>`<option value="${m.id}">${m.name}</option>`).join('');
