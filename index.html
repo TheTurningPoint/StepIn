@@ -1124,6 +1124,7 @@ async function loadDrugTests(){
 }
 
 let dtResults={urine:null,breath:null};
+let dtObserved=null;
 
 function toggleTestSection(type){
   const checked=document.getElementById('dt-'+type).checked;
@@ -1138,6 +1139,22 @@ function setTestResult(type,val){
     btn.style.opacity=r===val?'1':'0.35';
     btn.style.transform=r===val?'scale(1.05)':'scale(1)';
   });
+}
+
+function setObserved(val){
+  dtObserved=val;
+  const yBtn=document.getElementById('dt-observed-yes');
+  const nBtn=document.getElementById('dt-observed-no');
+  if(yBtn){
+    yBtn.style.background=val===true?'var(--success)':'var(--cream)';
+    yBtn.style.color=val===true?'white':'var(--charcoal)';
+    yBtn.style.borderColor=val===true?'var(--success)':'var(--sand)';
+  }
+  if(nBtn){
+    nBtn.style.background=val===false?'var(--danger)':'var(--cream)';
+    nBtn.style.color=val===false?'white':'var(--charcoal)';
+    nBtn.style.borderColor=val===false?'var(--danger)':'var(--sand)';
+  }
 }
 
 function openDrugTest(){
