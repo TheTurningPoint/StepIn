@@ -489,6 +489,84 @@ function mgrTab(tab,btn){
 }
 
 function renderManagerDashboard(){
+  if(isOwner()){renderOwnerDashboard();return;}
+  renderMgrDashboard();
+}
+
+function renderOwnerDashboard(){
+  // Sticky note
+  const sn=document.getElementById('dash-sticky-note');
+  if(sn&&cachedAnnouncement)sn.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE</div><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div>`;
+  else if(sn)sn.innerHTML='';
+
+  document.getElementById('dash-curfew-time').textContent='';
+
+  const curfewEl=document.getElementById('dash-curfew-list');
+  const attEl=document.getElementById('dash-attendance-list');
+
+  if(!selectedHouse){
+    // No house selected — show house summary cards
+    const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
+    const req=cachedSettings.required||3;const weekStart=getWeekStart();
+    if(!houses.length){
+      curfewEl.innerHTML='<p class="text-mid">No houses yet. Add one in Tools.</p>';
+      attEl.innerHTML='';
+      return;
+    }
+    curfewEl.innerHTML='<p style="font-size:13px;color:var(--mid);margin-bottom:12px">Select a house from the dropdown to see resident details.</p>'+houses.map(house=>{
+      const hRes=allResidents.filter(r=>r.house===house);
+      const hMgr=allManagers.find(m=>m.house===house);
+      const onTrack=hRes.filter(r=>allCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=req).length;
+      const today=new Date().toDateString();
+      const homeCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.action==='in'&&!last.late;}).length;
+      const lateCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.late;}).length;
+      return`<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:12px;cursor:pointer" onclick="selectHouse('${house}')">
+        <div style="font-size:17px;font-weight:800;color:var(--black);margin-bottom:4px">&#127968; ${house}</div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:12px">Manager: ${hMgr?hMgr.name:'None assigned'}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--pink)">${hRes.length}</div><div style="font-size:10px;color:var(--mid);font-weight:600">RESIDENTS</div></div>
+          <div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--success)">${onTrack}</div><div style="font-size:10px;color:var(--mid);font-weight:600">ON TRACK</div></div>
+          <div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:${lateCount>0?'var(--danger)':'var(--success)'}">${homeCount}</div><div style="font-size:10px;color:var(--mid);font-weight:600">HOME</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--pink);margin-top:10px;font-weight:600">Tap to view details &#8594;</div>
+      </div>`;
+    }).join('');
+    attEl.innerHTML='';
+  }else{
+    // House selected — show that house's resident list simply
+    const res=residents();
+    const req=cachedSettings.required||3;const weekStart=getWeekStart();
+    curfewEl.innerHTML=res.length?res.map(r=>{
+      const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;
+      const today=new Date().toDateString();
+      const todayLogs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
+      const excused=todayLogs.find(l=>l.excused);
+      const lastLog=todayLogs.filter(l=>!l.excused).sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];
+      let curfewStatus='No action';let sc='unknown';
+      if(excused){curfewStatus='Excused';sc='excused';}
+      else if(lastLog&&lastLog.action==='in'){curfewStatus=lastLog.late?'Late':'Home';sc=lastLog.late?'late':'home';}
+      else if(lastLog&&lastLog.action==='out'){curfewStatus='Out'+(lastLog.destination?' → '+lastLog.destination:'');sc='out';}
+      const pillClass={home:'pill-green',late:'pill-red',out:'pill-yellow',excused:'pill-blue',unknown:'pill-gray'};
+      const attColor=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';
+      return`<div class="resident-row" onclick="viewResident('${r.id}')" style="cursor:pointer">
+        <div class="avatar">${r.name[0]}</div>
+        <div style="flex:1">
+          <div class="resident-name">${r.name}</div>
+          <div class="resident-sub">Phase ${r.phase||1} &bull; Meetings: <span style="color:${attColor};font-weight:700">${wc}/${req}</span> &bull; <span class="pill ${pillClass[sc]||'pill-gray'}" style="font-size:10px">${curfewStatus}</span></div>
+        </div>
+      </div>`;
+    }).join(''):'<p class="text-mid">No residents in this house.</p>';
+    attEl.innerHTML='';
+  }
+}
+
+function selectHouse(house){
+  selectedHouse=house;
+  document.getElementById('house-dropdown').value=house;
+  onHouseChange();
+}
+
+function renderMgrDashboard(){
   // Sticky note preview for manager
   const sn=document.getElementById('dash-sticky-note');
   if(sn&&cachedAnnouncement)sn.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE &mdash; ${cachedAcks.length}/${residents().length} acknowledged</div><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div>`;
