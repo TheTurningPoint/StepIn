@@ -624,9 +624,21 @@ function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h==
 function isPastCurfew(phase){const now=new Date();return now.getHours()>=getCurfewTime(phase,now);}
 function getMyStatus(){const today=new Date().toDateString();const logs=allCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!logs.length)return{status:'unknown',last:null};const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
 
-window.onload=async()=>{try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}};
+window.onload=async()=>{
+  // Check connectivity
+  if(!navigator.onLine){
+    document.getElementById('loading').innerHTML='<div style="color:white;text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:16px">&#128267;</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">No Internet Connection</div><div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:24px">Please connect to WiFi or cellular data and try again.</div><button onclick="location.reload()" style="background:var(--pink);color:white;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer">Try Again</button></div>';
+    return;
+  }
+  try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}};
 
 async function loadAllData(){
+  // 15 second timeout on all data loads
+  const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Connection timed out')),15000));
+  try{await Promise.race([loadAllDataInner(),timeout]);}
+  catch(e){console.log('loadAllData timeout/error:',e.message);}
+}
+async function loadAllDataInner(){
   try{
     const{data:sData}=await sb.from('settings').select('*').eq('id',1).single();if(sData)cachedSettings=sData;
     const today=new Date().toISOString().split('T')[0];
@@ -661,7 +673,7 @@ async function doLogin(){
   try{
     const res=await fetch(`${SUPABASE_URL}/rest/v1/residents?name=ilike.${encodeURIComponent(name)}&pin=eq.${pin}&select=*`,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
     const data=await res.json();
-    if(!data||!data.length){showErr(err,'Name or PIN not found. Please check your spelling or ask your manager for help.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
+    if(!data||!data.length){showErr(err,'Name or PIN not found. Make sure your name is spelled exactly as your manager entered it, then try again.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
     // Pick best match — owner first, then manager, then resident
     const match=data.find(r=>r.role==='owner')||data.find(r=>r.role==='manager')||data.find(r=>r.role==='resident');
     if(!match){showErr(err,'Account not found.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
@@ -943,9 +955,13 @@ async function ciDetails(){
   }
   setTimeout(initSigCanvas,200);
 }
-async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,meeting_lat:checkinData.meeting_lat||null,meeting_lng:checkinData.meeting_lng||null,distance_from_meeting:checkinData.distance_from_meeting||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL('image/jpeg',0.6),ts:checkinData.ts,house:currentUser.house||null};let ciSaveErr;try{const{error:e2}=await sb.from('checkins').insert(record);ciSaveErr=e2;}catch(e){ciSaveErr={message:e.message};}if(ciSaveErr){toast('Save failed. Check your connection.',true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
-function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const w=rect.width||sigCanvas.offsetWidth||300;sigCanvas.width=w;sigCanvas.height=180;sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
-function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
+async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');// Build record - include new columns only if they have values
+const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL('image/jpeg',0.6),ts:checkinData.ts,house:currentUser.house||null};
+if(checkinData.meeting_lat)record.meeting_lat=checkinData.meeting_lat;
+if(checkinData.meeting_lng)record.meeting_lng=checkinData.meeting_lng;
+if(checkinData.distance_from_meeting)record.distance_from_meeting=checkinData.distance_from_meeting;let ciSaveErr;try{const{error:e2}=await sb.from('checkins').insert(record);ciSaveErr=e2;}catch(e){ciSaveErr={message:e.message};}if(ciSaveErr){toast('Save failed. Check your connection.',true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
+function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const w=rect.width||sigCanvas.offsetWidth||300;sigCanvas.width=w;sigCanvas.height=180;sigCtx.fillStyle='#FFFFFF';sigCtx.fillRect(0,0,w,180);sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
+function clearSig(){if(sigCtx){sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigCtx.fillStyle='#FFFFFF';sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);}sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
 // ── MANAGER / OWNER ──
 function enterManager(){
@@ -1337,7 +1353,7 @@ function dtNextStep(){
   if(breathOn&&!dtResults.breath){toast('Please select a result for the breathalyzer.',true);return;}
   if(dtObserved===null){toast('Please indicate if collection was observed.',true);return;}
   dtShowStep(2);
-  setTimeout(function(){initDtSig('admin');},200);
+  setTimeout(function(){initDtSig('admin');},400);
 }
 
 function dtNextStep2(){
@@ -1358,7 +1374,7 @@ function dtNextStep2(){
     '<br>Collection observed: <strong>'+(dtObserved?'Yes':'No')+'</strong>'+
     '<br><span style="font-size:13px;color:var(--mid)">By signing below you confirm this test was administered to you and you understand the results.</span>';
   dtShowStep(3);
-  setTimeout(function(){initDtSig('resident');},200);
+  setTimeout(function(){initDtSig('resident');},400);
 }
 
 function dtPrevStep(){dtShowStep(1);}
@@ -1375,6 +1391,9 @@ function initDtSig(who){
   const w=rect.width||canvas.offsetWidth||300;
   canvas.width=w;
   canvas.height=180;
+  // Fill white background - prevents black boxes in JPEG output
+  ctx.fillStyle='#FFFFFF';
+  ctx.fillRect(0,0,w,180);
   ctx.strokeStyle='#0A0A0A';
   ctx.lineWidth=2.5;
   ctx.lineCap='round';
@@ -1409,11 +1428,13 @@ function initDtSig(who){
 function clearDtSig(who){
   if(who==='admin'&&dtAdminSigCtx){
     dtAdminSigCtx.clearRect(0,0,dtAdminSigCanvas.width,dtAdminSigCanvas.height);
+    dtAdminSigCtx.fillStyle='#FFFFFF';dtAdminSigCtx.fillRect(0,0,dtAdminSigCanvas.width,dtAdminSigCanvas.height);
     dtAdminHasMark=false;
     document.getElementById('dt-admin-hint').style.opacity='1';
   }
   if(who==='resident'&&dtResSigCtx){
     dtResSigCtx.clearRect(0,0,dtResSigCanvas.width,dtResSigCanvas.height);
+    dtResSigCtx.fillStyle='#FFFFFF';dtResSigCtx.fillRect(0,0,dtResSigCanvas.width,dtResSigCanvas.height);
     dtResHasMark=false;
     document.getElementById('dt-resident-hint').style.opacity='1';
   }
@@ -1464,7 +1485,7 @@ async function saveDrugTest(){
   const allResults=[urineOn?dtResults.urine:null,breathOn?dtResults.breath:null].filter(Boolean);
   if(allResults.includes('fail'))overallResult='fail';
   else if(allResults.includes('refused'))overallResult='refused';
-  const btn=document.getElementById('dt-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const btn=document.getElementById('dt-btn');if(btn.dataset.saving){return;}btn.dataset.saving='1';btn.textContent='Saving...';btn.classList.add('btn-disabled');
   const record={
     id:'dt-'+Date.now(),
     resident_id:resId,
@@ -1483,9 +1504,9 @@ async function saveDrugTest(){
   let dtSaveErr;try{const{error:e2}=await sb.from('drug_tests').insert(record);dtSaveErr=e2;}catch(e){dtSaveErr={message:e.message};}
   if(dtSaveErr){toast('Could not save: '+dtSaveErr.message,true);btn.textContent='Save test record';btn.classList.remove('btn-disabled');return;}
   cachedDrugTests.unshift(record);
-  btn.textContent='Save test record';btn.classList.remove('btn-disabled');
+  btn.textContent='Save test record';btn.classList.remove('btn-disabled');delete btn.dataset.saving;
   closeModal('modal-drug-test');
-  toast(resName+' — test recorded.');
+  toast(resName+' — test recorded and signed.');
 }
 
 async function openDrugTestHistory(){
