@@ -265,6 +265,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
 </div>
 <div class="body" id="res-tab-home">
+  <div id="res-curfew-detail"></div>
   <div class="stats-grid" id="res-stats"></div>
   <div id="res-sticky-note"></div>
   <div id="res-curfew-action"></div>
@@ -306,7 +307,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
 <div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
-<div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
+<div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><div id="ci-distance-display"></div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
 
@@ -339,9 +340,15 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div class="card-title">Meetings this week</div>
     <div id="dash-attendance-list"></div>
   </div>
-  <div style="display:flex;gap:10px;margin-bottom:16px">
-    <button class="btn btn-primary" style="flex:1" onclick="openDrugTest()">&#128137; Log drug test</button>
-
+  <div style="margin-bottom:16px">
+    <button class="btn btn-primary" style="width:100%" onclick="openDrugTest()">&#128137; Log drug test</button>
+  </div>
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:14px">
+      <span class="card-title" style="margin:0">&#128101; Residents</span>
+      <button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button>
+    </div>
+    <div id="mgr-resident-list"></div>
   </div>
 </div>
 
@@ -349,7 +356,24 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128137; Drug tests</span><button class="btn btn-primary btn-sm" onclick="openDrugTest()">+ Log test</button></div><div style="margin-bottom:12px"><button class="btn btn-outline btn-sm" onclick="openDrugTestHistory()">View full history</button></div></div>
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:12px">
+      <span class="card-title" style="margin:0">&#128137; Drug tests</span>
+      <button class="btn btn-primary btn-sm" onclick="openDrugTest()">+ Log test</button>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:14px">
+        <option value="all">All residents</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn btn-outline btn-sm" id="dtr-all-inline" onclick="setDtRangeInline('all')" style="flex:1">All</button>
+      <button class="btn btn-primary btn-sm" id="dtr-month-inline" onclick="setDtRangeInline('month')" style="flex:1">Month</button>
+      <button class="btn btn-outline btn-sm" id="dtr-90-inline" onclick="setDtRangeInline('90')" style="flex:1">90 days</button>
+    </div>
+    <div id="dt-history-content"></div>
+    <button class="btn btn-outline btn-sm mt8" onclick="printDrugTestLog()">&#128424; Print / PDF</button>
+  </div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span><button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button></div><div id="mgr-announcement-status"></div></div>
@@ -913,7 +937,6 @@ function enterManager(){
     badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');
     document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';
     document.getElementById('owner-tools').style.display='none';
-    document.getElementById('qa-add-house').style.display='none';
   }
   mgrTab('dash',document.getElementById('mgr-tab-dash'));
 }
@@ -1423,15 +1446,18 @@ async function saveDrugTest(){
 
 async function openDrugTestHistory(){
   await loadDrugTests();
-  // Populate resident filter
-  const filterEl=document.getElementById('dt-history-resident-filter');
-  if(filterEl){
-    const res=residents();
-    filterEl.innerHTML='<option value="all">All residents</option>'+
-      res.map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
-  }
+  populateDtResidentFilter();
   renderDtHistory();
-  document.getElementById('modal-drug-test-history').classList.add('open');
+  // Switch to tools tab to show inline
+  mgrTab('tools',document.getElementById('mgr-tab-tools'));
+}
+
+function populateDtResidentFilter(){
+  const el=document.getElementById('dt-history-resident-filter');
+  if(!el)return;
+  const res=residents();
+  el.innerHTML='<option value="all">All residents</option>'+
+    res.map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
 }
 
 function renderDtHistory(){
@@ -1723,6 +1749,16 @@ function switchReportTab(tab){
   // Update flex styles
   document.getElementById('report-tab-attendance').style.flex='1';
   document.getElementById('report-tab-drugtests').style.flex='1';
+}
+
+function setDtRangeInline(range){
+  currentDtRange=range;
+  ['all','month','90'].forEach(function(r){
+    const btn=document.getElementById('dtr-'+r+'-inline');
+    if(btn)btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
+    if(btn)btn.style.flex='1';
+  });
+  renderDtHistory();
 }
 
 function setDtRange(range){
