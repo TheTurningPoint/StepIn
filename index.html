@@ -320,17 +320,9 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div class="card-title">Meetings this week</div>
     <div id="dash-attendance-list"></div>
   </div>
-  <div class="card">
-    <div class="card-title">Quick actions</div>
-    <div class="quick-actions" id="quick-actions-grid">
-      <button class="quick-btn" onclick="openAddResident()"><div class="quick-btn-icon">&#128101;</div><div class="quick-btn-label">Add resident</div></button>
-      <button class="quick-btn" onclick="openPostAnnouncement()"><div class="quick-btn-icon">&#128204;</div><div class="quick-btn-label">Post note</div></button>
-      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddChore,100)"><div class="quick-btn-icon">&#129529;</div><div class="quick-btn-label">Add chore</div></button>
-      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(scrollToExcuse,100)"><div class="quick-btn-icon">&#128338;</div><div class="quick-btn-label">Excuse resident</div></button>
-      <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddEvent,100)"><div class="quick-btn-icon">&#128197;</div><div class="quick-btn-label">Add event</div></button>
-      <button class="quick-btn" onclick="openDrugTest()"><div class="quick-btn-icon">&#128137;</div><div class="quick-btn-label">Log drug test</div></button>
-      <button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
-    </div>
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    <button class="btn btn-primary" style="flex:1" onclick="openDrugTest()">&#128137; Log drug test</button>
+    <button class="btn btn-navy" id="qa-add-house" onclick="openAddManager()" style="display:none;flex:1">&#127968; Add house</button>
   </div>
 </div>
 
