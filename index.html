@@ -1157,6 +1157,115 @@ function setObserved(val){
   }
 }
 
+let dtAdminSigCanvas=null,dtAdminSigCtx=null,dtAdminHasMark=false;
+let dtResSigCanvas=null,dtResSigCtx=null,dtResHasMark=false;
+
+function dtShowStep(n){
+  [1,2,3].forEach(function(i){
+    const el=document.getElementById('dt-step-'+i);
+    if(el)el.style.display=i===n?'block':'none';
+  });
+  const steps=document.getElementById('dt-steps');
+  if(steps)steps.innerHTML=[1,2,3].map(function(i){
+    return '<div class="step-dot '+(i===n?'active':i<n?'done':'')+'"></div>';
+  }).join('');
+}
+
+function dtNextStep(){
+  const resVal=document.getElementById('dt-resident').value;
+  const date=document.getElementById('dt-date').value;
+  const time=document.getElementById('dt-time').value;
+  const urineOn=document.getElementById('dt-urine').checked;
+  const breathOn=document.getElementById('dt-breath').checked;
+  if(!resVal){toast('Please select a resident.',true);return;}
+  if(!date||!time){toast('Please enter date and time.',true);return;}
+  if(!urineOn&&!breathOn){toast('Please select at least one test type.',true);return;}
+  if(urineOn&&!dtResults.urine){toast('Please select a result for the urine test.',true);return;}
+  if(breathOn&&!dtResults.breath){toast('Please select a result for the breathalyzer.',true);return;}
+  if(dtObserved===null){toast('Please indicate if collection was observed.',true);return;}
+  dtShowStep(2);
+  setTimeout(function(){initDtSig('admin');},200);
+}
+
+function dtNextStep2(){
+  const adminName=document.getElementById('dt-admin-name').value.trim();
+  if(!adminName){toast('Please enter the administrator name.',true);return;}
+  if(!dtAdminHasMark){toast('Administrator signature is required.',true);return;}
+  const urineOn=document.getElementById('dt-urine').checked;
+  const breathOn=document.getElementById('dt-breath').checked;
+  const resVal=document.getElementById('dt-resident').value;
+  const resName=resVal?resVal.split('|')[1]:'';
+  const parts=[];
+  if(urineOn)parts.push('Urine: <strong>'+(dtResults.urine.charAt(0).toUpperCase()+dtResults.urine.slice(1))+'</strong>');
+  if(breathOn)parts.push('Breathalyzer: <strong>'+(dtResults.breath.charAt(0).toUpperCase()+dtResults.breath.slice(1))+'</strong>');
+  const summary=document.getElementById('dt-result-summary');
+  if(summary)summary.innerHTML=
+    '<div style="font-weight:700;margin-bottom:6px">'+resName+' — test results</div>'+
+    parts.join('<br>')+
+    '<br>Collection observed: <strong>'+(dtObserved?'Yes':'No')+'</strong>'+
+    '<br><span style="font-size:13px;color:var(--mid)">By signing below you confirm this test was administered to you and you understand the results.</span>';
+  dtShowStep(3);
+  setTimeout(function(){initDtSig('resident');},200);
+}
+
+function dtPrevStep(){dtShowStep(1);}
+function dtPrevStep2(){dtShowStep(2);}
+
+function initDtSig(who){
+  const canvasId=who==='admin'?'dt-admin-canvas':'dt-resident-canvas';
+  const hintId=who==='admin'?'dt-admin-hint':'dt-resident-hint';
+  const canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const rect=canvas.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=rect.width*dpr;
+  canvas.height=180*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.strokeStyle='#0A0A0A';
+  ctx.lineWidth=2.5;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  let drawing=false;
+  const getXY=function(e){
+    const r=canvas.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    return[t.clientX-r.left,t.clientY-r.top];
+  };
+  canvas.onmousedown=function(e){drawing=true;ctx.beginPath();const p=getXY(e);ctx.moveTo(p[0],p[1]);};
+  canvas.onmousemove=function(e){
+    if(!drawing)return;
+    const p=getXY(e);ctx.lineTo(p[0],p[1]);ctx.stroke();
+    document.getElementById(hintId).style.opacity='0';
+    if(who==='admin')dtAdminHasMark=true;else dtResHasMark=true;
+  };
+  canvas.onmouseup=function(){drawing=false;};
+  canvas.ontouchstart=function(e){e.preventDefault();drawing=true;ctx.beginPath();const p=getXY(e);ctx.moveTo(p[0],p[1]);};
+  canvas.ontouchmove=function(e){
+    e.preventDefault();
+    if(!drawing)return;
+    const p=getXY(e);ctx.lineTo(p[0],p[1]);ctx.stroke();
+    document.getElementById(hintId).style.opacity='0';
+    if(who==='admin')dtAdminHasMark=true;else dtResHasMark=true;
+  };
+  canvas.ontouchend=function(){drawing=false;};
+  if(who==='admin'){dtAdminSigCanvas=canvas;dtAdminSigCtx=ctx;dtAdminHasMark=false;}
+  else{dtResSigCanvas=canvas;dtResSigCtx=ctx;dtResHasMark=false;}
+}
+
+function clearDtSig(who){
+  if(who==='admin'&&dtAdminSigCtx){
+    dtAdminSigCtx.clearRect(0,0,dtAdminSigCanvas.width,dtAdminSigCanvas.height);
+    dtAdminHasMark=false;
+    document.getElementById('dt-admin-hint').style.opacity='1';
+  }
+  if(who==='resident'&&dtResSigCtx){
+    dtResSigCtx.clearRect(0,0,dtResSigCanvas.width,dtResSigCanvas.height);
+    dtResHasMark=false;
+    document.getElementById('dt-resident-hint').style.opacity='1';
+  }
+}
+
 function openDrugTest(){
   document.getElementById('dt-resident').innerHTML='<option value="">Select resident&#8230;</option>'+residents().map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');
   const now=new Date();
