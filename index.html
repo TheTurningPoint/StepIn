@@ -727,6 +727,17 @@ function renderCurfewAction(){
 async function doSignOut(){const dest=document.getElementById('signout-destination');const d=dest?dest.value.trim():'';if(!d){toast('Please tell us where you’re going before you leave.',true);return;}await doCurfewAction('out',d);}
 
 async function doCurfewAction(action,destination){
+  if(isDemoMode){
+    // Demo mode - use fake GPS
+    const now=new Date();const phase=currentUser.phase||1;const isLate=action==='in'&&now.getHours()>=getCurfewTime(phase,now);
+    const record={id:'cl-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,action,ts:now.toISOString(),lat:'39.7392',lng:'-104.9847',late:isLate,excused:false,destination:destination||null,house:currentUser.house||null};
+    allCurfewLog.unshift(record);
+    if(action==='out')toast('Signed out. Be home by '+getCurfewLabel(phase,now)+'.');
+    else if(isLate)toast('Signed in — marked late.');
+    else toast('Signed in. Welcome home! ❤️');
+    renderCurfewAction();renderResCurfewDetail();
+    return;
+  }
   if(!navigator.geolocation){alert('We need your location to record your curfew check-in. When your phone asks, tap Allow.');return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const now=new Date();const phase=currentUser.phase||1;const isLate=action==='in'&&now.getHours()>=getCurfewTime(phase,now);
@@ -830,7 +841,35 @@ async function changeMyPin(){const cur=document.getElementById('pin-current').va
 
 // CHECK-IN
 function ciShow(step){['loc','details','sig','done'].forEach(s=>document.getElementById('ci-step-'+s).style.display=s===step?'block':'none');const n={loc:0,details:1,sig:2,done:3}[step];document.getElementById('checkin-steps').innerHTML=n>0?[1,2,3].map(i=>`<div class="step-dot ${i===n?'active':i<n?'done':''}"></div>`).join(''):'';}
-function startCheckin(){if(!navigator.geolocation){alert('Location services required.');return;}checkinData={};show('screen-checkin');ciShow('loc');document.getElementById('loc-status').className='loc-box';document.getElementById('loc-status').innerHTML='&#128205; Getting your location\u2026';document.getElementById('btn-loc-proceed').classList.add('btn-disabled');navigator.geolocation.getCurrentPosition(pos=>{checkinData.lat=pos.coords.latitude.toFixed(6);checkinData.lng=pos.coords.longitude.toFixed(6);const el=document.getElementById('loc-status');el.className='loc-box success';el.innerHTML='\u2705 Location captured. You may proceed.';document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');},err=>{const el=document.getElementById('loc-status');el.className='loc-box error';el.innerHTML='\u274c Location access denied.<br><small>Go to Settings \u2192 Privacy \u2192 Location Services.</small>';},{timeout:15000,enableHighAccuracy:true,maximumAge:0});}
+function startCheckin(){
+  checkinData={};
+  show('screen-checkin');
+  ciShow('loc');
+  if(isDemoMode){
+    checkinData.lat='39.7392';checkinData.lng='-104.9847';
+    const el=document.getElementById('loc-status');
+    el.className='loc-box success';
+    el.innerHTML='&#9989; Demo location: Denver, CO (simulated) &mdash; ready to proceed.';
+    document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');
+    return;
+  }
+  if(!navigator.geolocation){alert('Location services required.');return;}
+  document.getElementById('loc-status').className='loc-box';
+  document.getElementById('loc-status').innerHTML='&#128205; Getting your location…';
+  document.getElementById('btn-loc-proceed').classList.add('btn-disabled');
+  navigator.geolocation.getCurrentPosition(function(pos){
+    checkinData.lat=pos.coords.latitude.toFixed(6);
+    checkinData.lng=pos.coords.longitude.toFixed(6);
+    const el=document.getElementById('loc-status');
+    el.className='loc-box success';
+    el.innerHTML='✅ Location captured. You may proceed.';
+    document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');
+  },function(){
+    const el=document.getElementById('loc-status');
+    el.className='loc-box error';
+    el.innerHTML='❌ Location access denied.<br><small>Go to Settings → Privacy → Location Services.</small>';
+  },{timeout:15000,enableHighAccuracy:true,maximumAge:0});
+}
 function locProceed(){if(!checkinData.lat){toast('Location not ready.',true);return;}ciShow('details');}
 function cancelCheckin(){if(confirm('Cancel this check-in?')){show('screen-resident');renderResidentHome();}}
 async function finishCheckin(){await loadAllData();show('screen-resident');renderResidentHome();}
@@ -870,7 +909,7 @@ async function ciDetails(){
   checkinData.ts=new Date().toISOString();
   checkinData.distance_from_meeting=null;
   // Geocode the meeting address
-  if(checkinData.lat&&checkinData.lng&&addr){
+  if(!isDemoMode&&checkinData.lat&&checkinData.lng&&addr){
     const geo=await geocodeAddress(addr);
     if(geo){
       const dist=haversineDistance(
@@ -881,6 +920,11 @@ async function ciDetails(){
       checkinData.meeting_lat=geo.lat.toFixed(6);
       checkinData.meeting_lng=geo.lng.toFixed(6);
     }
+  }else if(isDemoMode&&checkinData.lat&&checkinData.lng){
+    // Demo - simulate distance
+    checkinData.distance_from_meeting='0.3';
+    checkinData.meeting_lat=checkinData.lat;
+    checkinData.meeting_lng=checkinData.lng;
   }
   if(btn){btn.textContent='Next — Get someone to sign ➔';btn.classList.remove('btn-disabled');}
   document.getElementById('sig-resident-name').textContent=currentUser.name;
@@ -899,7 +943,7 @@ async function ciDetails(){
   }
   setTimeout(initSigCanvas,200);
 }
-async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,meeting_lat:checkinData.meeting_lat||null,meeting_lng:checkinData.meeting_lng||null,distance_from_meeting:checkinData.distance_from_meeting||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};let ciSaveErr;try{const{error:e2}=await sb.from('checkins').insert(record);ciSaveErr=e2;}catch(e){ciSaveErr={message:e.message};}if(ciSaveErr){toast('Save failed. Check your connection.',true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
+async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,meeting_lat:checkinData.meeting_lat||null,meeting_lng:checkinData.meeting_lng||null,distance_from_meeting:checkinData.distance_from_meeting||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL('image/jpeg',0.6),ts:checkinData.ts,house:currentUser.house||null};let ciSaveErr;try{const{error:e2}=await sb.from('checkins').insert(record);ciSaveErr=e2;}catch(e){ciSaveErr={message:e.message};}if(ciSaveErr){toast('Save failed. Check your connection.',true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
 function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const w=rect.width||sigCanvas.offsetWidth||300;sigCanvas.width=w;sigCanvas.height=180;sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
 function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
@@ -1402,6 +1446,7 @@ async function saveDrugTest(){
   const urineOn=document.getElementById('dt-urine').checked;
   const breathOn=document.getElementById('dt-breath').checked;
   const notes=document.getElementById('dt-notes').value.trim();
+  const adminName=document.getElementById('dt-admin-name')?document.getElementById('dt-admin-name').value.trim():currentUser.name;
   if(!resVal){toast('Please select a resident.',true);return;}
   if(!date||!time){toast('Please enter date and time.',true);return;}
   if(!urineOn&&!breathOn){toast('Please select at least one test type.',true);return;}
@@ -1431,8 +1476,8 @@ async function saveDrugTest(){
     result:overallResult,
     notes:parts.join(' | ')+'| Observed: '+(dtObserved?'Yes':'No')+(notes?' | '+notes:''),
     administered_by:adminName,
-    admin_sig:dtAdminSigCanvas?dtAdminSigCanvas.toDataURL():null,
-    resident_sig:dtResSigCanvas?dtResSigCanvas.toDataURL():null,
+    admin_sig:dtAdminSigCanvas?dtAdminSigCanvas.toDataURL('image/jpeg',0.6):null,
+    resident_sig:dtResSigCanvas?dtResSigCanvas.toDataURL('image/jpeg',0.6):null,
     house:r?r.house:(myHouse()||null)
   };
   let dtSaveErr;try{const{error:e2}=await sb.from('drug_tests').insert(record);dtSaveErr=e2;}catch(e){dtSaveErr={message:e.message};}
