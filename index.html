@@ -295,7 +295,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div id="res-meeting-list"></div>
   </div>
 </div>
-<div class="body" id="res-tab-history" style="display:none"><div class="card"><div class="card-title">All my meetings</div><div id="res-history-list"></div></div></div>
+
 <div class="body" id="res-tab-pin" style="display:none"><div class="card"><div class="card-title">Change my PIN</div>
 <p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm new PIN</label><input type="password" id="pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMyPin()">Update PIN</button></div></div>
 </div>
@@ -492,7 +492,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-post-announcement"><div class="modal"><div class="modal-handle"></div><h2>&#128204; Post sticky note</h2><p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p><div class="field"><label>Message</label><textarea id="announcement-text" placeholder="e.g. House meeting tonight at 7pm." style="height:100px;resize:none"></textarea></div><button class="btn btn-primary" id="announcement-btn" onclick="postAnnouncement()">Post note</button><button class="btn btn-outline mt8" onclick="closeModal('modal-post-announcement')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-resident"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
-<div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Serenity House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Serenity House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Anchor House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Anchor House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-chore"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-event"><div class="modal"><div class="modal-handle"></div><h2>Add event</h2><div class="field"><label>Event title</label><input type="text" id="event-title" placeholder="e.g. House meeting"></div><div class="field"><label>Date</label><input type="date" id="event-date"></div><div class="field"><label>Time (optional)</label><input type="time" id="event-time"></div><div class="field"><label>Notes (optional)</label><textarea id="event-notes" placeholder="Any details&#8230;" style="height:80px;resize:none"></textarea></div><button class="btn btn-primary" id="event-btn" onclick="saveNewEvent()">Add event</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-event')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-drug-test"><div class="modal"><div class="modal-handle"></div>
@@ -1998,11 +1998,11 @@ function renderDtReport(range){
 let isDemoMode=false;
 
 const DEMO_RESIDENTS=[
-  {id:'d1',name:'James R.',role:'resident',phase:1,house:'Serenity House',pin:'1111'},
-  {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Serenity House',pin:'2222'},
-  {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Serenity House',pin:'3333'},
-  {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Serenity House',pin:'4444'},
-  {id:'d5',name:'Robert C.',role:'resident',phase:1,house:'Serenity House',pin:'5555'},
+  {id:'d1',name:'James R.',role:'resident',phase:1,house:'Anchor House',pin:'1111'},
+  {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Anchor House',pin:'2222'},
+  {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Anchor House',pin:'3333'},
+  {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Anchor House',pin:'4444'},
+  {id:'d5',name:'Robert C.',role:'resident',phase:1,house:'Anchor House',pin:'5555'},
   {id:'d6',name:'Lisa W.',role:'resident',phase:1,house:'Unity House',pin:'6666'},
   {id:'d7',name:'Marcus B.',role:'resident',phase:2,house:'Unity House',pin:'7777'},
   {id:'d8',name:'Sandra K.',role:'resident',phase:1,house:'Unity House',pin:'8888'},
@@ -2021,7 +2021,7 @@ function makeDemoCheckins(){
     {type:'Al-Anon',name:'Al-Anon Monday Night',addr:'1400 Williams St, Denver'},
     {type:'AA (Alcoholics Anonymous)',name:'Friday Night Live',addr:'2000 E 12th Ave, Denver'},
   ];
-  // Serenity House residents - varied attendance
+  // Anchor House residents - varied attendance
   const checkinPlan=[
     {rid:'d1',rn:'James R.',days:[0,1,2],mIdx:[0,2,6]},
     {rid:'d2',rn:'Maria S.',days:[0,2,3],mIdx:[1,3,4]},
@@ -2042,7 +2042,7 @@ function makeDemoCheckins(){
         lat:'39.'+(730+id*3),lng:'-104.'+(950+id*2),
         signer_name:['John D. (Secretary)','Mary K. (Chair)','Bob T. (Sponsor)','Susan L. (Secretary)'][id%4],
         sig_data_url:null,ts:d.toISOString(),
-        house:['d1','d2','d3','d4','d5'].includes(plan.rid)?'Serenity House':'Unity House'});
+        house:['d1','d2','d3','d4','d5'].includes(plan.rid)?'Anchor House':'Unity House'});
     });
   });
   // Add some historical checkins from past weeks
@@ -2056,7 +2056,7 @@ function makeDemoCheckins(){
           meeting_type:m.type,meeting_name:m.name,address:m.addr,
           lat:'39.730',lng:'-104.950',signer_name:'John D. (Secretary)',
           sig_data_url:null,ts:dt.toISOString(),
-          house:['d1','d2','d3','d4','d5'].includes(rid)?'Serenity House':'Unity House'});
+          house:['d1','d2','d3','d4','d5'].includes(rid)?'Anchor House':'Unity House'});
       }
     });
   }
@@ -2068,19 +2068,19 @@ function makeDemoCurfew(){
   const logs=[];
   // James - home
   const t1=new Date(now);t1.setHours(20,30,0,0);
-  logs.push({id:'cl-d1',resident_id:'d1',resident_name:'James R.',action:'in',ts:t1.toISOString(),late:false,excused:false,destination:null,house:'Serenity House'});
+  logs.push({id:'cl-d1',resident_id:'d1',resident_name:'James R.',action:'in',ts:t1.toISOString(),late:false,excused:false,destination:null,house:'Anchor House'});
   // Maria - home
   const t2=new Date(now);t2.setHours(21,15,0,0);
-  logs.push({id:'cl-d2',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:t2.toISOString(),late:false,excused:false,destination:null,house:'Serenity House'});
+  logs.push({id:'cl-d2',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:t2.toISOString(),late:false,excused:false,destination:null,house:'Anchor House'});
   // Kevin - out at meeting
   const t3=new Date(now);t3.setHours(18,0,0,0);
-  logs.push({id:'cl-d3',resident_id:'d3',resident_name:'Kevin T.',action:'out',ts:t3.toISOString(),late:false,excused:false,destination:'AA Meeting on Colfax',house:'Serenity House'});
+  logs.push({id:'cl-d3',resident_id:'d3',resident_name:'Kevin T.',action:'out',ts:t3.toISOString(),late:false,excused:false,destination:'AA Meeting on Colfax',house:'Anchor House'});
   // Angela - late
   const t4=new Date(now);t4.setHours(22,45,0,0);
-  logs.push({id:'cl-d4',resident_id:'d4',resident_name:'Angela M.',action:'in',ts:t4.toISOString(),late:true,excused:false,destination:null,house:'Serenity House'});
+  logs.push({id:'cl-d4',resident_id:'d4',resident_name:'Angela M.',action:'in',ts:t4.toISOString(),late:true,excused:false,destination:null,house:'Anchor House'});
   // Robert - excused
   const t5=new Date(now);t5.setHours(20,0,0,0);
-  logs.push({id:'cl-d5',resident_id:'d5',resident_name:'Robert C.',action:'in',ts:t5.toISOString(),late:false,excused:true,excused_reason:'Work night shift',house:'Serenity House'});
+  logs.push({id:'cl-d5',resident_id:'d5',resident_name:'Robert C.',action:'in',ts:t5.toISOString(),late:false,excused:true,excused_reason:'Work night shift',house:'Anchor House'});
   // Unity House
   const t6=new Date(now);t6.setHours(21,0,0,0);
   logs.push({id:'cl-d6',resident_id:'d6',resident_name:'Lisa W.',action:'in',ts:t6.toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
@@ -2096,13 +2096,13 @@ function makeDemoDrugTests(){
   const tests=[];
   const admins=['Sarah M. (Manager)','Demo Manager','John R. (Manager)'];
   const plan=[
-    {rid:'d1',rn:'James R.',daysAgo:0,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
-    {rid:'d3',rn:'Kevin T.',daysAgo:1,types:'Urine + Breathalyzer',result:'fail',notes:'Urine: Fail | Breath: Pass | Observed: Yes',house:'Serenity House'},
-    {rid:'d5',rn:'Robert C.',daysAgo:2,types:'Urine',result:'refused',notes:'Urine: Refused | Observed: Yes | Resident refused to comply',house:'Serenity House'},
-    {rid:'d2',rn:'Maria S.',daysAgo:5,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
-    {rid:'d4',rn:'Angela M.',daysAgo:7,types:'Breathalyzer',result:'pass',notes:'Breath: Pass | Observed: Yes',house:'Serenity House'},
-    {rid:'d1',rn:'James R.',daysAgo:14,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Serenity House'},
-    {rid:'d3',rn:'Kevin T.',daysAgo:21,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d1',rn:'James R.',daysAgo:0,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d3',rn:'Kevin T.',daysAgo:1,types:'Urine + Breathalyzer',result:'fail',notes:'Urine: Fail | Breath: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d5',rn:'Robert C.',daysAgo:2,types:'Urine',result:'refused',notes:'Urine: Refused | Observed: Yes | Resident refused to comply',house:'Anchor House'},
+    {rid:'d2',rn:'Maria S.',daysAgo:5,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d4',rn:'Angela M.',daysAgo:7,types:'Breathalyzer',result:'pass',notes:'Breath: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d1',rn:'James R.',daysAgo:14,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d3',rn:'Kevin T.',daysAgo:21,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
     {rid:'d6',rn:'Lisa W.',daysAgo:1,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d7',rn:'Marcus B.',daysAgo:3,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d8',rn:'Sandra K.',daysAgo:6,types:'Urine',result:'fail',notes:'Urine: Fail | Observed: Yes',house:'Unity House'},
@@ -2121,26 +2121,26 @@ function makeDemoDrugTests(){
 }
 
 const DEMO_DATA={
-  manager:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Serenity House',pin:'0000'},
+  manager:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Anchor House',pin:'0000'},
   owner:{id:'demo-owner',name:'Tanya',role:'owner',house:null,pin:'9999'},
-  resident:{id:'d1',name:'James R.',role:'resident',phase:1,house:'Serenity House',pin:'1111'},
+  resident:{id:'d1',name:'James R.',role:'resident',phase:1,house:'Anchor House',pin:'1111'},
   managers:[
-    {id:'demo-mgr',name:'Serenity House Manager',role:'manager',house:'Serenity House'},
+    {id:'demo-mgr',name:'Anchor House Manager',role:'manager',house:'Anchor House'},
     {id:'demo-mgr2',name:'Unity House Manager',role:'manager',house:'Unity House'},
   ],
   settings:{required:3,house_name:'The Turning Point'},
   announcement:{id:'ann-demo',message:'House meeting this Thursday at 7pm. Attendance is mandatory for all residents.',created_by:'Demo Manager'},
   events:[
-    {id:'ev-d1',title:'House meeting',event_date:new Date(Date.now()+2*86400000).toISOString().split('T')[0],event_time:'19:00',notes:'Mandatory for all residents',house:'Serenity House'},
-    {id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:'Serenity House'},
+    {id:'ev-d1',title:'House meeting',event_date:new Date(Date.now()+2*86400000).toISOString().split('T')[0],event_time:'19:00',notes:'Mandatory for all residents',house:'Anchor House'},
+    {id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:'Anchor House'},
     {id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null},
   ],
   chores:[
-    {id:'ch-d1',resident_id:'d1',resident_name:'James R.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d5',resident_id:'d5',resident_name:'Robert C.',title:'Clean fridge',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d1',resident_id:'d1',resident_name:'James R.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},
+    {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
+    {id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
+    {id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},
+    {id:'ch-d5',resident_id:'d5',resident_name:'Robert C.',title:'Clean fridge',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
     {id:'ch-d6',resident_id:'d6',resident_name:'Lisa W.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},
     {id:'ch-d7',resident_id:'d7',resident_name:'Marcus B.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Unity House'},
   ],
