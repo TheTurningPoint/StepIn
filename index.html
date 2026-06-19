@@ -235,7 +235,12 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <div class="body" id="mgr-pane-settings" style="display:none">
   <div class="card"><div class="card-title">&#128273; Reset resident PIN</div><div class="field"><select id="reset-pin-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetResidentPin()">Reset PIN</button></div>
   <div class="card"><div class="card-title">Set resident phase</div><div class="field"><select id="phase-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Phase</label><select id="phase-value"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-navy" onclick="setResidentPhase()">Update phase</button></div>
-  <div class="card"><div class="card-title">Remove resident</div><div class="field"><select id="remove-select"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-danger" onclick="removeResident()">Remove resident</button></div>
+  <div class="card"><div class="card-title">Edit resident name</div>
+<p class="text-mid" style="margin-bottom:12px">Fix a misspelling or update a name.</p>
+<div class="field"><select id="edit-name-select"><option value="">Select resident&#8230;</option></select></div>
+<div class="field"><label>New name</label><input type="text" id="edit-name-value" placeholder="Corrected full name"></div>
+<button class="btn btn-navy" onclick="editResidentName()">Update name</button></div>
+<div class="card"><div class="card-title">Remove resident</div><div class="field"><select id="remove-select"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-danger" onclick="removeResident()">Remove resident</button></div>
   <div class="card"><div class="card-title">Change my PIN</div>
 <p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm</label><input type="password" id="mgr-pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMgrPin()">Update my PIN</button></div>
   <div id="owner-tools" style="display:none">
@@ -725,6 +730,23 @@ function openAddResident(){document.getElementById('add-name').value='';document
 function openAddManager(){document.getElementById('add-mgr-name').value='';document.getElementById('add-mgr-id').value='';document.getElementById('add-mgr-pin').value='';document.getElementById('modal-add-manager').classList.add('open');}
 async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house};const{error}=await sb.from('residents').insert(newR);if(error){toast('Could not add: '+error.message);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
 async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.');return;}if(!mgrId){toast('Please enter a manager ID.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
+async function editResidentName(){
+  const id=document.getElementById('edit-name-select').value;
+  const newName=document.getElementById('edit-name-value').value.trim();
+  if(!id){toast('Please select a resident.');return;}
+  if(!newName){toast('Please enter the new name.');return;}
+  if(newName.length<2){toast('Name is too short.');return;}
+  const r=allResidents.find(x=>x.id===id);if(!r)return;
+  if(!confirm('Rename '+r.name+' to '+newName+'?'))return;
+  const{error}=await sb.from('residents').update({name:newName}).eq('id',id);
+  if(error){toast('Could not update name.');return;}
+  allResidents=allResidents.map(x=>x.id===id?{...x,name:newName}:x);
+  toast(r.name+' renamed to '+newName+'.');
+  document.getElementById('edit-name-value').value='';
+  populateSelects();
+  renderMgrResidents();
+}
+
 async function removeResident(){const id=document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allResidents=allResidents.filter(x=>x.id!==id);toast(`${r.name} removed.`);renderManagerDashboard();populateSelects();}
 async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
 
