@@ -558,7 +558,26 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 </div></div>
 
-<div class="modal-bg" id="modal-drug-test-history"><div class="modal"><div class="modal-handle"></div><h2>&#128137; Drug test history</h2><div id="dt-history-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-drug-test-history')">Close</button></div></div>
+<div class="modal-bg" id="modal-drug-test-history">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="flex-between" style="margin-bottom:16px">
+    <h2 style="margin:0">&#128137; Drug test log</h2>
+    <button onclick="printDrugTestLog()" style="background:var(--black);color:white;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">&#128424; Print all</button>
+  </div>
+  <!-- Resident filter -->
+  <div class="field" style="margin-bottom:12px">
+    <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:14px">
+      <option value="all">All residents</option>
+    </select>
+  </div>
+  <div id="dt-history-content"></div>
+  <button class="btn btn-outline mt16" onclick="closeModal('modal-drug-test-history')">Close</button>
+</div>
+</div>
+
+<!-- Individual resident drug test PDF window -->
+<div id="dt-print-frame" style="display:none"></div>
 
 <div class="modal-bg" id="modal-resident-detail"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
 <div id="toast"></div>
@@ -1404,28 +1423,198 @@ async function saveDrugTest(){
 
 async function openDrugTestHistory(){
   await loadDrugTests();
-  const el=document.getElementById('dt-history-content');
-  const tests=isOwner()&&selectedHouse?cachedDrugTests.filter(t=>t.house===selectedHouse):cachedDrugTests;
-  if(!tests.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">&#128196;</div><h3>No tests recorded yet</h3></div>';
-  }else{
-    const resultStyle={pass:'color:var(--success);font-weight:700',fail:'color:var(--danger);font-weight:700',refused:'color:var(--warn);font-weight:700'};
-    const resultIcon={pass:'&#10003; Pass',fail:'&#10005; Fail',refused:'&#9888; Refused'};
-    el.innerHTML=tests.map(t=>{
-      const d=new Date(t.test_date+'T'+t.test_time);
-      return '<div style="padding:14px 0;border-bottom:1px solid var(--sand)">'+
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
-        '<div style="flex:1"><div style="font-size:15px;font-weight:700">'+t.resident_name+'</div>'+
-        '<div style="font-size:13px;color:var(--mid)">'+t.test_types+' &bull; '+fmtDate(d)+' at '+fmtTimeStr(t.test_time)+(t.house?' &bull; '+t.house:'')+'</div>'+
-        (t.notes?'<div style="font-size:12px;color:var(--mid);margin-top:3px">'+t.notes+'</div>':'')+
-        '<div style="font-size:12px;color:var(--soft);margin-top:2px">By: '+(t.administered_by||'Unknown')+'</div>'+
-        (t.admin_sig?'<div style="font-size:12px;font-weight:700;color:var(--mid);margin-top:6px">Admin signature:</div><img src="'+t.admin_sig+'" style="max-width:160px;border:1px solid var(--sand);border-radius:6px;margin-top:4px">':'')+
-        (t.resident_sig?'<div style="font-size:12px;font-weight:700;color:var(--mid);margin-top:6px">Resident acknowledgment:</div><img src="'+t.resident_sig+'" style="max-width:160px;border:1px solid var(--sand);border-radius:6px;margin-top:4px">':'')+
-        '</div><span style="'+resultStyle[t.result]+';font-size:13px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;white-space:nowrap">'+resultIcon[t.result]+'</span>'+
-        '</div></div>';
-    }).join('');
+  // Populate resident filter
+  const filterEl=document.getElementById('dt-history-resident-filter');
+  if(filterEl){
+    const res=residents();
+    filterEl.innerHTML='<option value="all">All residents</option>'+
+      res.map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
   }
+  renderDtHistory();
   document.getElementById('modal-drug-test-history').classList.add('open');
+}
+
+function renderDtHistory(){
+  const el=document.getElementById('dt-history-content');
+  if(!el)return;
+  const filterVal=document.getElementById('dt-history-resident-filter')?document.getElementById('dt-history-resident-filter').value:'all';
+  const res=residents();
+  const resIds=new Set(res.map(function(r){return r.id;}));
+  let tests=cachedDrugTests.filter(function(t){return resIds.has(t.resident_id);});
+  if(filterVal!=='all')tests=tests.filter(function(t){return t.resident_id===filterVal;});
+  tests=tests.sort(function(a,b){return new Date(b.test_date)-new Date(a.test_date);});
+
+  if(!tests.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128137;</div><h3>No tests recorded</h3></div>';
+    return;
+  }
+
+  const resultBg={pass:'#DCFCE7',fail:'#FEE2E2',refused:'#FEF3C7'};
+  const resultColor={pass:'#166534',fail:'#991B1B',refused:'#92400E'};
+  const resultIcon={pass:'&#10003; PASS',fail:'&#10005; FAIL',refused:'&#9888; REFUSED'};
+
+  // Group by resident
+  const byResident={};
+  tests.forEach(function(t){
+    if(!byResident[t.resident_id])byResident[t.resident_id]={name:t.resident_name,id:t.resident_id,tests:[]};
+    byResident[t.resident_id].tests.push(t);
+  });
+
+  el.innerHTML=Object.values(byResident).map(function(r){
+    const rPass=r.tests.filter(function(t){return t.result==='pass';}).length;
+    const rFail=r.tests.filter(function(t){return t.result==='fail';}).length;
+    const rRef=r.tests.filter(function(t){return t.result==='refused';}).length;
+    const testRows=r.tests.map(function(t){
+      const notes=t.notes||'';
+      const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'—';
+      const cleanNotes=notes.replace(/Urine:\s*\w+\s*\|?\s*/g,'').replace(/Breath:\s*\w+\s*\|?\s*/g,'').replace(/Observed:\s*\w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
+      return '<div style="border:1px solid var(--sand);border-radius:10px;margin-bottom:10px;overflow:hidden">'+
+        // Test header row
+        '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:'+(resultBg[t.result]||'var(--cream)')+'">'+
+          '<div style="background:'+(resultColor[t.result]||'var(--mid)')+';color:white;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;flex-shrink:0">'+
+            (resultIcon[t.result]||t.result.toUpperCase())+
+          '</div>'+
+          '<div style="flex:1">'+
+            '<div style="font-size:14px;font-weight:700">'+t.test_types+'</div>'+
+            '<div style="font-size:12px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; Observed: '+observed+'</div>'+
+          '</div>'+
+          '<button onclick="printResidentDrugTest(this.dataset.id)" data-id="'+t.id+'" style="background:var(--black);color:white;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">&#128424; PDF</button>'+
+        '</div>'+
+        // Details
+        '<div style="padding:12px 14px">'+
+          '<div style="font-size:13px;color:var(--mid);margin-bottom:8px">Administered by: <strong style="color:var(--charcoal)">'+(t.administered_by||'Unknown')+'</strong></div>'+
+          (cleanNotes?'<div style="font-size:12px;color:var(--mid);background:var(--cream);border-radius:6px;padding:8px;margin-bottom:10px">'+cleanNotes+'</div>':'')+
+          // Signatures
+          (t.admin_sig||t.resident_sig?
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+              '<div>'+
+                '<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Administrator</div>'+
+                (t.admin_sig?'<img src="'+t.admin_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white">':'<div style="border:1px dashed var(--sand);border-radius:6px;height:50px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mid)">No signature</div>')+
+              '</div>'+
+              '<div>'+
+                '<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resident acknowledgment</div>'+
+                (t.resident_sig?'<img src="'+t.resident_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white">':'<div style="border:1px dashed var(--sand);border-radius:6px;height:50px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mid)">No signature</div>')+
+              '</div>'+
+            '</div>':
+            '<div style="font-size:12px;color:var(--mid);font-style:italic">No signatures on file</div>'
+          )+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    return '<div style="margin-bottom:20px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<div class="avatar" style="width:36px;height:36px;font-size:14px">'+r.name[0]+'</div>'+
+          '<div>'+
+            '<div style="font-size:16px;font-weight:800">'+r.name+'</div>'+
+            '<div style="font-size:12px;color:var(--mid)">'+r.tests.length+' test'+(r.tests.length!==1?'s':'')+
+              (rPass?' &bull; <span style="color:var(--success)">'+rPass+' pass</span>':'')+
+              (rFail?' &bull; <span style="color:var(--danger)">'+rFail+' fail</span>':'')+
+              (rRef?' &bull; <span style="color:var(--warn)">'+rRef+' refused</span>':'')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<button onclick="printResidentAllTests(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="background:var(--pink);color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer">&#128424; All PDFs</button>'+
+      '</div>'+
+      testRows+
+    '</div>';
+  }).join('<div class="divider"></div>');
+}
+
+function printResidentDrugTest(testId){
+  const t=cachedDrugTests.find(function(x){return x.id===testId;});
+  if(!t)return;
+  printDrugTestPDF([t],t.resident_name);
+}
+
+function printResidentAllTests(resId,resName){
+  const tests=cachedDrugTests.filter(function(t){return t.resident_id===resId;})
+    .sort(function(a,b){return new Date(b.test_date)-new Date(a.test_date);});
+  printDrugTestPDF(tests,resName);
+}
+
+function printDrugTestLog(){
+  const res=residents();
+  const resIds=new Set(res.map(function(r){return r.id;}));
+  const filterVal=document.getElementById('dt-history-resident-filter')?document.getElementById('dt-history-resident-filter').value:'all';
+  let tests=cachedDrugTests.filter(function(t){return resIds.has(t.resident_id);});
+  if(filterVal!=='all')tests=tests.filter(function(t){return t.resident_id===filterVal;});
+  const label=filterVal!=='all'?(cachedDrugTests.find(function(t){return t.resident_id===filterVal;})||{}).resident_name||'Resident':'All Residents';
+  printDrugTestPDF(tests,label);
+}
+
+function printDrugTestPDF(tests,label){
+  const org=cachedSettings.house_name||'The Turning Point';
+  const house=myHouse()||'';
+  const now=new Date();
+  const resultBg={pass:'#DCFCE7',fail:'#FEE2E2',refused:'#FEF3C7'};
+  const resultColor={pass:'#166534',fail:'#991B1B',refused:'#92400E'};
+  const resultLabel={pass:'&#10003; PASS',fail:'&#10005; FAIL',refused:'&#9888; REFUSED'};
+
+  const rows=tests.map(function(t){
+    const notes=t.notes||'';
+    const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'Unknown';
+    const cleanNotes=notes.replace(/Urine:\s*\w+\s*\|?\s*/g,'').replace(/Breath:\s*\w+\s*\|?\s*/g,'').replace(/Observed:\s*\w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
+    return '<div style="border:1.5px solid #ddd;border-radius:8px;margin-bottom:16px;page-break-inside:avoid;overflow:hidden">'+
+      '<div style="background:'+(resultBg[t.result]||'#f5f5f5')+';padding:12px 16px;display:flex;justify-content:space-between;align-items:center">'+
+        '<div>'+
+          '<div style="font-size:15px;font-weight:800;color:#000">'+t.resident_name+'</div>'+
+          '<div style="font-size:13px;color:#666;margin-top:2px">'+t.test_types+' &bull; '+t.test_date+' at '+(t.test_time||'')+' &bull; Observed: '+observed+'</div>'+
+        '</div>'+
+        '<div style="background:'+(resultColor[t.result]||'#999')+';color:white;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:800">'+
+          (resultLabel[t.result]||t.result.toUpperCase())+
+        '</div>'+
+      '</div>'+
+      '<div style="padding:12px 16px">'+
+        '<div style="font-size:13px;color:#333;margin-bottom:10px">Administered by: <strong>'+( t.administered_by||'Unknown')+'</strong></div>'+
+        (cleanNotes?'<div style="font-size:12px;color:#666;background:#f9f9f9;border-radius:4px;padding:8px;margin-bottom:10px">'+cleanNotes+'</div>':'')+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px">'+
+          '<div>'+
+            '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;border-bottom:1px solid #ddd;padding-bottom:4px">Administrator Signature</div>'+
+            (t.admin_sig?'<img src="'+t.admin_sig+'" style="width:100%;max-height:80px;object-fit:contain;border:1px solid #ddd;border-radius:4px;background:white;display:block">':'<div style="height:60px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature on file</div>')+
+            '<div style="font-size:11px;color:#666;margin-top:4px">'+( t.administered_by||'')+'</div>'+
+          '</div>'+
+          '<div>'+
+            '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;border-bottom:1px solid #ddd;padding-bottom:4px">Resident Acknowledgment</div>'+
+            (t.resident_sig?'<img src="'+t.resident_sig+'" style="width:100%;max-height:80px;object-fit:contain;border:1px solid #ddd;border-radius:4px;background:white;display:block">':'<div style="height:60px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature on file</div>')+
+            '<div style="font-size:11px;color:#666;margin-top:4px">'+t.resident_name+'</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<title>Drug Test Log — '+label+'</title>'+
+    '<style>'+
+      'body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:24px;color:#000;background:white;}'+
+      '@media print{body{padding:0;} .no-print{display:none;}}'+
+      'h1{font-size:22px;font-weight:800;margin:0 0 4px;}'+
+      '.header{border-bottom:2px solid #000;padding-bottom:16px;margin-bottom:24px;}'+
+      '.subheader{font-size:13px;color:#666;}'+
+    '</style>'+
+    '</head><body>'+
+    '<div class="header">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">'+
+        '<div>'+
+          '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Confidential Drug Test Record</div>'+
+          '<h1>'+org+(house?' &mdash; '+house:'')+'</h1>'+
+          '<div class="subheader">Resident: '+label+' &bull; Generated: '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div>'+
+          '<div class="subheader">Total tests: '+tests.length+' &bull; Pass: '+tests.filter(function(t){return t.result==='pass';}).length+' &bull; Fail: '+tests.filter(function(t){return t.result==='fail';}).length+' &bull; Refused: '+tests.filter(function(t){return t.result==='refused';}).length+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    rows+
+    '<div style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999">'+
+      'This document is confidential. Generated by StepIn — theturningpoint.github.io/StepIn'+
+    '</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  const w=window.open('','_blank','width=800,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{toast('Please allow popups to print.',true);}
 }
 
 
