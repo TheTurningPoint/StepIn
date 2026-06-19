@@ -36,9 +36,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .topbar{background:var(--black);color:var(--white);padding:52px 20px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);}
 .topbar .logo{font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;}
 .topbar .logo span{color:var(--pink-light);}
-.topbar .sub{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;font-weight:500;}
+.topbar .sub{font-size:14px;color:rgba(255,255,255,0.45);margin-top:2px;font-weight:500;}
 .topbar-right{display:flex;align-items:center;gap:8px;}
-.badge-role{font-size:11px;font-weight:700;background:var(--pink-dark);color:var(--white);padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
+.badge-role{font-size:13px;font-weight:700;background:var(--pink-dark);color:var(--white);padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
 .badge-owner{background:linear-gradient(135deg,var(--gold),var(--gold-light))!important;}
 .btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer;padding:6px 12px;border-radius:20px;}
 
@@ -47,7 +47,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 
 /* CARDS */
 .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:20px;margin-bottom:16px;border:1px solid rgba(192,57,122,0.06);}
-.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mid);margin-bottom:14px;}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mid);margin-bottom:14px;}
 
 /* BUTTONS */
 .btn{width:100%;padding:16px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.2px;}
@@ -63,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .btn-disabled{opacity:0.4;pointer-events:none;}
 
 /* FORMS */
-label{display:block;font-size:12px;font-weight:700;color:var(--mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+label{display:block;font-size:14px;font-weight:700;color:var(--mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
 input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;padding:14px 16px;border:1.5px solid var(--sand);border-radius:var(--radius-sm);font-size:16px;color:var(--charcoal);background:var(--white);outline:none;appearance:none;transition:all 0.2s;font-family:inherit;}
 input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{border-color:var(--pink);background:var(--white);box-shadow:0 0 0 3px var(--pink-glow);}
 input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:pointer;flex-shrink:0;appearance:auto;}
@@ -80,7 +80,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .login-card h2{font-size:20px;font-weight:800;margin-bottom:22px;color:var(--black);letter-spacing:-0.3px;}
 
 /* PILLS */
-.pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.3px;}
+.pill{display:inline-block;font-size:13px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.3px;}
 .pill-green{background:var(--success-light);color:#166534;}
 .pill-yellow{background:var(--warn-light);color:#92400E;}
 .pill-red{background:var(--danger-light);color:#991B1B;}
@@ -90,7 +90,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 /* LOG ITEMS */
 .log-item{border-bottom:1px solid var(--sand);padding:14px 0;display:flex;align-items:flex-start;gap:14px;}.log-item:last-child{border-bottom:none;}
 .log-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--pink-glow),var(--sand));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.log-title{font-size:15px;font-weight:700;margin-bottom:2px;}.log-meta{font-size:12px;color:var(--mid);line-height:1.7;}.log-sig{font-size:11px;color:var(--pink);margin-top:4px;font-weight:700;}
+.log-title{font-size:15px;font-weight:700;margin-bottom:2px;}.log-meta{font-size:14px;color:var(--mid);line-height:1.7;}.log-sig{font-size:13px;color:var(--pink);margin-top:4px;font-weight:700;}
 
 /* SIGNATURE */
 .sig-wrap{border:2px dashed var(--sand);border-radius:var(--radius);background:var(--white);position:relative;overflow:hidden;min-height:180px;}
@@ -100,26 +100,27 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* STEPS */
 .steps{display:flex;gap:6px;justify-content:center;padding:16px 0 8px;}
-.step-dot{width:8px;height:8px;border-radius:50%;background:var(--sand);}
-.step-dot.active{background:var(--pink);width:24px;border-radius:4px;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--sand);}
+.step-dot.active{background:var(--pink);width:28px;border-radius:5px;}
 .step-dot.done{background:var(--pink);}
 
 /* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .stat-box{background:var(--white);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-card);text-align:center;border:1px solid rgba(192,57,122,0.06);}
 .stat-num{font-size:32px;font-weight:800;color:var(--pink);letter-spacing:-1px;}
-.stat-label{font-size:11px;color:var(--mid);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-label{font-size:13px;color:var(--mid);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
 
 /* RESIDENTS */
 .resident-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--sand);cursor:pointer;}.resident-row:last-child{border-bottom:none;}
 .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(192,57,122,0.3);}
 .avatar-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold))!important;box-shadow:0 2px 8px rgba(123,63,0,0.3)!important;}
 .resident-name{font-size:15px;font-weight:700;letter-spacing:-0.2px;}
-.resident-sub{font-size:12px;color:var(--mid);margin-top:1px;}
+.resident-sub{font-size:14px;color:var(--mid);margin-top:1px;}
 .resident-right{margin-left:auto;text-align:right;}
 
 /* TOAST */
-#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:var(--white);padding:14px 24px;border-radius:30px;font-size:14px;font-weight:600;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:var(--white);padding:14px 24px;border-radius:30px;font-size:15px;font-weight:600;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.3);max-width:90vw;text-align:center;}
+#toast.error{background:var(--danger);}
 #toast.show{transform:translateX(-50%) translateY(0);}
 
 /* LOADING */
@@ -138,7 +139,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 /* REPORT */
 .report-header{background:linear-gradient(135deg,var(--black),#1A0A14);color:var(--white);border-radius:var(--radius);padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
 .report-title{font-size:18px;font-weight:800;letter-spacing:-0.3px;}
-.report-date{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;font-weight:500;}
+.report-date{font-size:14px;color:rgba(255,255,255,0.45);margin-top:4px;font-weight:500;}
 .report-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--sand);font-size:14px;}.report-row:last-child{border-bottom:none;}
 .report-name{font-weight:700;}
 .report-count{font-size:13px;color:var(--mid);}
@@ -153,13 +154,13 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* BOTTOM NAV */
 .bottom-nav{display:flex;background:var(--black);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 28px;flex-shrink:0;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;transition:color 0.15s;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;transition:color 0.15s;}
 .nav-btn.active{color:var(--pink-light);}
 .nav-icon{font-size:22px;line-height:1;}
 
 /* TOP TABS */
 .top-tabs{display:flex;background:var(--black);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
-.top-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid transparent;transition:all 0.15s;}
+.top-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid transparent;transition:all 0.15s;}
 .top-tab.active{color:var(--pink-light);border-bottom-color:var(--pink-light);}
 .top-tab-icon{font-size:20px;line-height:1;}
 
@@ -173,14 +174,14 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .chore-check{width:26px;height:26px;border-radius:8px;border:2px solid var(--sand);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;transition:all 0.15s;}
 .chore-check.done{background:var(--success);border-color:var(--success);color:var(--white);}
 .chore-name{font-size:15px;font-weight:700;flex:1;}
-.chore-who{font-size:12px;color:var(--mid);margin-top:2px;}
-.chore-done-label{font-size:11px;color:var(--success);font-weight:700;}
+.chore-who{font-size:14px;color:var(--mid);margin-top:2px;}
+.chore-done-label{font-size:13px;color:var(--success);font-weight:700;}
 
 /* EVENTS */
 .event-item{padding:14px 0;border-bottom:1px solid var(--sand);}.event-item:last-child{border-bottom:none;}
-.event-date-badge{display:inline-block;background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;margin-bottom:6px;letter-spacing:0.3px;}
+.event-date-badge{display:inline-block;background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;margin-bottom:6px;letter-spacing:0.3px;}
 .event-title{font-size:15px;font-weight:700;}
-.event-meta{font-size:12px;color:var(--mid);margin-top:3px;line-height:1.6;}
+.event-meta{font-size:14px;color:var(--mid);margin-top:3px;line-height:1.6;}
 
 /* CURFEW */
 .curfew-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--sand);}.curfew-row:last-child{border-bottom:none;}
@@ -193,7 +194,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .curfew-status-card.unknown{background:var(--cream);border-color:var(--sand);}
 .curfew-icon{font-size:24px;flex-shrink:0;}
 .curfew-res-name{font-size:15px;font-weight:700;}
-.curfew-res-detail{font-size:12px;color:var(--mid);margin-top:2px;}
+.curfew-res-detail{font-size:14px;color:var(--mid);margin-top:2px;}
 
 /* ATTENDANCE BARS */
 .attendance-bar{height:6px;border-radius:3px;background:var(--sand);margin-top:6px;overflow:hidden;}
@@ -204,12 +205,12 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .quick-btn{background:var(--white);border:1px solid rgba(192,57,122,0.08);border-radius:var(--radius);padding:16px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm);transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .quick-btn:active{transform:scale(0.95);box-shadow:none;}
 .quick-btn-icon{font-size:26px;line-height:1;}
-.quick-btn-label{font-size:11px;font-weight:700;color:var(--charcoal);line-height:1.3;letter-spacing:0.1px;}
+.quick-btn-label{font-size:13px;font-weight:700;color:var(--charcoal);line-height:1.3;letter-spacing:0.1px;}
 
 /* OWNER */
 .owner-card{border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important;}
 .owner-title{color:var(--gold-light)!important;}
-.refresh-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;}
+.refresh-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:7px 14px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.15s;}
 .refresh-btn:active{background:rgba(255,255,255,0.15);}
 
 /* MISC */
@@ -305,7 +306,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- TOP TABS -->
 <div class="top-tabs">
   <button class="top-tab active" id="mgr-tab-dash" onclick="mgrTab('dash',this)"><span class="top-tab-icon">&#127968;</span>Home</button>
-  <button class="top-tab" id="mgr-tab-tools" onclick="mgrTab('tools',this)"><span class="top-tab-icon">&#9881;</span>Tools</button>
+  <button class="top-tab" id="mgr-tab-tools" onclick="mgrTab('tools',this)"><span class="top-tab-icon">&#9881;</span>Actions</button>
   <button class="top-tab" id="mgr-tab-report" onclick="mgrTab('report',this)"><span class="top-tab-icon">&#128202;</span>Report</button>
   <button class="top-tab" id="mgr-tab-settings" onclick="mgrTab('settings',this)"><span class="top-tab-icon">&#128273;</span>Settings</button>
 </div>
@@ -625,18 +626,18 @@ function renderCurfewAction(){
   let html='';
   if(excused){html=`<div class="card" style="border:2px solid var(--warn);background:#FEF9C3"><div style="font-size:14px;font-weight:600;color:var(--warn)">&#128338; You’re excused for tonight</div><div style="font-size:12px;color:var(--mid);margin-top:4px">${excused.excused_reason||''}</div></div>`;}
   else if(status==='out'){const late=isPastCurfew(phase);const bc=late?'var(--danger)':'var(--warn)';const bg=late?'#FEF0F0':'#FEF9C3';html=`<div class="card" style="border:2px solid ${bc};background:${bg}">${late?'<div style="font-size:12px;color:var(--danger);font-weight:600;margin-bottom:8px">&#9888; You are past curfew. Please head home immediately and tap I&#8217;m back home when you arrive.</div>':''}<div style="font-size:13px;color:var(--warn);font-weight:600;margin-bottom:8px">&#128682; You're out — be home by ${curfewLabel}</div><button class="btn btn-success" onclick="doCurfewAction('in','')">&#127968; Sign in &mdash; I&#8217;m home</button></div>`;}
-  else{html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4"><div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You're home — Phase ${phase} curfew is at ${curfewLabel}</div><div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going? (required)" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; I'm leaving</button></div>`;}
+  else{html=`<div class="card" style="border:2px solid var(--success);background:#F0FBF4"><div style="font-size:13px;color:var(--success);font-weight:600;margin-bottom:8px">&#127968; You're home — Phase ${phase} curfew is at ${curfewLabel}</div><div class="field" style="margin-bottom:8px"><input type="text" id="signout-destination" placeholder="Where are you going? (required)" style="border-color:var(--warn)" style="font-size:14px;padding:10px 14px"></div><button class="btn btn-warn" onclick="doSignOut()">&#128682; I'm leaving</button></div>`;}
   el.innerHTML=html;
 }
 
-async function doSignOut(){const dest=document.getElementById('signout-destination');const d=dest?dest.value.trim():'';if(!d){toast('Please tell us where you’re going before you leave.');return;}await doCurfewAction('out',d);}
+async function doSignOut(){const dest=document.getElementById('signout-destination');const d=dest?dest.value.trim():'';if(!d){toast('Please tell us where you’re going before you leave.',true);return;}await doCurfewAction('out',d);}
 
 async function doCurfewAction(action,destination){
   if(!navigator.geolocation){alert('We need your location to record your curfew check-in. When your phone asks, tap Allow.');return;}
   navigator.geolocation.getCurrentPosition(async pos=>{
     const now=new Date();const phase=currentUser.phase||1;const isLate=action==='in'&&now.getHours()>=getCurfewTime(phase,now);
     const record={id:'cl-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,action,ts:now.toISOString(),lat:pos.coords.latitude.toFixed(6),lng:pos.coords.longitude.toFixed(6),late:isLate,excused:false,destination:destination||null,house:currentUser.house||null};
-    const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.');return;}
+    const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.',true);return;}
     allCurfewLog.unshift(record);
     if(action==='out')toast('Signed out. Be home by '+getCurfewLabel(phase,now)+'.');
     else if(isLate)toast('Signed in \u2014 marked late.');
@@ -715,7 +716,7 @@ function renderEventList(el,evts,showDelete){
   el.innerHTML=evts.map(e=>{const d=new Date(e.event_date+'T12:00:00');const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});const timeStr=e.event_time?` at ${fmtTimeStr(e.event_time)}`:'';const deleteBtn=showDelete?`<button onclick="deleteEvent('${e.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button>`:'';return`<div class="event-item"><div class="flex-between"><div><span class="event-date-badge">${dateStr}${timeStr}</span><div class="event-title">${e.title}</div>${e.notes?`<div class="event-meta">${e.notes}</div>`:''}</div>${deleteBtn}</div></div>`;}).join('');
 }
 
-async function completeChore(id){const today=new Date().toISOString().split('T')[0];const{error}=await sb.from('chores').update({completed_date:today}).eq('id',id);if(error){toast('Could not update.');return;}allChores=allChores.map(c=>c.id===id?{...c,completed_date:today}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore done for today!');}
+async function completeChore(id){const today=new Date().toISOString().split('T')[0];const{error}=await sb.from('chores').update({completed_date:today}).eq('id',id);if(error){toast('Could not update.',true);return;}allChores=allChores.map(c=>c.id===id?{...c,completed_date:today}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore done for today!');}
 
 function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','curfew','chores','calendar','meetings','history','pin'].forEach(t=>document.getElementById('res-tab-'+t).style.display=t===tab?'block':'none');if(tab==='curfew')renderResCurfewDetail();if(tab==='chores')renderResChores();if(tab==='calendar')renderResCalendar();if(tab==='meetings')renderResMeetingFinder();}
 
@@ -724,16 +725,16 @@ function renderLogList(el,ckins,showName){
   el.innerHTML=ckins.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div style="flex:1">${showName?`<div style="font-size:12px;color:var(--mid);font-weight:600">${c.resident_name}${c.house?' &bull; '+c.house:''}</div>`:''}<div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}<br>${c.address||''}</div><div class="log-sig">\u270d\ufe0f Signed by ${c.signer_name||'Unknown'}${mapLink}</div></div></div>`;}).join('');
 }
 
-async function changeMyPin(){const cur=document.getElementById('pin-current').value.trim();const nw=document.getElementById('pin-new').value.trim();const cf=document.getElementById('pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.');return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('pin-current').value='';document.getElementById('pin-new').value='';document.getElementById('pin-confirm').value='';}
+async function changeMyPin(){const cur=document.getElementById('pin-current').value.trim();const nw=document.getElementById('pin-new').value.trim();const cf=document.getElementById('pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('pin-current').value='';document.getElementById('pin-new').value='';document.getElementById('pin-confirm').value='';}
 
 // CHECK-IN
 function ciShow(step){['loc','details','sig','done'].forEach(s=>document.getElementById('ci-step-'+s).style.display=s===step?'block':'none');const n={loc:0,details:1,sig:2,done:3}[step];document.getElementById('checkin-steps').innerHTML=n>0?[1,2,3].map(i=>`<div class="step-dot ${i===n?'active':i<n?'done':''}"></div>`).join(''):'';}
 function startCheckin(){if(!navigator.geolocation){alert('Location services required.');return;}checkinData={};show('screen-checkin');ciShow('loc');document.getElementById('loc-status').className='loc-box';document.getElementById('loc-status').innerHTML='&#128205; Getting your location\u2026';document.getElementById('btn-loc-proceed').classList.add('btn-disabled');navigator.geolocation.getCurrentPosition(pos=>{checkinData.lat=pos.coords.latitude.toFixed(6);checkinData.lng=pos.coords.longitude.toFixed(6);const el=document.getElementById('loc-status');el.className='loc-box success';el.innerHTML='\u2705 Location captured. You may proceed.';document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');},err=>{const el=document.getElementById('loc-status');el.className='loc-box error';el.innerHTML='\u274c Location access denied.<br><small>Go to Settings \u2192 Privacy \u2192 Location Services.</small>';},{timeout:15000,enableHighAccuracy:true,maximumAge:0});}
-function locProceed(){if(!checkinData.lat){toast('Location not ready.');return;}ciShow('details');}
+function locProceed(){if(!checkinData.lat){toast('Location not ready.',true);return;}ciShow('details');}
 function cancelCheckin(){if(confirm('Cancel this check-in?')){show('screen-resident');renderResidentHome();}}
 async function finishCheckin(){await loadAllData();show('screen-resident');renderResidentHome();}
-function ciDetails(){const type=document.getElementById('ci-type').value;const name=document.getElementById('ci-name').value.trim();const addr=document.getElementById('ci-addr').value.trim();if(!type){toast('Please select a meeting type.');return;}if(!name){toast('Please enter the meeting name.');return;}checkinData.meeting_type=type;checkinData.meeting_name=name;checkinData.address=addr;checkinData.ts=new Date().toISOString();document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');setTimeout(initSigCanvas,200);}
-async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
+function ciDetails(){const type=document.getElementById('ci-type').value;const name=document.getElementById('ci-name').value.trim();const addr=document.getElementById('ci-addr').value.trim();if(!type){toast('Please select a meeting type.',true);return;}if(!name){toast('Please enter the meeting name.',true);return;}checkinData.meeting_type=type;checkinData.meeting_name=name;checkinData.address=addr;checkinData.ts=new Date().toISOString();document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');setTimeout(initSigCanvas,200);}
+async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message,true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
 function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const dpr=window.devicePixelRatio||1;sigCanvas.width=rect.width*dpr;sigCanvas.height=180*dpr;sigCtx.scale(dpr,dpr);sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
 function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
@@ -957,19 +958,19 @@ function renderOwnerHouseList(){
 
 function scrollToExcuse(){document.getElementById('excuse-card').scrollIntoView({behavior:'smooth'});}
 function openPostAnnouncement(){document.getElementById('announcement-text').value='';renderMgrAnnouncementStatus();document.getElementById('modal-post-announcement').classList.add('open');}
-async function postAnnouncement(){const msg=document.getElementById('announcement-text').value.trim();if(!msg){toast('Please enter a message.');return;}const btn=document.getElementById('announcement-btn');btn.textContent='Posting\u2026';btn.classList.add('btn-disabled');if(cachedAnnouncement){await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);}const newA={id:'ann-'+Date.now(),message:msg,created_by:currentUser.name};const{error}=await sb.from('announcements').insert(newA);if(error){toast('Could not post.');btn.textContent='Post note';btn.classList.remove('btn-disabled');return;}cachedAnnouncement=newA;cachedAcks=[];btn.textContent='Post note';btn.classList.remove('btn-disabled');closeModal('modal-post-announcement');toast('Note posted.');renderMgrAnnouncementStatus();renderManagerDashboard();}
+async function postAnnouncement(){const msg=document.getElementById('announcement-text').value.trim();if(!msg){toast('Please enter a message.',true);return;}const btn=document.getElementById('announcement-btn');btn.textContent='Posting\u2026';btn.classList.add('btn-disabled');if(cachedAnnouncement){await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);}const newA={id:'ann-'+Date.now(),message:msg,created_by:currentUser.name};const{error}=await sb.from('announcements').insert(newA);if(error){toast('Could not post.',true);btn.textContent='Post note';btn.classList.remove('btn-disabled');return;}cachedAnnouncement=newA;cachedAcks=[];btn.textContent='Post note';btn.classList.remove('btn-disabled');closeModal('modal-post-announcement');toast('Note posted.');renderMgrAnnouncementStatus();renderManagerDashboard();}
 async function deleteAnnouncement(){if(!cachedAnnouncement||!confirm('Remove this note?'))return;await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);cachedAnnouncement=null;cachedAcks=[];toast('Note removed.');renderMgrAnnouncementStatus();renderManagerDashboard();}
 
-async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.');return;}const[resId,resName]=val.split('|');const r=allResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.');return;}allCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
-async function setResidentPhase(){const id=document.getElementById('manage-resident-select').value||document.getElementById('phase-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update.');return;}allResidents=allResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
+async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.',true);return;}const[resId,resName]=val.split('|');const r=allResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.',true);return;}allCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
+async function setResidentPhase(){const id=document.getElementById('manage-resident-select').value||document.getElementById('phase-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update.',true);return;}allResidents=allResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
 
 function openAddChore(){document.getElementById('chore-title').value='';populateSelects();document.getElementById('modal-add-chore').classList.add('open');}
-async function saveNewChore(){const title=document.getElementById('chore-title').value.trim();const resVal=document.getElementById('chore-resident').value;if(!title){toast('Please enter a chore.');return;}if(!resVal){toast('Select a resident.');return;}const[resId,resName]=resVal.split('|');const btn=document.getElementById('chore-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const weekStart=getWeekStartDate();const r=allResidents.find(x=>x.id===resId);const newC={id:'ch-'+Date.now(),resident_id:resId,resident_name:resName,title,completed_date:null,week_start:weekStart,house:r?r.house:(myHouse()||null)};const{error}=await sb.from('chores').insert(newC);if(error){toast('Could not add.');btn.textContent='Add chore';btn.classList.remove('btn-disabled');return;}allChores.push(newC);btn.textContent='Add chore';btn.classList.remove('btn-disabled');closeModal('modal-add-chore');toast('Chore added.');renderMgrChores();}
-async function deleteChore(id){if(!confirm('Remove this chore?'))return;const{error}=await sb.from('chores').delete().eq('id',id);if(error){toast('Could not remove.');return;}allChores=allChores.filter(c=>c.id!==id);toast('Chore removed.');renderMgrChores();}
+async function saveNewChore(){const title=document.getElementById('chore-title').value.trim();const resVal=document.getElementById('chore-resident').value;if(!title){toast('Please enter a chore.',true);return;}if(!resVal){toast('Select a resident.');return;}const[resId,resName]=resVal.split('|');const btn=document.getElementById('chore-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const weekStart=getWeekStartDate();const r=allResidents.find(x=>x.id===resId);const newC={id:'ch-'+Date.now(),resident_id:resId,resident_name:resName,title,completed_date:null,week_start:weekStart,house:r?r.house:(myHouse()||null)};const{error}=await sb.from('chores').insert(newC);if(error){toast('Could not add.',true);btn.textContent='Add chore';btn.classList.remove('btn-disabled');return;}allChores.push(newC);btn.textContent='Add chore';btn.classList.remove('btn-disabled');closeModal('modal-add-chore');toast('Chore added.');renderMgrChores();}
+async function deleteChore(id){if(!confirm('Remove this chore?'))return;const{error}=await sb.from('chores').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allChores=allChores.filter(c=>c.id!==id);toast('Chore removed.');renderMgrChores();}
 
 function openAddEvent(){document.getElementById('event-title').value='';document.getElementById('event-date').value='';document.getElementById('event-time').value='';document.getElementById('event-notes').value='';document.getElementById('modal-add-event').classList.add('open');}
-async function saveNewEvent(){const title=document.getElementById('event-title').value.trim();const date=document.getElementById('event-date').value;const time=document.getElementById('event-time').value;const notes=document.getElementById('event-notes').value.trim();if(!title){toast('Please enter a title.');return;}if(!date){toast('Please select a date.');return;}const btn=document.getElementById('event-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newE={id:'ev-'+Date.now(),title,event_date:date,event_time:time||null,notes:notes||null,created_by:currentUser.name,house:myHouse()||null};const{error}=await sb.from('events').insert(newE);if(error){toast('Could not add.');btn.textContent='Add event';btn.classList.remove('btn-disabled');return;}allEvents.push(newE);allEvents.sort((a,b)=>a.event_date.localeCompare(b.event_date));btn.textContent='Add event';btn.classList.remove('btn-disabled');closeModal('modal-add-event');toast('Event added.');renderMgrCalendar();}
-async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.');return;}allEvents=allEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
+async function saveNewEvent(){const title=document.getElementById('event-title').value.trim();const date=document.getElementById('event-date').value;const time=document.getElementById('event-time').value;const notes=document.getElementById('event-notes').value.trim();if(!title){toast('Please enter a title.',true);return;}if(!date){toast('Please select a date.',true);return;}const btn=document.getElementById('event-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newE={id:'ev-'+Date.now(),title,event_date:date,event_time:time||null,notes:notes||null,created_by:currentUser.name,house:myHouse()||null};const{error}=await sb.from('events').insert(newE);if(error){toast('Could not add.',true);btn.textContent='Add event';btn.classList.remove('btn-disabled');return;}allEvents.push(newE);allEvents.sort((a,b)=>a.event_date.localeCompare(b.event_date));btn.textContent='Add event';btn.classList.remove('btn-disabled');closeModal('modal-add-event');toast('Event added.');renderMgrCalendar();}
+async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allEvents=allEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
 
 function renderReport(){
   const req=cachedSettings.required||3;const weekStart=getWeekStart();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
@@ -1001,14 +1002,14 @@ ${ckins.slice(0,5).map(function(c){const d=new Date(c.ts);const mapLink=c.lat?' 
 '</div>';document.getElementById('modal-resident-detail').classList.add('open');}
 
 function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';}
-async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.');return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
-async function changeMgrPin(){const cur=document.getElementById('mgr-pin-current').value.trim();const nw=document.getElementById('mgr-pin-new').value.trim();const cf=document.getElementById('mgr-pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.');return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('mgr-pin-current').value='';document.getElementById('mgr-pin-new').value='';document.getElementById('mgr-pin-confirm').value='';}
-async function resetResidentPin(){const id=document.getElementById('manage-resident-select').value||document.getElementById('reset-pin-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.');return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
-async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Reset PIN for ${m.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset.');return;}toast(`${m.name}'s PIN updated.`);document.getElementById('reset-mgr-pin-value').value='';}
+async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.',true);return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
+async function changeMgrPin(){const cur=document.getElementById('mgr-pin-current').value.trim();const nw=document.getElementById('mgr-pin-new').value.trim();const cf=document.getElementById('mgr-pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('mgr-pin-current').value='';document.getElementById('mgr-pin-new').value='';document.getElementById('mgr-pin-confirm').value='';}
+async function resetResidentPin(){const id=document.getElementById('manage-resident-select').value||document.getElementById('reset-pin-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.',true);return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
+async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Reset PIN for ${m.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset.',true);return;}toast(`${m.name}'s PIN updated.`);document.getElementById('reset-mgr-pin-value').value='';}
 function openAddResident(){document.getElementById('add-name').value='';document.getElementById('add-pin').value='';document.getElementById('modal-add-resident').classList.add('open');}
 function openAddManager(){document.getElementById('add-mgr-name').value='';document.getElementById('add-mgr-id').value='';document.getElementById('add-mgr-pin').value='';document.getElementById('modal-add-manager').classList.add('open');}
-async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house};const{error}=await sb.from('residents').insert(newR);if(error){toast('Could not add: '+error.message);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
-async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.');return;}if(!mgrId){toast('Please enter a manager ID.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
+async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house};const{error}=await sb.from('residents').insert(newR);if(error){toast('Could not add: '+error.message,true);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
+async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.',true);return;}if(!mgrId){toast('Please enter a manager ID.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message,true);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
 function onManageResidentChange(){
   const id=document.getElementById('manage-resident-select').value;
   const panel=document.getElementById('manage-resident-panel');
@@ -1029,13 +1030,13 @@ function onManageResidentChange(){
 async function editResidentName(){
   const id=document.getElementById('manage-resident-select').value||document.getElementById('edit-name-select').value;
   const newName=document.getElementById('edit-name-value').value.trim();
-  if(!id){toast('Please select a resident.');return;}
-  if(!newName){toast('Please enter the new name.');return;}
+  if(!id){toast('Please select a resident.',true);return;}
+  if(!newName){toast('Please enter the new name.',true);return;}
   if(newName.length<2){toast('Name is too short.');return;}
   const r=allResidents.find(x=>x.id===id);if(!r)return;
   if(!confirm('Rename '+r.name+' to '+newName+'?'))return;
   const{error}=await sb.from('residents').update({name:newName}).eq('id',id);
-  if(error){toast('Could not update name.');return;}
+  if(error){toast('Could not update name.',true);return;}
   allResidents=allResidents.map(x=>x.id===id?{...x,name:newName}:x);
   toast(r.name+' renamed to '+newName+'.');
   document.getElementById('edit-name-value').value='';
@@ -1043,8 +1044,8 @@ async function editResidentName(){
   renderMgrResidents();
 }
 
-async function removeResident(){const id=document.getElementById('manage-resident-select').value||document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allResidents=allResidents.filter(x=>x.id!==id);const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';toast(r.name+' removed.');renderManagerDashboard();populateSelects();}
-async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
+async function removeResident(){const id=document.getElementById('manage-resident-select').value||document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allResidents=allResidents.filter(x=>x.id!==id);const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';toast(r.name+' removed.');renderManagerDashboard();populateSelects();}
+async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
 
 
 // ── DRUG TESTS ──
@@ -1103,11 +1104,11 @@ async function saveDrugTest(){
   const urineOn=document.getElementById('dt-urine').checked;
   const breathOn=document.getElementById('dt-breath').checked;
   const notes=document.getElementById('dt-notes').value.trim();
-  if(!resVal){toast('Please select a resident.');return;}
-  if(!date||!time){toast('Please enter date and time.');return;}
-  if(!urineOn&&!breathOn){toast('Please select at least one test type.');return;}
-  if(urineOn&&!dtResults.urine){toast('Please select a result for the urine test.');return;}
-  if(breathOn&&!dtResults.breath){toast('Please select a result for the breathalyzer.');return;}
+  if(!resVal){toast('Please select a resident.',true);return;}
+  if(!date||!time){toast('Please enter date and time.',true);return;}
+  if(!urineOn&&!breathOn){toast('Please select at least one test type.',true);return;}
+  if(urineOn&&!dtResults.urine){toast('Please select a result for the urine test.',true);return;}
+  if(breathOn&&!dtResults.breath){toast('Please select a result for the breathalyzer.',true);return;}
   const[resId,resName]=resVal.split('|');
   const r=allResidents.find(x=>x.id===resId);
   // Build test_types and result strings
@@ -1380,7 +1381,14 @@ function renderDtReport(range){
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
+function toast(msg,isError){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.remove('error');
+  if(isError)el.classList.add('error');
+  el.classList.add('show');
+  setTimeout(()=>{el.classList.remove('show');el.classList.remove('error');},4500);
+}
 function getWeekStart(){const now=new Date();const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);const start=new Date(now);start.setDate(diff);start.setHours(0,0,0,0);return start;}
 function getWeekStartDate(){return getWeekStart().toISOString().split('T')[0];}
 function fmtDate(d){return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
