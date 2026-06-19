@@ -279,6 +279,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <button onclick="filterMeetings('NA')" class="btn btn-outline btn-sm" id="mf-NA">NA</button>
       <button onclick="filterMeetings('Al-Anon')" class="btn btn-outline btn-sm" id="mf-Al-Anon">Al-Anon</button>
       <button onclick="filterMeetings('SMART Recovery')" class="btn btn-outline btn-sm" id="mf-SMART">SMART</button>
+      <button onclick="filterMeetings('Dharma Recovery')" class="btn btn-outline btn-sm" id="mf-Dharma">Dharma</button>
     </div>
     <div id="res-meeting-list"></div>
   </div>
@@ -294,7 +295,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" style="max-width:480px;margin:0 auto">
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
-<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
+<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
 <div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
@@ -330,7 +331,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
   <div style="display:flex;gap:10px;margin-bottom:16px">
     <button class="btn btn-primary" style="flex:1" onclick="openDrugTest()">&#128137; Log drug test</button>
-    <button class="btn btn-navy" id="qa-add-house" onclick="openAddManager()" style="display:none;flex:1">&#127968; Add house</button>
+
   </div>
 </div>
 
@@ -733,7 +734,7 @@ function renderMeetingList(el,filter){
   const todayList=list.filter(function(m){return m.day===today;});
   const otherList=list.filter(function(m){return m.day!==today;});
   const sorted=todayList.concat(otherList);
-  const typeColors={'AA':'#1B3A6B','NA':'#003366','Al-Anon':'#5B4B8A','SMART Recovery':'#2E8B57','CA':'#8B0000'};
+  const typeColors={'AA':'#1B3A6B','NA':'#003366','Al-Anon':'#5B4B8A','SMART Recovery':'#2E8B57','CA':'#8B0000','Dharma Recovery':'#6B4C9A'};
   if(!sorted.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128205;</div><h3>No meetings found</h3></div>';return;}
   el.innerHTML=sorted.map(function(m){
     const isToday=m.day===today;
@@ -806,7 +807,7 @@ function enterManager(){
     if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';
     document.getElementById('mgr-greeting').textContent='Hey Tanya!';
     document.getElementById('owner-tools').style.display='block';
-    document.getElementById('qa-add-house').style.display='block';
+    
     loadSettings();
   }else{
     badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');
@@ -1245,7 +1246,7 @@ function findMeetings(){
   const sorted=[].concat(withDist.filter(function(m){return m.day===today;}),withDist.filter(function(m){return m.day!==today;}));
   lastMeetingResults=sorted;
 
-  const typeColors={'AA':'#1B3A6B','NA':'#003366','Al-Anon':'#5B4B8A','SMART Recovery':'#2E8B57','CA':'#8B0000'};
+  const typeColors={'AA':'#1B3A6B','NA':'#003366','Al-Anon':'#5B4B8A','SMART Recovery':'#2E8B57','CA':'#8B0000','Dharma Recovery':'#6B4C9A'};
   statusEl.innerHTML='<strong>'+sorted.length+' meetings</strong> in the Denver area, sorted by distance.';
 
   listEl.innerHTML=sorted.map(function(m,i){
@@ -1292,7 +1293,9 @@ function selectMeeting(name,address,type,time){
     'NA':'NA (Narcotics Anonymous)',
     'CA':'CA (Cocaine Anonymous)',
     'Al-Anon':'Al-Anon',
-    'SMART':'SMART Recovery'
+    'SMART':'SMART Recovery',
+    'DHARMA':'Dharma Recovery',
+    'Dharma':'Dharma Recovery'
   };
   let matched='Other';
   for(const[key,val] of Object.entries(typeMap)){
