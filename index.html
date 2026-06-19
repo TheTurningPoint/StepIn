@@ -503,6 +503,9 @@ function renderOwnerDashboard(){
   else if(sn)sn.innerHTML='';
 
   document.getElementById('dash-curfew-time').textContent='';
+  // Retitle the curfew card for Tanya
+  const curfewTitle=document.querySelector('#mgr-pane-dash .card-title');
+  if(curfewTitle)curfewTitle.innerHTML='&#128203; Meetings &amp; Curfew';
 
   const curfewEl=document.getElementById('dash-curfew-list');
   const attEl=document.getElementById('dash-attendance-list');
@@ -573,6 +576,8 @@ function selectHouse(house){
 }
 
 function renderMgrDashboard(){
+  const curfewTitle=document.querySelector('#mgr-pane-dash .card-title');
+  if(curfewTitle)curfewTitle.innerHTML='&#128274; Tonight\'s curfew';
   // Sticky note preview for manager
   const sn=document.getElementById('dash-sticky-note');
   if(sn&&cachedAnnouncement)sn.innerHTML=`<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE &mdash; ${cachedAcks.length}/${residents().length} acknowledged</div><div style="font-size:14px;color:#3A3000">${cachedAnnouncement.message}</div></div>`;
