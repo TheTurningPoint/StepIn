@@ -193,7 +193,7 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 </div>
 
 <!-- DASHBOARD -->
-<div class="body" id="mgr-pane-dash">
+<div class="body" id="mgr-pane-dash" style="display:block">
   <div id="dash-sticky-note"></div>
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
@@ -215,8 +215,7 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
       <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(scrollToExcuse,100)"><div class="quick-btn-icon">&#128338;</div><div class="quick-btn-label">Excuse resident</div></button>
       <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddEvent,100)"><div class="quick-btn-icon">&#128197;</div><div class="quick-btn-label">Add event</div></button>
       <button class="quick-btn" onclick="openDrugTest()"><div class="quick-btn-icon">&#128137;</div><div class="quick-btn-label">Log drug test</div></button>
-<button class="quick-btn" onclick="openDrugTestHistory()"><div class="quick-btn-icon">&#128196;</div><div class="quick-btn-label">Test history</div></button>
-<button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
+      <button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
     </div>
   </div>
 </div>
@@ -225,6 +224,7 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 
 <!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
+  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128137; Drug tests</span><button class="btn btn-primary btn-sm" onclick="openDrugTest()">+ Log test</button></div><div style="margin-bottom:12px"><button class="btn btn-outline btn-sm" onclick="openDrugTestHistory()">View full history</button></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span><button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button></div><div id="mgr-announcement-status"></div></div>
