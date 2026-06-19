@@ -436,6 +436,9 @@ function enterManager(){
   const badge=document.getElementById('mgr-badge');
   if(isOwner()){
     badge.textContent='Tanya';badge.classList.add('badge-owner');
+    // Hide attendance card — not useful for owner view
+    const attEl=document.getElementById('dash-attendance-list');
+    if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';
     document.getElementById('mgr-greeting').textContent='Hey Tanya!';
     document.getElementById('house-selector-bar').style.display='block';
     document.getElementById('owner-tools').style.display='block';
@@ -558,6 +561,9 @@ function renderOwnerDashboard(){
     }).join(''):'<p class="text-mid">No residents in this house.</p>';
     attEl.innerHTML='';
   }
+  // Hide attendance section entirely for owner
+  const attCard=attEl?attEl.closest('.card'):null;
+  if(attCard)attCard.style.display='none';
 }
 
 function selectHouse(house){
