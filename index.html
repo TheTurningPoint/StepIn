@@ -277,10 +277,10 @@ const myHouse=()=>isOwner()?(selectedHouse||null):currentUser&&currentUser.house
 
 // Filtered views
 const residents=()=>isOwner()&&selectedHouse?allResidents.filter(r=>r.house===selectedHouse):isOwner()?allResidents:allResidents.filter(r=>r.house===currentUser.house);
-const checkins=()=>isOwner()&&selectedHouse?allCheckins.filter(c=>c.house===selectedHouse):isOwner()?allCheckins:allCheckins.filter(c=>c.house===currentUser.house);
-const curfewLog=()=>isOwner()&&selectedHouse?allCurfewLog.filter(l=>l.house===selectedHouse):isOwner()?allCurfewLog:allCurfewLog.filter(l=>l.house===currentUser.house);
-const chores=()=>isOwner()&&selectedHouse?allChores.filter(c=>c.house===selectedHouse):isOwner()?allChores:allChores.filter(c=>c.house===currentUser.house);
-const events=()=>isOwner()&&selectedHouse?allEvents.filter(e=>e.house===selectedHouse||!e.house):isOwner()?allEvents:allEvents.filter(e=>e.house===currentUser.house||!e.house);
+const checkins=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allCheckins.filter(c=>ids.has(c.resident_id));};
+const curfewLog=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allCurfewLog.filter(l=>ids.has(l.resident_id));};
+const chores=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allChores.filter(c=>ids.has(c.resident_id));};
+const events=()=>{const h=myHouse();return h?allEvents.filter(e=>e.house===h||!e.house):allEvents;};
 
 function getCurfewTime(phase,date){const day=date.getDay();const isWeekend=day===0||day===6;return phase===1?(isWeekend?22:21):(isWeekend?23:22);}
 function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h===21?'9:00 PM':h===22?'10:00 PM':'11:00 PM';}
