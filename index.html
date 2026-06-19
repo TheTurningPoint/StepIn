@@ -192,9 +192,9 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <!-- TOP TABS -->
 <div class="top-tabs">
   <button class="top-tab active" id="mgr-tab-dash" onclick="mgrTab('dash',this)"><span class="top-tab-icon">&#127968;</span>Home</button>
-  <button class="top-tab" id="mgr-tab-residents" onclick="mgrTab('residents',this)"><span class="top-tab-icon">&#128101;</span>Residents</button>
   <button class="top-tab" id="mgr-tab-tools" onclick="mgrTab('tools',this)"><span class="top-tab-icon">&#9881;</span>Tools</button>
   <button class="top-tab" id="mgr-tab-report" onclick="mgrTab('report',this)"><span class="top-tab-icon">&#128202;</span>Report</button>
+  <button class="top-tab" id="mgr-tab-settings" onclick="mgrTab('settings',this)"><span class="top-tab-icon">&#128273;</span>Settings</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -224,17 +224,18 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
   </div>
 </div>
 
-<!-- RESIDENTS -->
-<div class="body" id="mgr-pane-residents" style="display:none">
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">Residents</span><button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button></div><div id="mgr-resident-list"></div></div>
-</div>
 
-<!-- TOOLS -->
+
+<!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span><button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button></div><div id="mgr-announcement-status"></div></div>
   <div class="card" id="excuse-card"><div class="card-title">&#128338; Excuse a resident</div><div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Date</label><input type="date" id="excuse-date"></div><div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work, medical, family..."></div><button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button></div>
+</div>
+
+<!-- SETTINGS (infrequent actions) -->
+<div class="body" id="mgr-pane-settings" style="display:none">
   <div class="card"><div class="card-title">&#128273; Reset resident PIN</div><div class="field"><select id="reset-pin-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetResidentPin()">Reset PIN</button></div>
   <div class="card"><div class="card-title">Set resident phase</div><div class="field"><select id="phase-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Phase</label><select id="phase-value"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-navy" onclick="setResidentPhase()">Update phase</button></div>
   <div class="card"><div class="card-title">Remove resident</div><div class="field"><select id="remove-select"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-danger" onclick="removeResident()">Remove resident</button></div>
@@ -484,11 +485,11 @@ async function refreshDashboard(){
 
 function mgrTab(tab,btn){
   document.querySelectorAll('.top-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
-  ['dash','residents','tools','report'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
-  if(tab==='dash')renderManagerDashboard();
-  if(tab==='residents'){renderMgrResidents();}
-  if(tab==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];if(isOwner())renderOwnerHouseList();}
+  ['dash','tools','report','settings'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
+  if(tab==='dash'){renderManagerDashboard();renderMgrResidents();}
+  if(tab==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
   if(tab==='report')renderReport();
+  if(tab==='settings'){populateSelects();if(isOwner()){renderOwnerHouseList();document.getElementById('owner-tools').style.display='block';loadSettings();}}
 }
 
 function renderManagerDashboard(){
