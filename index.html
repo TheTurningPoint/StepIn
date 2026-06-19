@@ -778,7 +778,14 @@ function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').
 
 function renderLogList(el,ckins,showName){
   if(!ckins.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No meetings yet</h3><p>After your next meeting, tap “Check in to a meeting” above.</p></div>';return;}
-  el.innerHTML=ckins.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return`<div class="log-item"><div class="log-icon">\ud83e\udd1d</div><div style="flex:1">${showName?`<div style="font-size:12px;color:var(--mid);font-weight:600">${c.resident_name}${c.house?' &bull; '+c.house:''}</div>`:''}<div class="log-title">${c.meeting_type}</div><div class="log-meta">${c.meeting_name}<br>${fmtDate(d)} at ${fmtTime(d)}<br>${c.address||''}</div><div class="log-sig">\u270d\ufe0f Signed by ${c.signer_name||'Unknown'}${mapLink}</div></div></div>`;}).join('');
+  el.innerHTML=ckins.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink);font-size:11px">\ud83d\udccd map</a>`:'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div style="flex:1">'+(showName?'<div style="font-size:12px;color:var(--mid);font-weight:600">'+c.resident_name+(c.house?' &bull; '+c.house:'')+'</div>':'')+
+      '<div class="log-title">'+c.meeting_type+'</div>'+
+      '<div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'<br>'+(c.address||'')+'</div>'+
+      '<div class="log-sig">&#9997;&#65039; Signed by '+(c.signer_name||'Unknown')+mapLink+
+        (c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined?
+          ' &bull; <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'var(--success)':parseFloat(c.distance_from_meeting)<=3?'var(--warn)':'var(--danger)')+'">'+(parseFloat(c.distance_from_meeting)<=0.1?'At location':parseFloat(c.distance_from_meeting)+' mi from meeting')+'</span>':'')+
+      '</div>'+
+      '</div></div>';}).join('');
 }
 
 async function changeMyPin(){const cur=document.getElementById('pin-current').value.trim();const nw=document.getElementById('pin-new').value.trim();const cf=document.getElementById('pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('pin-current').value='';document.getElementById('pin-new').value='';document.getElementById('pin-confirm').value='';}
@@ -789,9 +796,73 @@ function startCheckin(){if(!navigator.geolocation){alert('Location services requ
 function locProceed(){if(!checkinData.lat){toast('Location not ready.',true);return;}ciShow('details');}
 function cancelCheckin(){if(confirm('Cancel this check-in?')){show('screen-resident');renderResidentHome();}}
 async function finishCheckin(){await loadAllData();show('screen-resident');renderResidentHome();}
-function ciDetails(){const type=document.getElementById('ci-type').value;const name=document.getElementById('ci-name').value.trim();const addr=document.getElementById('ci-addr').value.trim();if(!type){toast('Please select a meeting type.',true);return;}if(!name){toast('Please enter the meeting name.',true);return;}checkinData.meeting_type=type;checkinData.meeting_name=name;checkinData.address=addr;checkinData.ts=new Date().toISOString();document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');setTimeout(initSigCanvas,200);}
-async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message,true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
-function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const dpr=window.devicePixelRatio||1;sigCanvas.width=rect.width*dpr;sigCanvas.height=180*dpr;sigCtx.scale(dpr,dpr);sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
+function haversineDistance(lat1,lng1,lat2,lng2){
+  const R=3959;
+  const dLat=(lat2-lat1)*Math.PI/180;
+  const dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+
+    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+    Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+async function geocodeAddress(address){
+  try{
+    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(address)+'&limit=1';
+    const res=await fetch(url,{headers:{'Accept':'application/json','User-Agent':'StepIn-App/1.0'}});
+    const data=await res.json();
+    if(data&&data.length>0)return{lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+    return null;
+  }catch(e){return null;}
+}
+
+async function ciDetails(){
+  const type=document.getElementById('ci-type').value;
+  const name=document.getElementById('ci-name').value.trim();
+  const addr=document.getElementById('ci-addr').value.trim();
+  if(!type){toast('Please select a meeting type.',true);return;}
+  if(!name){toast('Please enter the meeting name.',true);return;}
+  if(!addr){toast('Please enter the meeting address.',true);return;}
+  // Show loading state
+  const btn=document.querySelector('#ci-step-details .btn-primary');
+  if(btn){btn.textContent='Verifying location…';btn.classList.add('btn-disabled');}
+  checkinData.meeting_type=type;
+  checkinData.meeting_name=name;
+  checkinData.address=addr;
+  checkinData.ts=new Date().toISOString();
+  checkinData.distance_from_meeting=null;
+  // Geocode the meeting address
+  if(checkinData.lat&&checkinData.lng&&addr){
+    const geo=await geocodeAddress(addr);
+    if(geo){
+      const dist=haversineDistance(
+        parseFloat(checkinData.lat),parseFloat(checkinData.lng),
+        geo.lat,geo.lng
+      );
+      checkinData.distance_from_meeting=dist.toFixed(2);
+      checkinData.meeting_lat=geo.lat.toFixed(6);
+      checkinData.meeting_lng=geo.lng.toFixed(6);
+    }
+  }
+  if(btn){btn.textContent='Next — Get someone to sign ➔';btn.classList.remove('btn-disabled');}
+  document.getElementById('sig-resident-name').textContent=currentUser.name;
+  ciShow('sig');
+  // Show distance on sig screen
+  const distEl=document.getElementById('ci-distance-display');
+  if(distEl){
+    if(checkinData.distance_from_meeting!==null){
+      const d=parseFloat(checkinData.distance_from_meeting);
+      const color=d<=1?'var(--success)':d<=3?'var(--warn)':'var(--danger)';
+      const label=d<=0.1?'At the meeting location':d<=1?d.toFixed(1)+' miles from meeting':''+d.toFixed(1)+' miles from meeting address';
+      distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid '+color+';border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px"><span style="font-size:20px">&#128205;</span><div><div style="font-size:14px;font-weight:700;color:'+color+'">'+label+'</div><div style="font-size:12px;color:var(--mid)">Recorded with this check-in</div></div></div>';
+    }else{
+      distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; Location distance could not be verified — GPS coordinates recorded</div></div>';
+    }
+  }
+  setTimeout(initSigCanvas,200);
+}
+async function ciSubmit(){const signerName=document.getElementById('sig-name').value.trim();if(!sigHasMark){toast('A signature is required.');return;}if(!signerName){toast("Please enter the signer's name.");return;}const btn=document.getElementById('submit-btn');btn.textContent='Saving\u2026';btn.classList.add('btn-disabled');const record={id:'ci-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,meeting_type:checkinData.meeting_type,meeting_name:checkinData.meeting_name,address:checkinData.address,lat:checkinData.lat||null,lng:checkinData.lng||null,meeting_lat:checkinData.meeting_lat||null,meeting_lng:checkinData.meeting_lng||null,distance_from_meeting:checkinData.distance_from_meeting||null,signer_name:signerName,sig_data_url:sigCanvas.toDataURL(),ts:checkinData.ts,house:currentUser.house||null};const{error}=await sb.from('checkins').insert(record);if(error){toast('Save failed: '+error.message,true);btn.textContent='Submit check-in \u2713';btn.classList.remove('btn-disabled');return;}allCheckins.unshift(record);document.getElementById('confirm-detail').textContent=`${checkinData.meeting_type} \u00b7 ${checkinData.meeting_name} \u00b7 ${fmtDate(new Date(checkinData.ts))} at ${fmtTime(new Date(checkinData.ts))}`;ciShow('done');}
+function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=sigCanvas.getContext('2d');sigHasMark=false;const rect=sigCanvas.getBoundingClientRect();const w=rect.width||sigCanvas.offsetWidth||300;sigCanvas.width=w;sigCanvas.height=180;sigCtx.strokeStyle='#0A0A0A';sigCtx.lineWidth=2.5;sigCtx.lineCap='round';sigCtx.lineJoin='round';const getXY=e=>{const r=sigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};sigCanvas.onmousedown=e=>{sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.onmousemove=e=>{if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.onmouseup=()=>sigDrawing=false;sigCanvas.ontouchstart=e=>{e.preventDefault();sigDrawing=true;sigCtx.beginPath();const[x,y]=getXY(e);sigCtx.moveTo(x,y);};sigCanvas.ontouchmove=e=>{e.preventDefault();if(!sigDrawing)return;const[x,y]=getXY(e);sigCtx.lineTo(x,y);sigCtx.stroke();sigHasMark=true;document.getElementById('sig-hint').style.opacity='0';};sigCanvas.ontouchend=()=>sigDrawing=false;}
 function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
 // ── MANAGER / OWNER ──
@@ -1217,11 +1288,11 @@ function initDtSig(who){
   const canvas=document.getElementById(canvasId);
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
+  // Set canvas to natural CSS size - avoid DPR scaling issues in modal
   const rect=canvas.getBoundingClientRect();
-  const dpr=window.devicePixelRatio||1;
-  canvas.width=rect.width*dpr;
-  canvas.height=180*dpr;
-  ctx.scale(dpr,dpr);
+  const w=rect.width||canvas.offsetWidth||300;
+  canvas.width=w;
+  canvas.height=180;
   ctx.strokeStyle='#0A0A0A';
   ctx.lineWidth=2.5;
   ctx.lineCap='round';
