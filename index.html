@@ -59,6 +59,7 @@ input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{b
 #toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--black);color:var(--white);padding:14px 22px;border-radius:30px;font-size:14px;font-weight:500;transition:transform 0.3s ease;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
 #toast.show{transform:translateX(-50%) translateY(0);}
 #loading{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
+.spin{width:30px;height:30px;border:3px solid rgba(0,0,0,0.1);border-top-color:var(--pink);border-radius:50%;animation:spin 0.8s linear infinite;}
 #loading .spin{width:40px;height:40px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--pink-light);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px;}
 #loading p{color:rgba(255,255,255,0.6);font-size:14px;}@keyframes spin{to{transform:rotate(360deg);}}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-end;justify-content:center;}.modal-bg.open{display:flex;}
@@ -172,7 +173,8 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <div class="body" style="max-width:480px;margin:0 auto">
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
-<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
+<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div>
+<button class="btn btn-outline btn-sm" onclick="findMeetings()" style="margin-bottom:14px;width:100%">&#128205; Find a meeting near me</button><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
 <div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
@@ -311,6 +313,13 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 </div>
 
 <!-- MODALS -->
+<div class="modal-bg" id="modal-find-meeting"><div class="modal"><div class="modal-handle"></div>
+<h2>&#128205; Meetings near you</h2>
+<div id="find-meeting-status" style="font-size:14px;color:var(--mid);margin-bottom:12px"></div>
+<div id="find-meeting-list"></div>
+<button class="btn btn-outline mt16" onclick="closeModal('modal-find-meeting')">Close</button>
+</div></div>
+
 <div class="modal-bg" id="modal-post-announcement"><div class="modal"><div class="modal-handle"></div><h2>&#128204; Post sticky note</h2><p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p><div class="field"><label>Message</label><textarea id="announcement-text" placeholder="e.g. House meeting tonight at 7pm." style="height:100px;resize:none"></textarea></div><button class="btn btn-primary" id="announcement-btn" onclick="postAnnouncement()">Post note</button><button class="btn btn-outline mt8" onclick="closeModal('modal-post-announcement')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-resident"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Serenity House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Serenity House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
@@ -956,6 +965,127 @@ async function openDrugTestHistory(){
     }).join('');
   }
   document.getElementById('modal-drug-test-history').classList.add('open');
+}
+
+
+
+// ── FIND A MEETING ──
+async function findMeetings(){
+  const statusEl=document.getElementById('find-meeting-status');
+  const listEl=document.getElementById('find-meeting-list');
+  statusEl.textContent='Looking for meetings near you...';
+  listEl.innerHTML='<div style="text-align:center;padding:20px"><div class="spin" style="margin:0 auto"></div></div>';
+  document.getElementById('modal-find-meeting').classList.add('open');
+
+  // Use cached location from check-in flow
+  const lat=checkinData.lat;
+  const lng=checkinData.lng;
+
+  if(!lat||!lng){
+    statusEl.textContent='Location not available. Please allow location access first.';
+    listEl.innerHTML='';
+    return;
+  }
+
+  try{
+    // Meeting Guide API - free, no key, used by official AA app
+    // Returns meetings within radius sorted by distance
+    const url=`https://api.meetingguide.org/meetings?latitude=${lat}&longitude=${lng}&distance=10&distance_units=miles&limit=20`;
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('Could not load meetings');
+    const data=await res.json();
+    const meetings=data.meetings||data||[];
+
+    if(!meetings.length){
+      statusEl.textContent='No meetings found within 10 miles. Try checking aa.org or na.org.';
+      listEl.innerHTML='';
+      return;
+    }
+
+    // Filter to today's meetings or show all upcoming
+    const now=new Date();
+    const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const today=days[now.getDay()];
+
+    // Sort: today first, then by distance
+    const todayMeetings=meetings.filter(m=>m.day===today||m.day===now.getDay().toString());
+    const otherMeetings=meetings.filter(m=>m.day!==today&&m.day!==now.getDay().toString());
+    const sorted=[...todayMeetings,...otherMeetings];
+
+    statusEl.textContent=`${sorted.length} meetings found near you. Tap one to use it.`;
+
+    listEl.innerHTML=sorted.slice(0,15).map(m=>{
+      const isToday=m.day===today||m.day===now.getDay().toString();
+      const dayLabel=isToday?'<span style="color:var(--success);font-weight:700">Today</span>':m.day;
+      const types=(m.types||[]).slice(0,3).join(', ');
+      const distance=m.distance?` &bull; ${parseFloat(m.distance).toFixed(1)} mi`:'';
+      const time=m.time?formatMeetingTime(m.time):'';
+      const name=m.name||'Meeting';
+      const address=(m.address||'')+(m.city?', '+m.city:'');
+      const typeLabel=m.type_description||types||'';
+
+      return `<div onclick="selectMeeting(${JSON.stringify(name).replace(/'/g,"\'")},'${(address).replace(/'/g,"\'")}','${typeLabel.replace(/'/g,"\'")}','${time}')"
+        style="padding:14px 0;border-bottom:1px solid var(--sand);cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;margin-bottom:2px">${name}</div>
+            <div style="font-size:12px;color:var(--mid)">${dayLabel}${time?' at '+time:''} ${distance}</div>
+            ${address?`<div style="font-size:12px;color:var(--mid)">${address}</div>`:''}
+            ${typeLabel?`<div style="font-size:11px;color:var(--pink);margin-top:2px">${typeLabel}</div>`:''}
+          </div>
+          <span style="color:var(--pink);font-size:20px;flex-shrink:0">&#8594;</span>
+        </div>
+      </div>`;
+    }).join('');
+
+  }catch(e){
+    // Fallback: link to meeting finder websites
+    statusEl.textContent='Could not load nearby meetings automatically.';
+    listEl.innerHTML=`<div style="text-align:center;padding:20px">
+      <p style="font-size:14px;color:var(--mid);margin-bottom:16px">Find a meeting manually:</p>
+      <a href="https://www.aa.org/find-aa" target="_blank" class="btn btn-primary btn-sm" style="display:block;margin-bottom:10px;text-decoration:none">&#128269; Find AA meetings</a>
+      <a href="https://www.na.org/meetingsearch/" target="_blank" class="btn btn-navy btn-sm" style="display:block;text-decoration:none">&#128269; Find NA meetings</a>
+    </div>`;
+  }
+}
+
+function formatMeetingTime(t){
+  try{
+    const[h,m]=t.split(':');
+    const d=new Date();d.setHours(parseInt(h),parseInt(m)||0);
+    return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }catch(e){return t;}
+}
+
+function selectMeeting(name,address,type,time){
+  // Pre-fill the check-in form
+  const typeEl=document.getElementById('ci-type');
+  const nameEl=document.getElementById('ci-name');
+  const addrEl=document.getElementById('ci-addr');
+
+  // Map meeting type to our dropdown options
+  const typeMap={
+    'AA':'AA (Alcoholics Anonymous)',
+    'NA':'NA (Narcotics Anonymous)',
+    'CA':'CA (Cocaine Anonymous)',
+    'Al-Anon':'Al-Anon',
+    'SMART':'SMART Recovery'
+  };
+  let matched='Other';
+  for(const[key,val] of Object.entries(typeMap)){
+    if((type||'').toUpperCase().includes(key.toUpperCase())||(name||'').toUpperCase().includes(key.toUpperCase())){
+      matched=val;break;
+    }
+  }
+  // Set dropdown
+  for(let i=0;i<typeEl.options.length;i++){
+    if(typeEl.options[i].value===matched){typeEl.selectedIndex=i;break;}
+  }
+  if(nameEl)nameEl.value=name||'';
+  if(addrEl)addrEl.value=address||'';
+
+  closeModal('modal-find-meeting');
+  toast('Meeting details filled in. Get your signature!');
 }
 
 
