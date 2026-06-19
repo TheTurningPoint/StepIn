@@ -213,7 +213,9 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
       <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddChore,100)"><div class="quick-btn-icon">&#129529;</div><div class="quick-btn-label">Add chore</div></button>
       <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(scrollToExcuse,100)"><div class="quick-btn-icon">&#128338;</div><div class="quick-btn-label">Excuse resident</div></button>
       <button class="quick-btn" onclick="mgrTab('tools',document.getElementById('mgr-tab-tools'));setTimeout(openAddEvent,100)"><div class="quick-btn-icon">&#128197;</div><div class="quick-btn-label">Add event</div></button>
-      <button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
+      <button class="quick-btn" onclick="openDrugTest()"><div class="quick-btn-icon">&#128137;</div><div class="quick-btn-label">Log drug test</div></button>
+<button class="quick-btn" onclick="openDrugTestHistory()"><div class="quick-btn-icon">&#128196;</div><div class="quick-btn-label">Test history</div></button>
+<button class="quick-btn" id="qa-add-house" onclick="openAddManager()" style="display:none"><div class="quick-btn-icon">&#127968;</div><div class="quick-btn-label">Add house</div></button>
     </div>
   </div>
 </div>
@@ -256,6 +258,30 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
 <div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Serenity House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Serenity House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-chore"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-event"><div class="modal"><div class="modal-handle"></div><h2>Add event</h2><div class="field"><label>Event title</label><input type="text" id="event-title" placeholder="e.g. House meeting"></div><div class="field"><label>Date</label><input type="date" id="event-date"></div><div class="field"><label>Time (optional)</label><input type="time" id="event-time"></div><div class="field"><label>Notes (optional)</label><textarea id="event-notes" placeholder="Any details&#8230;" style="height:80px;resize:none"></textarea></div><button class="btn btn-primary" id="event-btn" onclick="saveNewEvent()">Add event</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-event')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-drug-test"><div class="modal"><div class="modal-handle"></div><h2>&#128137; Log drug test</h2>
+<div class="field"><label>Resident</label><select id="dt-resident"><option value="">Select resident&#8230;</option></select></div>
+<div class="field"><label>Date</label><input type="date" id="dt-date"></div>
+<div class="field"><label>Time</label><input type="time" id="dt-time"></div>
+<div class="field"><label>Test type</label>
+<div style="display:flex;gap:10px;margin-top:4px">
+<label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:15px;cursor:pointer"><input type="checkbox" id="dt-urine" style="width:20px;height:20px;accent-color:var(--pink)"> Urine</label>
+<label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:15px;cursor:pointer"><input type="checkbox" id="dt-breath" style="width:20px;height:20px;accent-color:var(--pink)"> Breathalyzer</label>
+</div></div>
+<div class="field"><label>Result</label>
+<div style="display:flex;gap:10px;margin-top:4px">
+<button class="btn btn-sm" id="dt-pass-btn" onclick="setDtResult('pass')" style="flex:1;background:var(--success);color:white;border:none">&#10003; Pass</button>
+<button class="btn btn-sm" id="dt-fail-btn" onclick="setDtResult('fail')" style="flex:1;background:var(--danger);color:white;border:none">&#10005; Fail</button>
+<button class="btn btn-sm" id="dt-refused-btn" onclick="setDtResult('refused')" style="flex:1;background:var(--warn);color:white;border:none">&#9888; Refused</button>
+</div>
+<input type="hidden" id="dt-result" value="">
+</div>
+<div class="field"><label>Notes (optional)</label><textarea id="dt-notes" placeholder="Any additional notes&#8230;" style="height:70px;resize:none"></textarea></div>
+<button class="btn btn-primary" id="dt-btn" onclick="saveDrugTest()">Save test record</button>
+<button class="btn btn-outline mt8" onclick="closeModal('modal-drug-test')">Cancel</button>
+</div></div>
+
+<div class="modal-bg" id="modal-drug-test-history"><div class="modal"><div class="modal-handle"></div><h2>&#128137; Drug test history</h2><div id="dt-history-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-drug-test-history')">Close</button></div></div>
+
 <div class="modal-bg" id="modal-resident-detail"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
 <div id="toast"></div>
 <script>
@@ -428,7 +454,7 @@ function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=
 function clearSig(){if(sigCtx)sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
 // ── MANAGER / OWNER ──
-function enterManager(){
+function enterManager(){loadDrugTests();
   show('screen-manager');
   const badge=document.getElementById('mgr-badge');
   if(isOwner()){
@@ -661,7 +687,17 @@ function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;c
 <div class="card-title" style="margin-bottom:8px">Recent in/out</div>
 ${(function(){const logs=allCurfewLog.filter(function(l){return l.resident_id===id;}).slice(0,6);if(!logs.length)return'<p class="text-mid" style="margin-bottom:12px">No sign in/out activity recorded yet.</p>';return logs.map(function(l){const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?'Left'+(l.destination?' \u2192 '+l.destination:''):(l.excused?'Excused':'Signed in');const late=l.late?' <span class="pill pill-red">Late</span>':'';const exc=l.excused?' <span class="pill pill-blue">Excused</span>':'';const map=l.lat?' <a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205;</a>':'';return'<div class="curfew-row"><div style="font-size:18px">'+icon+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+label+late+exc+'</div><div style="font-size:11px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+map+'</div></div></div>';}).join('');})()}
 <div class="card-title" style="margin:12px 0 8px">Recent meetings</div>
-${ckins.slice(0,5).map(function(c){const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205; map</a>':'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div><div class="log-title">'+c.meeting_type+'</div><div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'</div><div class="log-sig">&#9997;&#65039; '+c.signer_name+mapLink+'</div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" class="sig-img" alt="Signature">':'')+'</div></div>';}).join('')||'<p class="text-mid">No meetings recorded.</p>'}`;document.getElementById('modal-resident-detail').classList.add('open');}
+${ckins.slice(0,5).map(function(c){const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205; map</a>':'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div><div class="log-title">'+c.meeting_type+'</div><div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'</div><div class="log-sig">&#9997;&#65039; '+c.signer_name+mapLink+'</div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" class="sig-img" alt="Signature">':'')+'</div></div>';}).join('')||'<p class="text-mid">No meetings recorded.</p>'}` +
+'<div style="margin-top:14px"><div class="card-title" style="margin-bottom:8px">Drug tests</div>' +
+(function(){
+  const dts=cachedDrugTests.filter(function(t){return t.resident_id===id;}).slice(0,5);
+  if(!dts.length)return '<p class="text-mid">No tests on record.</p>';
+  const icons={pass:'<span style="color:var(--success);font-weight:700">&#10003; Pass</span>',fail:'<span style="color:var(--danger);font-weight:700">&#10005; Fail</span>',refused:'<span style="color:var(--warn);font-weight:700">&#9888; Refused</span>'};
+  return dts.map(function(t){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sand)"><div><div style="font-size:13px;font-weight:600">'+t.test_types+'</div><div style="font-size:11px;color:var(--mid)">'+t.test_date+' at '+t.test_time+(t.notes?' &bull; '+t.notes:'')+'</div></div>'+(icons[t.result]||t.result)+'</div>';
+  }).join('');
+})() +
+'</div>';document.getElementById('modal-resident-detail').classList.add('open');}
 
 function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';}
 async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.');return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
@@ -674,6 +710,113 @@ async function saveNewResident(){const name=document.getElementById('add-name').
 async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.');return;}if(!mgrId){toast('Please enter a manager ID.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.');return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
 async function removeResident(){const id=document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allResidents=allResidents.filter(x=>x.id!==id);toast(`${r.name} removed.`);renderManagerDashboard();populateSelects();}
 async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.');return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
+
+
+// ── DRUG TESTS ──
+let cachedDrugTests=[];
+let dtResultSelected='';
+
+async function loadDrugTests(){
+  try{
+    let q=sb.from('drug_tests').select('*').order('created_at',{ascending:false});
+    if(!isOwner())q=q.eq('house',currentUser.house||'');
+    const{data}=await q;
+    cachedDrugTests=data||[];
+  }catch(e){console.log('drug test load err',e);}
+}
+
+function setDtResult(val){
+  dtResultSelected=val;
+  document.getElementById('dt-result').value=val;
+  ['pass','fail','refused'].forEach(r=>{
+    const btn=document.getElementById('dt-'+r+'-btn');
+    const colors={pass:'var(--success)',fail:'var(--danger)',refused:'var(--warn)'};
+    btn.style.opacity=r===val?'1':'0.35';
+    btn.style.transform=r===val?'scale(1.05)':'scale(1)';
+  });
+}
+
+function openDrugTest(){
+  populateSelects();
+  document.getElementById('dt-resident').innerHTML='<option value="">Select resident&#8230;</option>'+residents().map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');
+  const now=new Date();
+  document.getElementById('dt-date').value=now.toISOString().split('T')[0];
+  document.getElementById('dt-time').value=now.toTimeString().slice(0,5);
+  document.getElementById('dt-urine').checked=false;
+  document.getElementById('dt-breath').checked=false;
+  document.getElementById('dt-notes').value='';
+  dtResultSelected='';
+  document.getElementById('dt-result').value='';
+  ['pass','fail','refused'].forEach(r=>{
+    const btn=document.getElementById('dt-'+r+'-btn');
+    btn.style.opacity='1';btn.style.transform='scale(1)';
+  });
+  document.getElementById('modal-drug-test').classList.add('open');
+}
+
+async function saveDrugTest(){
+  const resVal=document.getElementById('dt-resident').value;
+  const date=document.getElementById('dt-date').value;
+  const time=document.getElementById('dt-time').value;
+  const urine=document.getElementById('dt-urine').checked;
+  const breath=document.getElementById('dt-breath').checked;
+  const result=document.getElementById('dt-result').value;
+  const notes=document.getElementById('dt-notes').value.trim();
+  if(!resVal){toast('Please select a resident.');return;}
+  if(!date||!time){toast('Please enter date and time.');return;}
+  if(!urine&&!breath){toast('Please select at least one test type.');return;}
+  if(!result){toast('Please select a result.');return;}
+  const[resId,resName]=resVal.split('|');
+  const types=[];if(urine)types.push('Urine');if(breath)types.push('Breathalyzer');
+  const btn=document.getElementById('dt-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const r=allResidents.find(x=>x.id===resId);
+  const record={
+    id:'dt-'+Date.now(),
+    resident_id:resId,
+    resident_name:resName,
+    test_date:date,
+    test_time:time,
+    test_types:types.join(' + '),
+    result,
+    notes:notes||null,
+    administered_by:currentUser.name,
+    house:r?r.house:(myHouse()||null)
+  };
+  const{error}=await sb.from('drug_tests').insert(record);
+  if(error){toast('Could not save: '+error.message);btn.textContent='Save test record';btn.classList.remove('btn-disabled');return;}
+  cachedDrugTests.unshift(record);
+  btn.textContent='Save test record';btn.classList.remove('btn-disabled');
+  closeModal('modal-drug-test');
+  toast(resName+' — test recorded.');
+}
+
+async function openDrugTestHistory(){
+  await loadDrugTests();
+  const el=document.getElementById('dt-history-content');
+  const tests=isOwner()&&selectedHouse?cachedDrugTests.filter(t=>t.house===selectedHouse):cachedDrugTests;
+  if(!tests.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128196;</div><h3>No tests recorded yet</h3></div>';
+  }else{
+    const resultStyle={pass:'color:var(--success);font-weight:700',fail:'color:var(--danger);font-weight:700',refused:'color:var(--warn);font-weight:700'};
+    const resultIcon={pass:'&#10003; Pass',fail:'&#10005; Fail',refused:'&#9888; Refused'};
+    el.innerHTML=tests.map(t=>{
+      const d=new Date(t.test_date+'T'+t.test_time);
+      return `<div style="padding:14px 0;border-bottom:1px solid var(--sand)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-size:15px;font-weight:700">${t.resident_name}</div>
+            <div style="font-size:12px;color:var(--mid)">${t.test_types} &bull; ${fmtDate(d)} at ${fmtTimeStr(t.test_time)}${t.house?' &bull; '+t.house:''}</div>
+            ${t.notes?`<div style="font-size:12px;color:var(--mid);margin-top:3px">${t.notes}</div>`:''}
+            <div style="font-size:11px;color:var(--soft);margin-top:2px">By: ${t.administered_by||'Unknown'}</div>
+          </div>
+          <span style="${resultStyle[t.result]||''};font-size:14px">${resultIcon[t.result]||t.result}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('modal-drug-test-history').classList.add('open');
+}
+
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
