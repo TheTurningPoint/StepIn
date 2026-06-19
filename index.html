@@ -235,8 +235,13 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="divider"></div>
 <p class="text-mid text-center">New here? Your house manager will set up your account and give you your PIN.</p>
 <div class="divider"></div>
-<button class="btn btn-outline" onclick="enterDemo()" style="border-color:var(--gold);color:var(--gold)">&#127981; Try a live demo</button>
-<p class="text-mid text-center" style="margin-top:8px;font-size:12px">No account needed. Explore the app with sample data.</p>
+<p style="font-size:13px;font-weight:700;color:var(--mid);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">&#127981; Try a live demo</p>
+<div style="display:flex;gap:8px">
+  <button class="btn btn-sm" onclick="enterDemo('resident')" style="flex:1;background:var(--cream);border:2px solid var(--pink);color:var(--pink);font-weight:700">Resident</button>
+  <button class="btn btn-sm" onclick="enterDemo('manager')" style="flex:1;background:var(--pink);color:white;font-weight:700">Manager</button>
+  <button class="btn btn-sm" onclick="enterDemo('owner')" style="flex:1;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;font-weight:700">Tanya</button>
+</div>
+<p class="text-mid text-center" style="margin-top:8px;font-size:12px">No account needed. Real features, sample data.</p>
 </div></div></div>
 
 <!-- RESIDENT SCREEN -->
@@ -1413,80 +1418,182 @@ function renderDtReport(range){
 // ── DEMO MODE ──
 let isDemoMode=false;
 
-const DEMO_DATA={
-  user:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Serenity House',pin:'0000'},
-  residents:[
-    {id:'d1',name:'James R.',role:'resident',phase:1,house:'Serenity House'},
-    {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Serenity House'},
-    {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Serenity House'},
-    {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Serenity House'},
-    {id:'d5',name:'Robert C.',role:'resident',phase:1,house:'Serenity House'},
-  ],
-  checkins:(function(){
-    const now=new Date();
-    const week=new Date(now);week.setDate(week.getDate()-now.getDay()+1);
-    const items=[];
-    const types=['AA (Alcoholics Anonymous)','NA (Narcotics Anonymous)','AA (Alcoholics Anonymous)','SMART Recovery','NA (Narcotics Anonymous)'];
-    const names=['Monday Serenity Group','Clean & Serene','Big Book Study','SMART Recovery Denver','Thursday Night NA'];
-    const addrs=['1400 Williams St, Denver','2100 Stout St, Denver','1849 York St, Denver','1700 Lincoln St, Denver','1370 Pennsylvania St, Denver'];
-    const residents=['d1','d2','d1','d3','d2','d4','d1','d5'];
-    const rnames=['James R.','Maria S.','James R.','Kevin T.','Maria S.','Angela M.','James R.','Robert C.'];
-    residents.forEach(function(rid,i){
-      const d=new Date(week);d.setDate(d.getDate()+Math.floor(i/2));d.setHours(19+i%3,0,0,0);
-      items.push({id:'ci-d'+i,resident_id:rid,resident_name:rnames[i],meeting_type:types[i%5],meeting_name:names[i%5],address:addrs[i%5],lat:'39.7'+(i*7),lng:'-104.9'+(i*3),signer_name:'John D. (Secretary)',sig_data_url:null,ts:d.toISOString(),house:'Serenity House'});
+const DEMO_RESIDENTS=[
+  {id:'d1',name:'James R.',role:'resident',phase:1,house:'Serenity House',pin:'1111'},
+  {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Serenity House',pin:'2222'},
+  {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Serenity House',pin:'3333'},
+  {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Serenity House',pin:'4444'},
+  {id:'d5',name:'Robert C.',role:'resident',phase:1,house:'Serenity House',pin:'5555'},
+  {id:'d6',name:'Lisa W.',role:'resident',phase:1,house:'Unity House',pin:'6666'},
+  {id:'d7',name:'Marcus B.',role:'resident',phase:2,house:'Unity House',pin:'7777'},
+  {id:'d8',name:'Sandra K.',role:'resident',phase:1,house:'Unity House',pin:'8888'},
+];
+
+function makeDemoCheckins(){
+  const now=new Date();
+  const monday=new Date(now);monday.setDate(monday.getDate()-monday.getDay()+1);monday.setHours(0,0,0,0);
+  const items=[];
+  const meetings=[
+    {type:'AA (Alcoholics Anonymous)',name:'Monday Serenity Group',addr:'1400 Williams St, Denver'},
+    {type:'NA (Narcotics Anonymous)',name:'Clean & Serene',addr:'2100 Stout St, Denver'},
+    {type:'AA (Alcoholics Anonymous)',name:'Big Book Study',addr:'1849 York St, Denver'},
+    {type:'SMART Recovery',name:'SMART Recovery Denver',addr:'1700 Lincoln St, Denver'},
+    {type:'NA (Narcotics Anonymous)',name:'Thursday Night NA',addr:'1370 Pennsylvania St, Denver'},
+    {type:'Al-Anon',name:'Al-Anon Monday Night',addr:'1400 Williams St, Denver'},
+    {type:'AA (Alcoholics Anonymous)',name:'Friday Night Live',addr:'2000 E 12th Ave, Denver'},
+  ];
+  // Serenity House residents - varied attendance
+  const checkinPlan=[
+    {rid:'d1',rn:'James R.',days:[0,1,2],mIdx:[0,2,6]},
+    {rid:'d2',rn:'Maria S.',days:[0,2,3],mIdx:[1,3,4]},
+    {rid:'d3',rn:'Kevin T.',days:[1],mIdx:[2]},
+    {rid:'d4',rn:'Angela M.',days:[0,1,2,3],mIdx:[0,1,2,4]},
+    {rid:'d5',rn:'Robert C.',days:[],mIdx:[]},
+    {rid:'d6',rn:'Lisa W.',days:[0,2],mIdx:[0,3]},
+    {rid:'d7',rn:'Marcus B.',days:[0,1,2,3,4],mIdx:[1,2,3,4,5]},
+    {rid:'d8',rn:'Sandra K.',days:[0,1],mIdx:[0,1]},
+  ];
+  let id=0;
+  checkinPlan.forEach(function(plan){
+    plan.days.forEach(function(dayOffset,i){
+      const d=new Date(monday);d.setDate(d.getDate()+dayOffset);d.setHours(19+i%3,30,0,0);
+      const m=meetings[plan.mIdx[i]||0];
+      items.push({id:'ci-d'+(id++),resident_id:plan.rid,resident_name:plan.rn,
+        meeting_type:m.type,meeting_name:m.name,address:m.addr,
+        lat:'39.'+(730+id*3),lng:'-104.'+(950+id*2),
+        signer_name:['John D. (Secretary)','Mary K. (Chair)','Bob T. (Sponsor)','Susan L. (Secretary)'][id%4],
+        sig_data_url:null,ts:d.toISOString(),
+        house:['d1','d2','d3','d4','d5'].includes(plan.rid)?'Serenity House':'Unity House'});
     });
-    return items;
-  })(),
-  curfewLog:(function(){
-    const now=new Date();
-    const today=now.toDateString();
-    return[
-      {id:'cl-d1',resident_id:'d1',resident_name:'James R.',action:'in',ts:new Date(now.setHours(21,30)).toISOString(),late:false,excused:false,destination:null,house:'Serenity House'},
-      {id:'cl-d2',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:new Date(now.setHours(20,15)).toISOString(),late:false,excused:false,destination:null,house:'Serenity House'},
-      {id:'cl-d3',resident_id:'d3',resident_name:'Kevin T.',action:'out',ts:new Date(now.setHours(18,0)).toISOString(),late:false,excused:false,destination:'AA Meeting on Colfax',house:'Serenity House'},
-      {id:'cl-d4',resident_id:'d4',resident_name:'Angela M.',action:'in',ts:new Date(now.setHours(22,45)).toISOString(),late:true,excused:false,destination:null,house:'Serenity House'},
-      {id:'cl-d5',resident_id:'d5',resident_name:'Robert C.',action:'in',ts:new Date(now.setHours(20,0)).toISOString(),late:false,excused:true,excused_reason:'Work shift',house:'Serenity House'},
-    ];
-  })(),
-  chores:[
-    {id:'ch-d1',resident_id:'d1',resident_name:'James R.',title:'Clean bathroom',completed_date:new Date().toISOString().split("T")[0],week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split("T")[0],week_start:'2024-01-01',house:'Serenity House'},
-    {id:'ch-d5',resident_id:'d5',resident_name:'Robert C.',title:'Clean fridge',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
+  });
+  // Add some historical checkins from past weeks
+  for(var w=1;w<=3;w++){
+    ['d1','d2','d4','d6','d7'].forEach(function(rid,i){
+      const rn=DEMO_RESIDENTS.find(function(r){return r.id===rid;}).name;
+      for(var d2=0;d2<3;d2++){
+        const dt=new Date(monday);dt.setDate(dt.getDate()-w*7+d2*2);dt.setHours(19,0,0,0);
+        const m=meetings[(i+d2)%meetings.length];
+        items.push({id:'ci-h'+(id++),resident_id:rid,resident_name:rn,
+          meeting_type:m.type,meeting_name:m.name,address:m.addr,
+          lat:'39.730',lng:'-104.950',signer_name:'John D. (Secretary)',
+          sig_data_url:null,ts:dt.toISOString(),
+          house:['d1','d2','d3','d4','d5'].includes(rid)?'Serenity House':'Unity House'});
+      }
+    });
+  }
+  return items;
+}
+
+function makeDemoCurfew(){
+  const now=new Date();
+  const logs=[];
+  // James - home
+  const t1=new Date(now);t1.setHours(20,30,0,0);
+  logs.push({id:'cl-d1',resident_id:'d1',resident_name:'James R.',action:'in',ts:t1.toISOString(),late:false,excused:false,destination:null,house:'Serenity House'});
+  // Maria - home
+  const t2=new Date(now);t2.setHours(21,15,0,0);
+  logs.push({id:'cl-d2',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:t2.toISOString(),late:false,excused:false,destination:null,house:'Serenity House'});
+  // Kevin - out at meeting
+  const t3=new Date(now);t3.setHours(18,0,0,0);
+  logs.push({id:'cl-d3',resident_id:'d3',resident_name:'Kevin T.',action:'out',ts:t3.toISOString(),late:false,excused:false,destination:'AA Meeting on Colfax',house:'Serenity House'});
+  // Angela - late
+  const t4=new Date(now);t4.setHours(22,45,0,0);
+  logs.push({id:'cl-d4',resident_id:'d4',resident_name:'Angela M.',action:'in',ts:t4.toISOString(),late:true,excused:false,destination:null,house:'Serenity House'});
+  // Robert - excused
+  const t5=new Date(now);t5.setHours(20,0,0,0);
+  logs.push({id:'cl-d5',resident_id:'d5',resident_name:'Robert C.',action:'in',ts:t5.toISOString(),late:false,excused:true,excused_reason:'Work night shift',house:'Serenity House'});
+  // Unity House
+  const t6=new Date(now);t6.setHours(21,0,0,0);
+  logs.push({id:'cl-d6',resident_id:'d6',resident_name:'Lisa W.',action:'in',ts:t6.toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
+  const t7=new Date(now);t7.setHours(19,30,0,0);
+  logs.push({id:'cl-d7',resident_id:'d7',resident_name:'Marcus B.',action:'out',ts:t7.toISOString(),late:false,excused:false,destination:'NA Meeting',house:'Unity House'});
+  const t8=new Date(now);t8.setHours(23,15,0,0);
+  logs.push({id:'cl-d8',resident_id:'d8',resident_name:'Sandra K.',action:'in',ts:t8.toISOString(),late:true,excused:false,destination:null,house:'Unity House'});
+  return logs;
+}
+
+function makeDemoDrugTests(){
+  const now=new Date();
+  const tests=[];
+  const admins=['Sarah M. (Manager)','Demo Manager','John R. (Manager)'];
+  const plan=[
+    {rid:'d1',rn:'James R.',daysAgo:0,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d3',rn:'Kevin T.',daysAgo:1,types:'Urine + Breathalyzer',result:'fail',notes:'Urine: Fail | Breath: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d5',rn:'Robert C.',daysAgo:2,types:'Urine',result:'refused',notes:'Urine: Refused | Observed: Yes | Resident refused to comply',house:'Serenity House'},
+    {rid:'d2',rn:'Maria S.',daysAgo:5,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d4',rn:'Angela M.',daysAgo:7,types:'Breathalyzer',result:'pass',notes:'Breath: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d1',rn:'James R.',daysAgo:14,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d3',rn:'Kevin T.',daysAgo:21,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Serenity House'},
+    {rid:'d6',rn:'Lisa W.',daysAgo:1,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
+    {rid:'d7',rn:'Marcus B.',daysAgo:3,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Unity House'},
+    {rid:'d8',rn:'Sandra K.',daysAgo:6,types:'Urine',result:'fail',notes:'Urine: Fail | Observed: Yes',house:'Unity House'},
+  ];
+  plan.forEach(function(p,i){
+    const d=new Date(now);d.setDate(d.getDate()-p.daysAgo);
+    tests.push({
+      id:'dt-d'+i,resident_id:p.rid,resident_name:p.rn,
+      test_date:d.toISOString().split('T')[0],
+      test_time:(9+i%8)+':'+((i%3)*15===0?'00':(i%3)*15),
+      test_types:p.types,result:p.result,notes:p.notes,
+      administered_by:admins[i%3],admin_sig:null,resident_sig:null,house:p.house
+    });
+  });
+  return tests;
+}
+
+const DEMO_DATA={
+  manager:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Serenity House',pin:'0000'},
+  owner:{id:'demo-owner',name:'Tanya',role:'owner',house:null,pin:'9999'},
+  resident:{id:'d1',name:'James R.',role:'resident',phase:1,house:'Serenity House',pin:'1111'},
+  managers:[
+    {id:'demo-mgr',name:'Serenity House Manager',role:'manager',house:'Serenity House'},
+    {id:'demo-mgr2',name:'Unity House Manager',role:'manager',house:'Unity House'},
   ],
+  settings:{required:3,house_name:'The Turning Point'},
+  announcement:{id:'ann-demo',message:'House meeting this Thursday at 7pm. Attendance is mandatory for all residents.',created_by:'Demo Manager'},
   events:[
     {id:'ev-d1',title:'House meeting',event_date:new Date(Date.now()+2*86400000).toISOString().split('T')[0],event_time:'19:00',notes:'Mandatory for all residents',house:'Serenity House'},
-    {id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Guest speaker from Denver AA',house:'Serenity House'},
+    {id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:'Serenity House'},
+    {id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null},
   ],
-  drugTests:[
-    {id:'dt-d1',resident_id:'d3',resident_name:'Kevin T.',test_date:new Date().toISOString().split('T')[0],test_time:'10:30',test_types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',administered_by:'Demo Manager',admin_sig:null,resident_sig:null,house:'Serenity House'},
-    {id:'dt-d2',resident_id:'d5',resident_name:'Robert C.',test_date:new Date(Date.now()-3*86400000).toISOString().split('T')[0],test_time:'14:15',test_types:'Urine + Breathalyzer',result:'fail',notes:'Urine: Fail | Breath: Pass | Observed: Yes',administered_by:'Demo Manager',admin_sig:null,resident_sig:null,house:'Serenity House'},
+  chores:[
+    {id:'ch-d1',resident_id:'d1',resident_name:'James R.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d5',resident_id:'d5',resident_name:'Robert C.',title:'Clean fridge',completed_date:null,week_start:'2024-01-01',house:'Serenity House'},
+    {id:'ch-d6',resident_id:'d6',resident_name:'Lisa W.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},
+    {id:'ch-d7',resident_id:'d7',resident_name:'Marcus B.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Unity House'},
   ],
-  settings:{required:3,house_name:'StepIn Demo'},
-  announcement:{id:'ann-demo',message:'House meeting this Thursday at 7pm. Attendance is mandatory.',created_by:'Demo Manager'},
 };
 
-function enterDemo(){
-  isDemoMode=true;
-  currentUser=DEMO_DATA.user;
-  allResidents=DEMO_DATA.residents;
-  allCheckins=DEMO_DATA.checkins;
-  allCurfewLog=DEMO_DATA.curfewLog;
+function loadDemoData(role){
+  const checkins=makeDemoCheckins();
+  const curfewLog=makeDemoCurfew();
+  const drugTests=makeDemoDrugTests();
+  allResidents=DEMO_RESIDENTS;
+  allCheckins=checkins;
+  allCurfewLog=curfewLog;
   allChores=DEMO_DATA.chores;
   allEvents=DEMO_DATA.events;
-  cachedDrugTests=DEMO_DATA.drugTests;
+  cachedDrugTests=drugTests;
   cachedSettings=DEMO_DATA.settings;
   cachedAnnouncement=DEMO_DATA.announcement;
-  cachedAcks=[];
-  allManagers=[];
+  cachedAcks=[{announcement_id:'ann-demo',resident_id:'d2',resident_name:'Maria S.'},{announcement_id:'ann-demo',resident_id:'d4',resident_name:'Angela M.'}];
+  allManagers=DEMO_DATA.managers;
   selectedHouse=null;
+}
+
+function enterDemo(role){
+  isDemoMode=true;
+  role=role||'manager';
+  if(role==='manager')currentUser=DEMO_DATA.manager;
+  else if(role==='owner')currentUser=DEMO_DATA.owner;
+  else currentUser=DEMO_DATA.resident;
+  loadDemoData(role);
   hideLoading();
-  enterManager();
-  // Show demo banner
-  setTimeout(function(){
-    toast('Demo mode — no data will be saved');
-  },800);
+  enterApp();
+  setTimeout(function(){toast('Demo mode — explore freely, nothing is saved');},800);
 }
 
 // Override Supabase calls in demo mode
