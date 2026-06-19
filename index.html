@@ -255,10 +255,6 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <div class="card"><div class="card-title">Recent meetings</div><div id="res-log-list"></div></div>
   <div class="card"><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
 </div>
-<div class="body" id="res-tab-curfew" style="display:none">
-  <div id="res-curfew-detail"></div>
-  <div class="card"><div class="card-title">My sign in &amp; out history</div><div id="res-curfew-history"></div></div>
-</div>
 <div class="body" id="res-tab-chores" style="display:none">
   <div class="card"><div class="card-title">&#129529; This week&#8217;s chores</div><div id="res-chore-list"></div></div>
 </div>
@@ -413,11 +409,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <button class="btn btn-danger" onclick="removeManager()">Remove manager</button>
     </div>
   </div>
-  <!-- Hidden selects for compatibility -->
-  <select id="reset-pin-select" style="display:none"></select>
-  <select id="phase-resident-select" style="display:none"></select>
-  <select id="edit-name-select" style="display:none"></select>
-  <select id="remove-select" style="display:none"></select>
+
 </div>
 
 <!-- REPORT -->
@@ -974,9 +966,6 @@ function populateSelects(){
   const res=residents();
   const opts=res.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
   const optsWithName=res.map(r=>`<option value="${r.id}|${r.name}">${r.name}</option>`).join('');
-  document.getElementById('remove-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
-  document.getElementById('reset-pin-select').innerHTML='<option value="">Select resident\u2026</option>'+opts;
-  document.getElementById('phase-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+res.map(r=>`<option value="${r.id}">${r.name} (Phase ${r.phase||1})</option>`).join('');
   document.getElementById('excuse-resident-select').innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
   const mrs=document.getElementById('manage-resident-select');
   if(mrs){const prev=mrs.value;mrs.innerHTML='<option value="">Choose a resident\u2026</option>'+opts;if(prev)mrs.value=prev;}
@@ -1004,7 +993,7 @@ async function postAnnouncement(){const msg=document.getElementById('announcemen
 async function deleteAnnouncement(){if(!cachedAnnouncement||!confirm('Remove this note?'))return;await sb.from('announcements').delete().eq('id',cachedAnnouncement.id);await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);cachedAnnouncement=null;cachedAcks=[];toast('Note removed.');renderMgrAnnouncementStatus();renderManagerDashboard();}
 
 async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.',true);return;}const[resId,resName]=val.split('|');const r=allResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};const{error}=await sb.from('curfew_log').insert(record);if(error){toast('Could not save.',true);return;}allCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
-async function setResidentPhase(){const id=document.getElementById('manage-resident-select').value||document.getElementById('phase-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update.',true);return;}allResidents=allResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
+async function setResidentPhase(){const id=document.getElementById('manage-resident-select').value;const phase=parseInt(document.getElementById('phase-value').value);if(!id){toast('Select a resident.');return;}const{error}=await sb.from('residents').update({phase}).eq('id',id);if(error){toast('Could not update.',true);return;}allResidents=allResidents.map(r=>r.id===id?{...r,phase}:r);toast('Phase updated.');renderManagerDashboard();}
 
 function openAddChore(){document.getElementById('chore-title').value='';populateSelects();document.getElementById('modal-add-chore').classList.add('open');}
 async function saveNewChore(){const title=document.getElementById('chore-title').value.trim();const resVal=document.getElementById('chore-resident').value;if(!title){toast('Please enter a chore.',true);return;}if(!resVal){toast('Select a resident.');return;}const[resId,resName]=resVal.split('|');const btn=document.getElementById('chore-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const weekStart=getWeekStartDate();const r=allResidents.find(x=>x.id===resId);const newC={id:'ch-'+Date.now(),resident_id:resId,resident_name:resName,title,completed_date:null,week_start:weekStart,house:r?r.house:(myHouse()||null)};const{error}=await sb.from('chores').insert(newC);if(error){toast('Could not add.',true);btn.textContent='Add chore';btn.classList.remove('btn-disabled');return;}allChores.push(newC);btn.textContent='Add chore';btn.classList.remove('btn-disabled');closeModal('modal-add-chore');toast('Chore added.');renderMgrChores();}
@@ -1046,7 +1035,7 @@ ${ckins.slice(0,5).map(function(c){const d=new Date(c.ts);const mapLink=c.lat?' 
 function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';}
 async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.',true);return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
 async function changeMgrPin(){const cur=document.getElementById('mgr-pin-current').value.trim();const nw=document.getElementById('mgr-pin-new').value.trim();const cf=document.getElementById('mgr-pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That’s not your current PIN. Try again or ask your manager to reset it.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The two PINs you entered don’t match. Please try again.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('mgr-pin-current').value='';document.getElementById('mgr-pin-new').value='';document.getElementById('mgr-pin-confirm').value='';}
-async function resetResidentPin(){const id=document.getElementById('manage-resident-select').value||document.getElementById('reset-pin-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.',true);return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
+async function resetResidentPin(){const id=document.getElementById('manage-resident-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Reset PIN for ${r.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.',true);return;}toast(`${r.name}'s PIN updated.`);document.getElementById('reset-pin-value').value='';}
 async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Reset PIN for ${m.name}?`))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset.',true);return;}toast(`${m.name}'s PIN updated.`);document.getElementById('reset-mgr-pin-value').value='';}
 function openAddResident(){document.getElementById('add-name').value='';document.getElementById('add-pin').value='';document.getElementById('modal-add-resident').classList.add('open');}
 function openAddManager(){document.getElementById('add-mgr-name').value='';document.getElementById('add-mgr-id').value='';document.getElementById('add-mgr-pin').value='';document.getElementById('modal-add-manager').classList.add('open');}
@@ -1062,15 +1051,12 @@ function onManageResidentChange(){
   document.getElementById('edit-name-value').value=r.name;
   document.getElementById('phase-value').value=r.phase||1;
   document.getElementById('reset-pin-value').value='';
-  // Sync hidden selects
-  ['reset-pin-select','phase-resident-select','edit-name-select','remove-select'].forEach(sid=>{
-    const el=document.getElementById(sid);if(el)el.value=id;
-  });
+
   panel.style.display='block';
 }
 
 async function editResidentName(){
-  const id=document.getElementById('manage-resident-select').value||document.getElementById('edit-name-select').value;
+  const id=document.getElementById('manage-resident-select').value;
   const newName=document.getElementById('edit-name-value').value.trim();
   if(!id){toast('Please select a resident.',true);return;}
   if(!newName){toast('Please enter the new name.',true);return;}
@@ -1086,7 +1072,7 @@ async function editResidentName(){
   renderMgrResidents();
 }
 
-async function removeResident(){const id=document.getElementById('manage-resident-select').value||document.getElementById('remove-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allResidents=allResidents.filter(x=>x.id!==id);const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';toast(r.name+' removed.');renderManagerDashboard();populateSelects();}
+async function removeResident(){const id=document.getElementById('manage-resident-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allResidents=allResidents.filter(x=>x.id!==id);const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';toast(r.name+' removed.');renderManagerDashboard();populateSelects();}
 async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
 
 
@@ -1265,26 +1251,10 @@ function selectMeetingIdx(i){
   selectMeeting(m.name,m.address,m.type,m.time);
 }
 
-function showMeetingFallback(lat,lng,statusEl,listEl){findMeetings();}
-
-function formatMeetingTime(t){
-  try{
-    const[h,m]=t.split(':');
-    const d=new Date();d.setHours(parseInt(h),parseInt(m)||0);
-    return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  }catch(e){return t;}
-}
 
 
-function findMeetingsAndStore(){
-  // called after sorting, stores results
-}
 
-function selectMeetingById(idx){
-  const m=lastMeetingResults[idx];
-  if(!m)return;
-  selectMeeting(m.name,m.address,m.type,m.time);
-}
+
 
 function selectMeeting(name,address,type,time){
   // Pre-fill the check-in form
