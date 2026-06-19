@@ -214,6 +214,16 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .refresh-btn:active{background:rgba(255,255,255,0.15);}
 
 /* MISC */
+/* PRINT STYLES */
+@media print {
+  .top-tabs,.bottom-nav,.btn-outline,.refresh-btn,.badge-role,.btn-ghost,
+  #report-tab-attendance,#report-tab-drugtests,
+  .card:has(#dtr-week),.report-header+.card{display:none!important;}
+  .body{padding:0!important;}
+  .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;}
+  body{background:white!important;}
+  .dt-print-record{break-inside:avoid;page-break-inside:avoid;}
+}
 .mt8{margin-top:8px;}.mt16{margin-top:16px;}
 .text-center{text-align:center;}
 .text-mid{color:var(--mid);font-size:13px;line-height:1.6;}
@@ -1343,80 +1353,130 @@ function renderDtReport(range){
   const rangeEl=document.getElementById('dt-report-range');
   if(!el)return;
 
-  // Calculate date range
   const now=new Date();
   let fromDate=new Date(0);
   let rangeLabel='All time';
-  if(range==='week'){
-    fromDate=getWeekStart();
-    rangeLabel='Week of '+fmtDate(fromDate)+' – '+fmtDate(new Date(fromDate.getTime()+6*86400000));
-  }else if(range==='month'){
-    fromDate=new Date(now.getFullYear(),now.getMonth(),1);
-    rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  }else if(range==='90'){
-    fromDate=new Date(now.getTime()-90*86400000);
-    rangeLabel='Last 90 days';
-  }
+  if(range==='week'){fromDate=getWeekStart();rangeLabel='Week of '+fmtDate(fromDate)+' – '+fmtDate(new Date(fromDate.getTime()+6*86400000));}
+  else if(range==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1);rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});}
+  else if(range==='90'){fromDate=new Date(now.getTime()-90*86400000);rangeLabel='Last 90 days';}
   if(rangeEl)rangeEl.textContent=rangeLabel;
 
-  // Filter tests
   const res=residents();
   const resIds=new Set(res.map(r=>r.id));
   const tests=cachedDrugTests.filter(function(t){
-    if(!resIds.has(t.resident_id))return false;
-    return new Date(t.test_date)>=fromDate;
-  });
+    return resIds.has(t.resident_id)&&new Date(t.test_date)>=fromDate;
+  }).sort(function(a,b){return new Date(b.test_date)-new Date(a.test_date);});
 
   if(!tests.length){
     el.innerHTML='<div class="empty"><div class="empty-icon">&#128137;</div><h3>No tests in this period</h3></div>';
     return;
   }
 
-  const resultStyle={
-    pass:'background:#DCFCE7;color:#166534',
-    fail:'background:#FEE2E2;color:#991B1B',
-    refused:'background:#FEF3C7;color:#92400E'
-  };
-  const resultLabel={pass:'&#10003; Pass',fail:'&#10005; Fail',refused:'&#9888; Refused'};
+  const resultBg={pass:'#DCFCE7',fail:'#FEE2E2',refused:'#FEF3C7'};
+  const resultColor={pass:'#166534',fail:'#991B1B',refused:'#92400E'};
+  const resultLabel={pass:'PASS',fail:'FAIL',refused:'REFUSED'};
+  const resultIcon={pass:'&#10003;',fail:'&#10005;',refused:'&#9888;'};
 
-  // Group by resident
+  // Summary counts
+  const totalPass=tests.filter(t=>t.result==='pass').length;
+  const totalFail=tests.filter(t=>t.result==='fail').length;
+  const totalRefused=tests.filter(t=>t.result==='refused').length;
+
+  // Group by resident, sorted by name
   const byResident={};
   tests.forEach(function(t){
     if(!byResident[t.resident_id])byResident[t.resident_id]={name:t.resident_name,tests:[]};
     byResident[t.resident_id].tests.push(t);
   });
+  const resGroups=Object.values(byResident).sort(function(a,b){return a.name.localeCompare(b.name);});
 
-  el.innerHTML=Object.values(byResident).map(function(r){
-    const rows=r.tests.map(function(t){
-      const rs=resultStyle[t.result]||'';
-      const rl=resultLabel[t.result]||t.result;
-      return '<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--sand)">'+
-        '<div style="flex:1">'+
-          '<div style="font-size:13px;font-weight:700">'+t.test_types+'</div>'+
-          '<div style="font-size:12px;color:var(--mid)">'+t.test_date+' at '+t.test_time+'</div>'+
-          (t.notes?'<div style="font-size:12px;color:var(--mid);margin-top:2px">'+t.notes+'</div>':'')+
-          '<div style="font-size:12px;color:var(--soft);margin-top:2px">Administered by: '+(t.administered_by||'Unknown')+'</div>'+
-          (t.admin_sig?'<img src="'+t.admin_sig+'" style="max-width:140px;border:1px solid var(--sand);border-radius:6px;margin-top:4px;display:block">':'')+
-          (t.resident_sig?'<div style="font-size:11px;font-weight:700;color:var(--mid);margin-top:4px">Resident ack:</div><img src="'+t.resident_sig+'" style="max-width:140px;border:1px solid var(--sand);border-radius:6px;margin-top:2px;display:block">':'')
-        '</div>'+
-        '<span style="'+rs+';font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;white-space:nowrap">'+rl+'</span>'+
+  const org=cachedSettings.house_name||'The Turning Point';
+  const house=myHouse()||'All Houses';
+
+  el.innerHTML=
+    // Summary header
+    '<div style="border:2px solid var(--black);border-radius:12px;padding:20px;margin-bottom:20px;background:var(--white)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">' +
+        '<div>' +
+          '<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Drug Test Summary Report</div>' +
+          '<div style="font-size:20px;font-weight:800;color:var(--black)">' + org + '</div>' +
+          '<div style="font-size:14px;color:var(--mid);margin-top:2px">' + house + ' &bull; ' + rangeLabel + '</div>' +
+          '<div style="font-size:12px;color:var(--mid);margin-top:2px">Generated: ' + now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">' +
+        '<div style="text-align:center;background:#DCFCE7;border-radius:10px;padding:14px">' +
+          '<div style="font-size:28px;font-weight:800;color:#166534">' + totalPass + '</div>' +
+          '<div style="font-size:12px;font-weight:700;color:#166534;text-transform:uppercase">Pass</div>' +
+        '</div>' +
+        '<div style="text-align:center;background:#FEE2E2;border-radius:10px;padding:14px">' +
+          '<div style="font-size:28px;font-weight:800;color:#991B1B">' + totalFail + '</div>' +
+          '<div style="font-size:12px;font-weight:700;color:#991B1B;text-transform:uppercase">Fail</div>' +
+        '</div>' +
+        '<div style="text-align:center;background:#FEF3C7;border-radius:10px;padding:14px">' +
+          '<div style="font-size:28px;font-weight:800;color:#92400E">' + totalRefused + '</div>' +
+          '<div style="font-size:12px;font-weight:700;color:#92400E;text-transform:uppercase">Refused</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // Individual records by resident
+    resGroups.map(function(r){
+      const rPass=r.tests.filter(t=>t.result==='pass').length;
+      const rFail=r.tests.filter(t=>t.result==='fail').length;
+      const rRefused=r.tests.filter(t=>t.result==='refused').length;
+      return '<div class="dt-print-record" style="border:1.5px solid var(--sand);border-radius:12px;margin-bottom:16px;overflow:hidden;background:var(--white)">' +
+        // Resident header
+        '<div style="background:var(--black);padding:14px 18px;display:flex;justify-content:space-between;align-items:center">' +
+          '<div style="color:white">' +
+            '<div style="font-size:16px;font-weight:800">' + r.name + '</div>' +
+            '<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px">' + r.tests.length + ' test' + (r.tests.length!==1?'s':'') + ' in period</div>' +
+          '</div>' +
+          '<div style="display:flex;gap:8px">' +
+            (rPass?'<span style="background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">'+rPass+' Pass</span>':'') +
+            (rFail?'<span style="background:#FEE2E2;color:#991B1B;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">'+rFail+' Fail</span>':'') +
+            (rRefused?'<span style="background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">'+rRefused+' Refused</span>':'') +
+          '</div>' +
+        '</div>' +
+        // Test rows
+        r.tests.map(function(t,i){
+          const bg=i%2===0?'var(--white)':'#FAFAFA';
+          const notes=t.notes||'';
+          const observed=notes.includes('Observed: Yes')?'Yes':notes.includes('Observed: No')?'No':'Unknown';
+          const cleanNotes=notes.replace(/Urine: \w+\s*\|?\s*/g,'').replace(/Breath: \w+\s*\|?\s*/g,'').replace(/Observed: \w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
+          return '<div style="padding:14px 18px;border-bottom:1px solid var(--sand);background:'+bg+';display:flex;gap:14px;align-items:flex-start">' +
+            // Result badge
+            '<div style="background:'+resultBg[t.result]+';color:'+resultColor[t.result]+';border-radius:8px;padding:8px 12px;text-align:center;min-width:70px;flex-shrink:0">' +
+              '<div style="font-size:18px">'+resultIcon[t.result]+'</div>' +
+              '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px">'+resultLabel[t.result]+'</div>' +
+            '</div>' +
+            // Test details
+            '<div style="flex:1">' +
+              '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">' +
+                '<div>' +
+                  '<div style="font-size:14px;font-weight:700">' + t.test_types + '</div>' +
+                  '<div style="font-size:13px;color:var(--mid);margin-top:2px">' +
+                    t.test_date + ' at ' + (t.test_time||'') +
+                  '</div>' +
+                '</div>' +
+                '<div style="text-align:right">' +
+                  '<div style="font-size:12px;font-weight:600;color:var(--mid)">Collection observed</div>' +
+                  '<div style="font-size:13px;font-weight:700;color:'+(observed==='Yes'?'var(--success)':'var(--danger)')+'">'+observed+'</div>' +
+                '</div>' +
+              '</div>' +
+              '<div style="font-size:12px;color:var(--mid);margin-bottom:6px">Administered by: <strong>' + (t.administered_by||'Unknown') + '</strong></div>' +
+              (cleanNotes?'<div style="font-size:12px;color:var(--mid);background:var(--cream);border-radius:6px;padding:6px 10px;margin-bottom:6px">'+cleanNotes+'</div>':'') +
+              // Signatures side by side
+              (t.admin_sig||t.resident_sig?
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">' +
+                  (t.admin_sig?'<div><div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Administrator signature</div><img src="'+t.admin_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white"></div>':'<div></div>') +
+                  (t.resident_sig?'<div><div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resident acknowledgment</div><img src="'+t.resident_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white"></div>':'<div></div>') +
+                '</div>':'') +
+            '</div>' +
+          '</div>';
+        }).join('') +
       '</div>';
     }).join('');
-    const passCount=r.tests.filter(t=>t.result==='pass').length;
-    const failCount=r.tests.filter(t=>t.result==='fail').length;
-    const refusedCount=r.tests.filter(t=>t.result==='refused').length;
-    return '<div class="card" style="margin-bottom:12px">'+
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'+
-        '<div class="avatar" style="width:36px;height:36px;font-size:14px">'+r.name[0]+'</div>'+
-        '<div style="flex:1"><div style="font-size:16px;font-weight:800">'+r.name+'</div>'+
-        '<div style="font-size:12px;color:var(--mid)">'+r.tests.length+' test'+(r.tests.length!==1?'s':'')+
-          (passCount?' &bull; <span style="color:var(--success)">'+passCount+' pass</span>':'')+
-          (failCount?' &bull; <span style="color:var(--danger)">'+failCount+' fail</span>':'')+
-          (refusedCount?' &bull; <span style="color:var(--warn)">'+refusedCount+' refused</span>':'')+
-        '</div></div>'+
-      '</div>'+rows+
-    '</div>';
-  }).join('');
 }
 
 // ── DEMO MODE ──
