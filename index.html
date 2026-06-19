@@ -247,21 +247,21 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
         <label>Name</label>
         <div style="display:flex;gap:8px">
           <input type="text" id="edit-name-value" placeholder="Full name">
-          <button class="btn btn-navy btn-sm" onclick="editResidentName()" style="white-space:nowrap">Save name</button>
+          <button class="btn btn-navy btn-sm" onclick="editResidentName()" style="white-space:nowrap">Save</button>
         </div>
       </div>
       <div class="field">
         <label>Phase</label>
         <div style="display:flex;gap:8px;align-items:center">
           <select id="phase-value" style="flex:1"><option value="1">Phase 1</option><option value="2">Phase 2</option></select>
-          <button class="btn btn-navy btn-sm" onclick="setResidentPhase()" style="white-space:nowrap">Save phase</button>
+          <button class="btn btn-navy btn-sm" onclick="setResidentPhase()" style="white-space:nowrap">Save</button>
         </div>
       </div>
       <div class="field">
         <label>Reset PIN</label>
         <div style="display:flex;gap:8px">
           <input type="password" id="reset-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric">
-          <button class="btn btn-navy btn-sm" onclick="resetResidentPin()" style="white-space:nowrap">Save PIN</button>
+          <button class="btn btn-navy btn-sm" onclick="resetResidentPin()" style="white-space:nowrap">Save</button>
         </div>
       </div>
       <div class="divider"></div>
@@ -269,17 +269,37 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
       <p class="text-mid" style="margin-top:8px;font-size:12px">Their records will be kept on file.</p>
     </div>
   </div>
+  <div class="card"><div class="card-title">Change my PIN</div>
+    <div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div>
+    <div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div>
+    <div class="field"><label>Confirm</label><input type="password" id="mgr-pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div>
+    <button class="btn btn-primary" onclick="changeMgrPin()">Update my PIN</button>
+  </div>
+  <div id="owner-tools" style="display:none">
+    <div class="card owner-card"><div class="card-title owner-title">&#9881; Organization settings</div>
+      <div class="field"><label>Weekly meetings required</label><select id="set-req"><option value="2">2 meetings</option><option value="3">3 meetings</option><option value="4">4 meetings</option><option value="5">5 meetings</option><option value="7">7 meetings (daily)</option></select></div>
+      <div class="field"><label>Organization name</label><input type="text" id="set-house-name" placeholder="e.g. The Turning Point"></div>
+      <button class="btn btn-gold" onclick="saveSettings()">Save settings</button>
+    </div>
+    <div class="card owner-card"><div class="card-title owner-title">&#128274; Reset manager PIN</div>
+      <div class="field"><select id="reset-mgr-pin-select"><option value="">Select manager&#8230;</option></select></div>
+      <div class="field"><label>New PIN</label><input type="password" id="reset-mgr-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div>
+      <button class="btn btn-navy" onclick="resetManagerPin()">Reset PIN</button>
+    </div>
+    <div class="card owner-card"><div class="card-title owner-title">Manage houses</div>
+      <div class="flex-between" style="margin-bottom:12px"><span class="text-mid">All houses</span><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add house</button></div>
+      <div id="owner-house-list"></div>
+      <div class="divider"></div>
+      <div class="card-title" style="margin-top:8px">Remove manager</div>
+      <div class="field"><select id="remove-mgr-select"><option value="">Select manager&#8230;</option></select></div>
+      <button class="btn btn-danger" onclick="removeManager()">Remove manager</button>
+    </div>
+  </div>
+  <!-- Hidden selects for compatibility -->
   <select id="reset-pin-select" style="display:none"></select>
   <select id="phase-resident-select" style="display:none"></select>
   <select id="edit-name-select" style="display:none"></select>
-  <select id="remove-select" style="display:none"></div>
-  <div class="card"><div class="card-title">Change my PIN</div>
-<p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm</label><input type="password" id="mgr-pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMgrPin()">Update my PIN</button></div>
-  <div id="owner-tools" style="display:none">
-    <div class="card owner-card"><div class="card-title owner-title">&#9881; Organization settings</div><div class="field"><label>Weekly meetings required</label><select id="set-req"><option value="2">2 meetings</option><option value="3">3 meetings</option><option value="4">4 meetings</option><option value="5">5 meetings</option><option value="7">7 meetings (daily)</option></select></div><div class="field"><label>Organization name</label><input type="text" id="set-house-name" placeholder="e.g. The Turning Point"></div><button class="btn btn-gold" onclick="saveSettings()">Save settings</button></div>
-    <div class="card owner-card"><div class="card-title owner-title">&#128274; Reset manager PIN</div><div class="field"><select id="reset-mgr-pin-select"><option value="">Select manager&#8230;</option></select></div><div class="field"><label>New PIN</label><input type="password" id="reset-mgr-pin-value" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-navy" onclick="resetManagerPin()">Reset PIN</button></div>
-    <div class="card owner-card"><div class="card-title owner-title">Manage houses</div><div class="flex-between" style="margin-bottom:12px"><span class="text-mid">All houses</span><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add house</button></div><div id="owner-house-list"></div><div class="divider"></div><div class="card-title" style="margin-top:8px">Remove manager</div><div class="field"><select id="remove-mgr-select"><option value="">Select manager&#8230;</option></select></div><button class="btn btn-danger" onclick="removeManager()">Remove manager</button></div>
-  </div>
+  <select id="remove-select" style="display:none"></select>
 </div>
 
 <!-- REPORT -->
