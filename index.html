@@ -243,6 +243,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="nav-btn" id="res-nav-curfew" onclick="resTab('curfew',this)"><span class="nav-icon">&#128274;</span>In/Out</button>
   <button class="nav-btn" id="res-nav-chores" onclick="resTab('chores',this)"><span class="nav-icon">&#129529;</span>Chores</button>
   <button class="nav-btn" id="res-nav-calendar" onclick="resTab('calendar',this)"><span class="nav-icon">&#128197;</span>Events</button>
+  <button class="nav-btn" id="res-nav-meetings" onclick="resTab('meetings',this)"><span class="nav-icon">&#128205;</span>Meetings</button>
   <button class="nav-btn" id="res-nav-history" onclick="resTab('history',this)"><span class="nav-icon">&#128203;</span>History</button>
   <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
 </div>
@@ -264,6 +265,20 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" id="res-tab-calendar" style="display:none">
   <div class="card"><div class="card-title">&#128197; Upcoming events</div><div id="res-calendar-list"></div></div>
 </div>
+<div class="body" id="res-tab-meetings" style="display:none">
+  <div class="card">
+    <div class="card-title">&#128205; Find a meeting</div>
+    <p class="text-mid" style="margin-bottom:16px">Browse meetings near you. Go to one, then use <strong>Check in</strong> on the home screen to record your attendance.</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="meeting-filter-btns">
+      <button onclick="filterMeetings('all')" class="btn btn-primary btn-sm" id="mf-all">All</button>
+      <button onclick="filterMeetings('AA')" class="btn btn-outline btn-sm" id="mf-AA">AA</button>
+      <button onclick="filterMeetings('NA')" class="btn btn-outline btn-sm" id="mf-NA">NA</button>
+      <button onclick="filterMeetings('Al-Anon')" class="btn btn-outline btn-sm" id="mf-Al-Anon">Al-Anon</button>
+      <button onclick="filterMeetings('SMART Recovery')" class="btn btn-outline btn-sm" id="mf-SMART">SMART</button>
+    </div>
+    <div id="res-meeting-list"></div>
+  </div>
+</div>
 <div class="body" id="res-tab-history" style="display:none"><div class="card"><div class="card-title">All my meetings</div><div id="res-history-list"></div></div></div>
 <div class="body" id="res-tab-pin" style="display:none"><div class="card"><div class="card-title">Change my PIN</div>
 <p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm new PIN</label><input type="password" id="pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMyPin()">Update PIN</button></div></div>
@@ -275,8 +290,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" style="max-width:480px;margin:0 auto">
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
-<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div>
-<button class="btn btn-outline btn-sm" onclick="findMeetings()" style="margin-bottom:14px;width:100%">&#128205; Find a meeting near me</button><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
+<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
 <div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
@@ -607,6 +621,58 @@ function renderResCurfewDetail(){
   histEl.innerHTML=allCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';return`<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;}).join('');
 }
 
+function renderResMeetingFinder(){
+  const el=document.getElementById('res-meeting-list');
+  if(!el)return;
+  renderMeetingList(el,'all');
+}
+
+let currentMeetingFilter='all';
+function filterMeetings(type){
+  currentMeetingFilter=type;
+  // Update filter buttons
+  ['all','AA','NA','Al-Anon','SMART'].forEach(t=>{
+    const btn=document.getElementById('mf-'+(t==='SMART Recovery'?'SMART':t));
+    if(btn){
+      btn.className=t===type?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
+    }
+  });
+  if(type==='SMART Recovery'){
+    const sb2=document.getElementById('mf-SMART');
+    if(sb2)sb2.className='btn btn-primary btn-sm';
+  }
+  renderMeetingList(document.getElementById('res-meeting-list'),type);
+}
+
+function renderMeetingList(el,filter){
+  if(!el)return;
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const today=days[new Date().getDay()];
+  let list=MEETING_DB;
+  if(filter&&filter!=='all')list=list.filter(function(m){return m.type===filter;});
+  // Sort: today first, then by day, then by time
+  const todayList=list.filter(function(m){return m.day===today;});
+  const otherList=list.filter(function(m){return m.day!==today;});
+  const sorted=todayList.concat(otherList);
+  const typeColors={'AA':'#1B3A6B','NA':'#003366','Al-Anon':'#5B4B8A','SMART Recovery':'#2E8B57','CA':'#8B0000'};
+  if(!sorted.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128205;</div><h3>No meetings found</h3></div>';return;}
+  el.innerHTML=sorted.map(function(m){
+    const isToday=m.day===today;
+    const color=typeColors[m.type]||'var(--pink)';
+    const dayBadge=isToday?'<span class="pill pill-green">Today</span>':'<span style="font-size:12px;color:var(--mid)">'+m.day+'</span>';
+    const mapUrl='https://maps.apple.com/?q='+encodeURIComponent(m.address);
+    return '<div style="padding:14px 0;border-bottom:1px solid var(--sand)">'+
+      '<div style="display:flex;gap:10px;align-items:flex-start">'+
+      '<div style="background:'+color+';color:white;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px">'+m.type+'</div>'+
+      '<div style="flex:1">'+
+      '<div style="font-size:15px;font-weight:700;margin-bottom:3px">'+m.name+'</div>'+
+      '<div style="margin-bottom:3px">'+dayBadge+' <span style="font-size:13px;font-weight:600">'+m.time+'</span></div>'+
+      '<div style="font-size:12px;color:var(--mid);margin-bottom:8px">'+m.address+'</div>'+
+      '<a href="'+mapUrl+'" target="_blank" style="display:inline-block;background:var(--cream);border:1.5px solid var(--sand);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;text-decoration:none;color:var(--charcoal)">&#128205; Get directions</a>'+
+      '</div></div></div>';
+  }).join('');
+}
+
 function choreCompleteToday(c){return c.completed_date===new Date().toISOString().split('T')[0];}
 function renderResChores(){const el=document.getElementById('res-chore-list');if(!el)return;if(!allChores.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#129529;</div><h3>No chores assigned yet</h3><p>Check back — your manager will add chores soon.</p></div>';return;}el.innerHTML=allChores.map(c=>{const isMe=c.resident_id===currentUser.id;const doneClass=choreCompleteToday(c)?'done':'';const checkIcon=choreCompleteToday(c)?'\u2713':'';const onclick=isMe&&!choreCompleteToday(c)?`onclick="completeChore('${c.id}')" style="cursor:pointer"`:'';return`<div class="chore-item"><div class="chore-check ${doneClass}" ${onclick}>${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${choreCompleteToday(c)?'text-decoration:line-through;color:var(--mid)':''}">${c.title}</div><div class="chore-who">${c.resident_name}${c.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div></div>`;}).join('');}
 function renderResCalendar(){const el=document.getElementById('res-calendar-list');if(!el)return;renderEventList(el,events(),false);}
@@ -618,7 +684,7 @@ function renderEventList(el,evts,showDelete){
 
 async function completeChore(id){const today=new Date().toISOString().split('T')[0];const{error}=await sb.from('chores').update({completed_date:today}).eq('id',id);if(error){toast('Could not update.');return;}allChores=allChores.map(c=>c.id===id?{...c,completed_date:today}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore done for today!');}
 
-function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','curfew','chores','calendar','history','pin'].forEach(t=>document.getElementById('res-tab-'+t).style.display=t===tab?'block':'none');if(tab==='curfew')renderResCurfewDetail();if(tab==='chores')renderResChores();if(tab==='calendar')renderResCalendar();}
+function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','curfew','chores','calendar','meetings','history','pin'].forEach(t=>document.getElementById('res-tab-'+t).style.display=t===tab?'block':'none');if(tab==='curfew')renderResCurfewDetail();if(tab==='chores')renderResChores();if(tab==='calendar')renderResCalendar();if(tab==='meetings')renderResMeetingFinder();}
 
 function renderLogList(el,ckins,showName){
   if(!ckins.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No meetings yet</h3><p>After your next meeting, tap “Check in to a meeting” above.</p></div>';return;}
