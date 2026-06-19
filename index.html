@@ -361,18 +361,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <span class="card-title" style="margin:0">&#128137; Drug tests</span>
       <button class="btn btn-primary btn-sm" onclick="openDrugTest()">+ Log test</button>
     </div>
-    <div class="field" style="margin-bottom:10px">
-      <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:14px">
-        <option value="all">All residents</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-outline btn-sm" id="dtr-all-inline" onclick="setDtRangeInline('all')" style="flex:1">All</button>
-      <button class="btn btn-primary btn-sm" id="dtr-month-inline" onclick="setDtRangeInline('month')" style="flex:1">Month</button>
-      <button class="btn btn-outline btn-sm" id="dtr-90-inline" onclick="setDtRangeInline('90')" style="flex:1">90 days</button>
-    </div>
-    <div id="dt-history-content"></div>
-    <button class="btn btn-outline btn-sm mt8" onclick="printDrugTestLog()">&#128424; Print / PDF</button>
+    <p class="text-mid" style="margin-bottom:0">View and print test records in the <strong>Report</strong> tab.</p>
   </div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
   <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
@@ -471,9 +460,13 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <div class="report-title">Drug Test Log</div>
       <div class="report-date" id="dt-report-range"></div>
     </div>
-    <!-- Date range selector -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Date range</div>
+    <!-- Resident filter -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title">Filter by resident</div>
+      <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:14px;margin-bottom:12px">
+        <option value="all">All residents</option>
+      </select>
+      <div class="card-title" style="margin-bottom:8px">Date range</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" id="dtr-week" onclick="setDtRange('week')">This week</button>
         <button class="btn btn-outline btn-sm" id="dtr-month" onclick="setDtRange('month')">This month</button>
@@ -481,6 +474,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         <button class="btn btn-outline btn-sm" id="dtr-all" onclick="setDtRange('all')">All time</button>
       </div>
     </div>
+    <div id="dt-history-content"></div>
     <div id="dt-report-rows"></div>
   </div>
 
@@ -948,7 +942,8 @@ function enterManager(){
 
 async function refreshDashboard(){
   const btn=document.querySelector('.refresh-btn');if(btn){btn.textContent='&#8635; Refreshing...';btn.disabled=true;}
-  await loadAllData();
+  if(isDemoMode){renderManagerDashboard();if(btn){btn.innerHTML='&#8635; Refresh';btn.disabled=false;}toast('Demo mode — data is simulated.');return;}
+  await loadAllData();await loadDrugTests();
   renderManagerDashboard();
   if(btn){btn.innerHTML='&#8635; Refresh';btn.disabled=false;}
   toast('Updated.');
@@ -1446,11 +1441,11 @@ async function saveDrugTest(){
 }
 
 async function openDrugTestHistory(){
-  await loadDrugTests();
+  if(!isDemoMode)await loadDrugTests();
   populateDtResidentFilter();
   renderDtHistory();
-  // Switch to tools tab to show inline
-  mgrTab('tools',document.getElementById('mgr-tab-tools'));
+  mgrTab('report',document.getElementById('mgr-tab-report'));
+  switchReportTab('drugtests');
 }
 
 function populateDtResidentFilter(){
@@ -1747,7 +1742,7 @@ function switchReportTab(tab){
   document.getElementById('report-section-drugtests').style.display=tab==='drugtests'?'block':'none';
   document.getElementById('report-tab-attendance').className=tab==='attendance'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
   document.getElementById('report-tab-drugtests').className=tab==='drugtests'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
-  if(tab==='drugtests')renderDtReport(currentDtRange);
+  if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(function(){populateDtResidentFilter();renderDtHistory();renderDtReport(currentDtRange);});}else{populateDtResidentFilter();renderDtHistory();renderDtReport(currentDtRange);}}
   // Update flex styles
   document.getElementById('report-tab-attendance').style.flex='1';
   document.getElementById('report-tab-drugtests').style.flex='1';
