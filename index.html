@@ -1103,6 +1103,7 @@ async function removeManager(){const id=document.getElementById('remove-mgr-sele
 let cachedDrugTests=[];
 
 async function loadDrugTests(){
+  if(isDemoMode)return; // demo data already loaded
   try{
     let q=sb.from('drug_tests').select('*').order('created_at',{ascending:false});
     if(!isOwner())q=q.eq('house',currentUser.house||'');
