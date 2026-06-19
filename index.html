@@ -91,9 +91,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);background:var(
 .bottom-nav{display:flex;background:var(--black);border-top:1px solid #222;padding:8px 0 24px;flex-shrink:0;}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:9px;font-weight:600;text-transform:uppercase;}
 .nav-btn.active{color:var(--pink-light);}.nav-icon{font-size:20px;}
-/* HOUSE SELECTOR */
-.house-selector-bar{background:var(--black);padding:8px 16px 12px;flex-shrink:0;}
-.house-select{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);border-radius:10px;color:var(--white);font-size:14px;font-weight:600;padding:10px 14px;width:100%;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='white' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+
 /* DASHBOARD */
 .curfew-status-card{border-radius:var(--radius);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;border:1.5px solid transparent;}
 .curfew-status-card.home{background:#F0FBF4;border-color:var(--success);}
@@ -183,12 +181,7 @@ h3.section-head{font-size:16px;font-weight:700;margin-bottom:4px;}
   <div><div class="logo">Step<span>In</span></div><div class="sub" id="mgr-greeting"></div></div>
   <div class="topbar-right"><button class="refresh-btn" onclick="refreshDashboard()">&#8635; Refresh</button><span class="badge-role" id="mgr-badge">Manager</span><button class="btn-ghost" onclick="logout()">Sign out</button></div>
 </div>
-<!-- Tanya house selector -->
-<div class="house-selector-bar" id="house-selector-bar" style="display:none">
-  <select class="house-select" id="house-dropdown" onchange="onHouseChange()">
-    <option value="">All houses</option>
-  </select>
-</div>
+
 <!-- TOP TABS -->
 <div class="top-tabs">
   <button class="top-tab active" id="mgr-tab-dash" onclick="mgrTab('dash',this)"><span class="top-tab-icon">&#127968;</span>Home</button>
@@ -441,44 +434,26 @@ function enterManager(){
     const attEl=document.getElementById('dash-attendance-list');
     if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';
     document.getElementById('mgr-greeting').textContent='Hey Tanya!';
-    document.getElementById('house-selector-bar').style.display='block';
     document.getElementById('owner-tools').style.display='block';
     document.getElementById('qa-add-house').style.display='block';
-    buildHouseDropdown();
     loadSettings();
   }else{
     badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');
     document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';
-    document.getElementById('house-selector-bar').style.display='none';
     document.getElementById('owner-tools').style.display='none';
     document.getElementById('qa-add-house').style.display='none';
   }
   mgrTab('dash',document.getElementById('mgr-tab-dash'));
 }
 
-function buildHouseDropdown(){
-  const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
-  const sel=document.getElementById('house-dropdown');
-  sel.innerHTML='<option value="">All houses</option>'+houses.map(h=>`<option value="${h}">${h}</option>`).join('');
-  if(selectedHouse)sel.value=selectedHouse;
-}
 
-function onHouseChange(){
-  selectedHouse=document.getElementById('house-dropdown').value||null;
-  renderManagerDashboard();
-  renderMgrResidents();
-  renderMgrChores();
-  renderMgrCalendar();
-  renderMgrAnnouncementStatus();
-  populateSelects();
-  if(document.getElementById('mgr-pane-report').style.display!=='none')renderReport();
-}
+
+
 
 async function refreshDashboard(){
   const btn=document.querySelector('.refresh-btn');if(btn){btn.textContent='&#8635; Refreshing...';btn.disabled=true;}
   await loadAllData();
   renderManagerDashboard();
-  if(isOwner())buildHouseDropdown();
   if(btn){btn.innerHTML='&#8635; Refresh';btn.disabled=false;}
   toast('Updated.');
 }
@@ -541,9 +516,11 @@ function renderOwnerDashboard(){
     attEl.innerHTML='';
   }else{
     // House selected — show that house's resident list simply
+    // Back button to return to all houses
+    const backBtn='<button onclick="selectedHouse=null;renderManagerDashboard();" style="background:none;border:none;color:var(--pink);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;padding:0">&#8592; All houses</button>';
     const res=residents();
     const req=cachedSettings.required||3;const weekStart=getWeekStart();
-    curfewEl.innerHTML=res.length?res.map(r=>{
+    curfewEl.innerHTML=backBtn+(res.length?res.map(r=>{
       const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;
       const today=new Date().toDateString();
       const todayLogs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
@@ -562,7 +539,7 @@ function renderOwnerDashboard(){
           <div class="resident-sub">Phase ${r.phase||1} &bull; Meetings: <span style="color:${attColor};font-weight:700">${wc}/${req}</span> &bull; <span class="pill ${pillClass[sc]||'pill-gray'}" style="font-size:10px">${curfewStatus}</span></div>
         </div>
       </div>`;
-    }).join(''):'<p class="text-mid">No residents in this house.</p>';
+    }).join(''):'<p class="text-mid">No residents in this house.</p>');
     attEl.innerHTML='';
   }
   // Hide attendance section entirely for owner
@@ -572,8 +549,12 @@ function renderOwnerDashboard(){
 
 function selectHouse(house){
   selectedHouse=house;
-  document.getElementById('house-dropdown').value=house;
-  onHouseChange();
+  renderManagerDashboard();
+  renderMgrResidents();
+  renderMgrChores();
+  renderMgrCalendar();
+  renderMgrAnnouncementStatus();
+  populateSelects();
 }
 
 function renderMgrDashboard(){
