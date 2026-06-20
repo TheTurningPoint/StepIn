@@ -454,9 +454,10 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" id="mgr-pane-report" style="display:none">
 
   <!-- Section toggle -->
-  <div style="display:flex;gap:10px;margin-bottom:20px">
+  <div style="display:flex;gap:8px;margin-bottom:20px">
     <button class="btn btn-primary btn-sm" id="report-tab-attendance" onclick="switchReportTab('attendance')" style="flex:1">&#128203; Attendance</button>
     <button class="btn btn-outline btn-sm" id="report-tab-drugtests" onclick="switchReportTab('drugtests')" style="flex:1">&#128137; Drug tests</button>
+    <button class="btn btn-outline btn-sm" id="report-tab-incidents" onclick="switchReportTab('incidents')" style="flex:1">&#9888;&#65039; Incidents</button>
   </div>
 
   <!-- ATTENDANCE SECTION -->
@@ -503,6 +504,33 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <button class="btn btn-outline btn-sm" onclick="printDrugTestLog()" style="width:100%">&#128424; Print / PDF</button>
     </div>
     <div id="dt-history-content"></div>
+  </div>
+
+  <!-- INCIDENTS SECTION -->
+  <div id="report-section-incidents" style="display:none">
+    <div class="report-header">
+      <div class="report-title">Incident Log</div>
+      <div class="report-date" id="incident-report-range"></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="field" style="margin-bottom:10px">
+        <label>Filter by resident</label>
+        <select id="incident-report-filter" onchange="renderIncidentReport()" style="font-size:15px">
+          <option value="all">All residents &amp; house-wide</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Date range</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" id="incr-week" onclick="setIncidentRange('week')" style="flex:1">This week</button>
+          <button class="btn btn-outline btn-sm" id="incr-month" onclick="setIncidentRange('month')" style="flex:1">Month</button>
+          <button class="btn btn-outline btn-sm" id="incr-90" onclick="setIncidentRange('90')" style="flex:1">90 days</button>
+          <button class="btn btn-outline btn-sm" id="incr-all" onclick="setIncidentRange('all')" style="flex:1">All time</button>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="printIncidentReport()" style="width:100%">&#128424; Print / PDF</button>
+    </div>
+    <div id="incident-report-rows"></div>
   </div>
 
   <button class="btn btn-outline mt16" onclick="window.print()">&#128424; Print / Save as PDF</button>
@@ -712,6 +740,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-resident-detail" onclick="if(event.target===this)closeModal('modal-resident-detail')"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
 <div id="toast"></div>
+<iframe id="print-frame" style="display:none;position:fixed;width:0;height:0;border:none"></iframe>
 <script>
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
@@ -1638,9 +1667,7 @@ function printAttendancePDF(data,label,weekStart,req){
     '<script>window.onload=function(){window.print();}<\/script>'+
     '</body></html>';
 
-  const w=window.open('','_blank','width=800,height=900');
-  if(w){w.document.write(html);w.document.close();}
-  else{toast('Please allow popups to print.',true);}
+  printHTML(html);
 }
 
 
@@ -2157,9 +2184,7 @@ function printDrugTestPDF(tests,label){
     '<script>window.onload=function(){window.print();}<\/script>'+
     '</body></html>';
 
-  const w=window.open('','_blank','width=800,height=900');
-  if(w){w.document.write(html);w.document.close();}
-  else{toast('Please allow popups to print.',true);}
+  printHTML(html);
 }
 
 
@@ -2287,14 +2312,17 @@ function selectMeeting(name,address,type,time){
 let currentDtRange='week';
 
 function switchReportTab(tab){
-  document.getElementById('report-section-attendance').style.display=tab==='attendance'?'block':'none';
-  document.getElementById('report-section-drugtests').style.display=tab==='drugtests'?'block':'none';
-  document.getElementById('report-tab-attendance').className=tab==='attendance'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
-  document.getElementById('report-tab-drugtests').className=tab==='drugtests'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
-  if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(function(){populateDtResidentFilter();renderDtHistory();});}else{populateDtResidentFilter();renderDtHistory();}}
-  // Update flex styles
-  document.getElementById('report-tab-attendance').style.flex='1';
-  document.getElementById('report-tab-drugtests').style.flex='1';
+  ['attendance','drugtests','incidents'].forEach(function(s){
+    const sec=document.getElementById('report-section-'+s);
+    if(sec)sec.style.display=s===tab?'block':'none';
+    const btn=document.getElementById('report-tab-'+s);
+    if(btn){btn.className=s===tab?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}
+  });
+  if(tab==='drugtests'){
+    if(!isDemoMode){loadDrugTests().then(function(){populateDtResidentFilter();renderDtHistory();});}
+    else{populateDtResidentFilter();renderDtHistory();}
+  }
+  if(tab==='incidents'){renderIncidentReport().catch(function(e){console.log('incident report err',e);});}
 }
 
 function setDtRangeInline(range){
@@ -2590,6 +2618,12 @@ const DEMO_DATA={
     {id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:'Anchor House'},
     {id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null},
   ],
+  incidents:[
+    {id:'inc-d1',incident_type:'Policy violation',incident_date:new Date(Date.now()-2*86400000).toISOString().split('T')[0],incident_time:'14:30',description:'Robert C. was found with an unopened beer in his room during routine inspection.',action_taken:'Verbal warning issued. Resident signed acknowledgment. Contraband disposed of.',authorities_notified:false,resident_id:'d5',resident_name:'Robert C.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-2*86400000).toISOString()},
+    {id:'inc-d2',incident_type:'Curfew violation',incident_date:new Date(Date.now()-5*86400000).toISOString().split('T')[0],incident_time:'23:45',description:'Angela M. returned to the house 45 minutes past her Phase 2 curfew of 10pm without prior notice.',action_taken:'Written warning issued. Phase review scheduled for next week. Resident notified probation officer.',authorities_notified:false,resident_id:'d4',resident_name:'Angela M.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-5*86400000).toISOString()},
+    {id:'inc-d3',incident_type:'Medical emergency',incident_date:new Date(Date.now()-10*86400000).toISOString().split('T')[0],incident_time:'09:15',description:'Sandra K. reported chest pains and difficulty breathing. EMS called immediately.',action_taken:'911 called. EMS responded within 8 minutes. Resident transported to St. Anthony Hospital. Discharged same day. Treatment center notified.',authorities_notified:true,resident_id:'d8',resident_name:'Sandra K.',reported_by:'Demo Manager',house:'Unity House',created_at:new Date(Date.now()-10*86400000).toISOString()},
+    {id:'inc-d4',incident_type:'Welfare check',incident_date:new Date(Date.now()-14*86400000).toISOString().split('T')[0],incident_time:'11:00',description:'House-wide wellness check following reports of increased stress among residents.',action_taken:'Individual check-ins conducted with all residents. Additional group support session scheduled.',authorities_notified:false,resident_id:null,resident_name:null,reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-14*86400000).toISOString()},
+  ],
   chores:[
     {id:'ch-d9b',resident_id:'d9',resident_name:'Johnny Test',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},
     {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
@@ -2617,6 +2651,7 @@ function loadDemoData(role){
   cachedAcks=[{announcement_id:'ann-demo',resident_id:'d2',resident_name:'Maria S.'},{announcement_id:'ann-demo',resident_id:'d4',resident_name:'Angela M.'}];
   allManagers=DEMO_DATA.managers;
   selectedHouse=null;
+  cachedIncidents=DEMO_DATA.incidents||[];
 }
 
 function enterDemo(role){
@@ -2822,6 +2857,216 @@ function renderIncidentHistory(){
       '</div>'+
     '</div>';
   }).join('');
+}
+
+// ── INCIDENT REPORT ──
+let currentIncidentRange='month';
+
+function setIncidentRange(range){
+  currentIncidentRange=range;
+  ['week','month','90','all'].forEach(function(r){
+    const btn=document.getElementById('incr-'+r);
+    if(btn){btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}
+  });
+  renderIncidentReport();
+}
+
+async function renderIncidentReport(){
+  const el=document.getElementById('incident-report-rows');
+  const rangeEl=document.getElementById('incident-report-range');
+  if(!el)return;
+
+  // Load incidents if not in demo
+  if(!isDemoMode&&!cachedIncidents.length){
+    try{
+      let q=sb.from('incidents').select('*').order('created_at',{ascending:false});
+      if(!isOwner()&&myHouse())q=q.eq('house',myHouse());
+      const{data}=await q;
+      cachedIncidents=data||[];
+    }catch(e){cachedIncidents=[];}
+  }
+
+  // Populate filter
+  const filterEl=document.getElementById('incident-report-filter');
+  if(filterEl){
+    filterEl.innerHTML='<option value="all">All residents &amp; house-wide</option>'+
+      residents().map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
+  }
+
+  // Date range
+  const now=new Date();
+  let fromDate=new Date(0);
+  let rangeLabel='All time';
+  if(currentIncidentRange==='week'){fromDate=getWeekStart();rangeLabel='Week of '+fmtDate(fromDate)+' – '+fmtDate(new Date(fromDate.getTime()+6*86400000));}
+  else if(currentIncidentRange==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1);rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});}
+  else if(currentIncidentRange==='90'){fromDate=new Date(now.getTime()-90*86400000);rangeLabel='Last 90 days';}
+  if(rangeEl)rangeEl.textContent=rangeLabel;
+
+  const filterVal=filterEl?filterEl.value:'all';
+  let incidents=cachedIncidents.filter(function(i){return new Date(i.incident_date)>=fromDate;});
+  if(filterVal!=='all')incidents=incidents.filter(function(i){return i.resident_id===filterVal;});
+
+  if(!incidents.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#9888;&#65039;</div><h3>No incidents in this period</h3></div>';
+    return;
+  }
+
+  // Summary
+  const total=incidents.length;
+  const withAuth=incidents.filter(function(i){return i.authorities_notified;}).length;
+  const byType={};
+  incidents.forEach(function(i){byType[i.incident_type]=(byType[i.incident_type]||0)+1;});
+  const topType=Object.entries(byType).sort(function(a,b){return b[1]-a[1];})[0];
+
+  const summaryBar='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">'+
+    '<div style="background:var(--cream);border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--charcoal)">'+total+'</div><div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;margin-top:2px">Total</div></div>'+
+    '<div style="background:#FEE2E2;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#991B1B">'+withAuth+'</div><div style="font-size:11px;font-weight:700;color:#991B1B;text-transform:uppercase;margin-top:2px">Auth. notified</div></div>'+
+    '<div style="background:#FEF3C7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:16px;font-weight:800;color:#92400E;line-height:1.2">'+(topType?topType[0]:'None')+'</div><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;margin-top:2px">Top type</div></div>'+
+  '</div>';
+
+  const typeColors={
+    'Policy violation':'#FEE2E2','Altercation':'#FEE2E2','Medical emergency':'#FEE2E2',
+    'Police contact':'#FEF3C7','Positive drug test follow-up':'#FEF3C7',
+    'Curfew violation':'#FEF3C7','Property damage':'#FEE2E2',
+    'Welfare check':'#DBEAFE','Other':'#F5F5F5'
+  };
+
+  el.innerHTML=summaryBar+incidents.map(function(inc){
+    const d=new Date(inc.incident_date+'T'+(inc.incident_time||'00:00'));
+    const bg=typeColors[inc.incident_type]||'#F5F5F5';
+    return '<div style="border:1.5px solid var(--sand);border-radius:12px;margin-bottom:12px;overflow:hidden">'+
+      '<div style="background:'+bg+';padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'+
+        '<div style="flex:1">'+
+          '<div style="font-size:14px;font-weight:800">'+inc.incident_type+'</div>'+
+          '<div style="font-size:12px;color:var(--mid);margin-top:2px">'+
+            d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' at '+(inc.incident_time||'')+
+            (inc.resident_name?' &bull; '+inc.resident_name:' &bull; House-wide')+
+          '</div>'+
+        '</div>'+
+        (inc.authorities_notified
+          ?'<span style="background:#991B1B;color:white;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap">Authorities notified</span>'
+          :'<span style="background:#166534;color:white;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap">No authorities</span>')+
+      '</div>'+
+      '<div style="padding:12px 14px">'+
+        '<div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">What happened</div>'+
+        '<div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:10px">'+inc.description+'</div>'+
+        '<div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Action taken</div>'+
+        '<div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:8px">'+inc.action_taken+'</div>'+
+        '<div style="font-size:12px;color:var(--soft)">Reported by: '+(inc.reported_by||'Unknown')+(inc.house?' &bull; '+inc.house:'')+
+        '</div>'+
+        '<button onclick="printSingleIncident(this.dataset.id)" data-id="'+inc.id+'" style="margin-top:10px;background:var(--black);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">&#128424; Print this incident</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function printSingleIncident(incId){
+  const inc=cachedIncidents.find(function(i){return i.id===incId;});
+  if(!inc)return;
+  printIncidentPDF([inc],inc.resident_name||'House-wide');
+}
+
+function printIncidentReport(){
+  if(!cachedIncidents.length){toast('No incidents to print in this period.',true);return;}
+  const filterEl=document.getElementById('incident-report-filter');
+  const filterVal=filterEl?filterEl.value:'all';
+  let incidents=cachedIncidents;
+  if(filterVal!=='all')incidents=incidents.filter(function(i){return i.resident_id===filterVal;});
+  const label=filterVal!=='all'?(residents().find(function(r){return r.id===filterVal;})||{}).name||'Resident':'All Residents';
+  printIncidentPDF(incidents,label);
+}
+
+function printIncidentPDF(incidents,label){
+  const org=cachedSettings.house_name||'The Turning Point';
+  const house=myHouse()||'';
+  const now=new Date();
+  const rangeEl=document.getElementById('incident-report-range');
+  const rangeLabel=rangeEl?rangeEl.textContent:'';
+  const typeColors={'Policy violation':'#FEE2E2','Altercation':'#FEE2E2','Medical emergency':'#FEE2E2','Police contact':'#FEF3C7','Curfew violation':'#FEF3C7','Property damage':'#FEE2E2','Welfare check':'#DBEAFE','Other':'#F5F5F5'};
+  const rows=incidents.map(function(inc){
+    const d=new Date(inc.incident_date+'T'+(inc.incident_time||'00:00'));
+    const bg=typeColors[inc.incident_type]||'#F5F5F5';
+    return '<div style="border:1.5px solid #ddd;border-radius:8px;margin-bottom:16px;overflow:hidden;page-break-inside:avoid">'+
+      '<div style="background:'+bg+';padding:12px 16px;display:flex;justify-content:space-between;align-items:center">'+
+        '<div>'+
+          '<div style="font-size:15px;font-weight:800">'+inc.incident_type+'</div>'+
+          '<div style="font-size:13px;color:#666;margin-top:2px">'+
+            d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' at '+(inc.incident_time||'')+
+            (inc.resident_name?' &bull; '+inc.resident_name:' &bull; House-wide')+
+          '</div>'+
+        '</div>'+
+        '<div style="background:'+(inc.authorities_notified?'#991B1B':'#166534')+';color:white;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700">'+
+          (inc.authorities_notified?'Authorities notified':'No authorities')+
+        '</div>'+
+      '</div>'+
+      '<div style="padding:14px 16px">'+
+        '<div style="font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">What happened</div>'+
+        '<div style="font-size:14px;color:#000;line-height:1.7;margin-bottom:12px">'+inc.description+'</div>'+
+        '<div style="font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Action taken</div>'+
+        '<div style="font-size:14px;color:#000;line-height:1.7;margin-bottom:8px">'+inc.action_taken+'</div>'+
+        '<div style="font-size:12px;color:#999;border-top:1px solid #eee;padding-top:8px;margin-top:4px">Reported by: '+(inc.reported_by||'Unknown')+(inc.house?' &bull; '+inc.house:'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Incident Log &mdash; '+label+'</title>'+
+    '<style>body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:24px;color:#000;background:white;}@media print{body{padding:0;}.no-print{display:none;}}h1{font-size:22px;font-weight:800;margin:0 0 4px;}.header{border-bottom:2px solid #000;padding-bottom:16px;margin-bottom:24px;}</style>'+
+    '</head><body>'+
+    '<div class="header">'+
+      '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Confidential Incident Record</div>'+
+      '<h1>'+org+(house?' &mdash; '+house:'')+'</h1>'+
+      '<div style="font-size:13px;color:#666;">'+label+' &bull; '+rangeLabel+'</div>'+
+      '<div style="font-size:13px;color:#666;">Generated: '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div>'+
+      '<div style="font-size:12px;color:#C0392B;font-weight:600;margin-top:4px">&#9888; All incident records are permanent and timestamped. Records cannot be altered after submission.</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px">'+
+        '<div style="background:#f5f5f5;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800">'+incidents.length+'</div><div style="font-size:11px;color:#666;text-transform:uppercase;font-weight:700">Total incidents</div></div>'+
+        '<div style="background:#FEE2E2;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#991B1B">'+incidents.filter(function(i){return i.authorities_notified;}).length+'</div><div style="font-size:11px;color:#991B1B;text-transform:uppercase;font-weight:700">Auth. notified</div></div>'+
+        '<div style="background:#DCFCE7;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#166534">'+incidents.filter(function(i){return!i.authorities_notified;}).length+'</div><div style="font-size:11px;color:#166534;text-transform:uppercase;font-weight:700">No authorities</div></div>'+
+      '</div>'+
+    '</div>'+
+    rows+
+    '<div style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999">Generated by StepIn &bull; theturningpoint.github.io/StepIn &bull; Records are tamper-evident and cannot be altered.</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  printHTML(html);
+}
+
+// ── UNIVERSAL PRINT HELPER (no popup needed) ──
+function printHTML(html,title){
+  // Try iframe first (no popup blocker)
+  try{
+    const frame=document.getElementById('print-frame');
+    if(frame){
+      frame.style.display='block';
+      frame.style.width='100%';
+      frame.style.height='100%';
+      frame.style.position='fixed';
+      frame.style.top='0';
+      frame.style.left='0';
+      frame.style.zIndex='9999';
+      frame.style.background='white';
+      const doc=frame.contentDocument||frame.contentWindow.document;
+      doc.open();
+      doc.write(html.replace('<script>window.onload=function(){window.print();}<\/script>',''));
+      doc.close();
+      setTimeout(function(){
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        setTimeout(function(){
+          frame.style.display='none';
+          frame.style.position='fixed';
+          frame.style.width='0';
+          frame.style.height='0';
+        },500);
+      },400);
+      return;
+    }
+  }catch(e){}
+  // Fallback to window.open
+  const w=window.open('','_blank','width=800,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{toast('To print: tap the share button \u2197 then select Print.',true);}
 }
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
