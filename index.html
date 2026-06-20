@@ -344,9 +344,9 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <div class="card">
-    <div class="flex-between" style="margin-bottom:14px">
-      <span class="card-title" style="margin:0">&#128101; Residents</span>
-      <button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button>
+    <div style="margin-bottom:14px">
+      <span class="card-title">&#128101; Residents</span>
+      <p class="text-mid" style="font-size:12px;margin-top:4px">Add residents from the Actions tab.</p>
     </div>
     <div id="mgr-resident-list"></div>
   </div>
@@ -370,6 +370,15 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="btn btn-outline btn-sm" onclick="openAnnouncementHistory()">History</button>
   <button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button>
 </div></div><div id="mgr-announcement-status"></div></div>
+  <!-- Add resident -->
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:4px">
+      <span class="card-title" style="margin:0">&#128101; Add resident</span>
+      <button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button>
+    </div>
+    <p class="text-mid" style="font-size:12px;margin-bottom:0">Add a new resident to this house.</p>
+  </div>
+
   <!-- Incident log -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
@@ -405,11 +414,15 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         </div>
       </div>
       <div class="field">
-        <label>Move-in / sobriety date</label>
+        <label>Move-in date</label>
         <div style="display:flex;gap:8px">
           <input type="date" id="edit-move-in-date" style="flex:1">
-          <button class="btn btn-navy btn-sm" onclick="saveResidentMoveInDate()" style="white-space:nowrap">Save</button>
+          <button class="btn btn-navy btn-sm" onclick="saveResidentDates()" style="white-space:nowrap">Save</button>
         </div>
+      </div>
+      <div class="field">
+        <label>Sobriety date <span style="font-weight:400;color:var(--mid)">(optional)</span></label>
+        <input type="date" id="edit-sobriety-date" style="flex:1">
       </div>
       <div class="field">
         <label>Phase</label>
@@ -655,7 +668,8 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div id="announcement-history-content"></div>
 <button class="btn btn-outline mt16" onclick="closeModal('modal-announcement-history')">Close</button>
 </div></div>
-<div class="modal-bg" id="modal-add-resident" onclick="if(event.target===this)closeModal('modal-add-resident')"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><div class="field"><label>Move-in / sobriety date</label><input type="date" id="add-move-in-date"></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-add-resident" onclick="if(event.target===this)closeModal('modal-add-resident')"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><div class="field"><label>Move-in date</label><input type="date" id="add-move-in-date" placeholder="When did they move in?"></div>
+<div class="field"><label>Sobriety date <span style="font-weight:400;color:var(--mid)">(optional)</span></label><input type="date" id="add-sobriety-date" placeholder="When did they get clean?"></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-manager" onclick="if(event.target===this)closeModal('modal-add-manager')"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Anchor House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Anchor House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-chore" onclick="if(event.target===this)closeModal('modal-add-chore')"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
 <div class="modal-bg" id="modal-add-event" onclick="if(event.target===this)closeModal('modal-add-event')"><div class="modal"><div class="modal-handle"></div><h2>Add event</h2><div class="field"><label>Event title</label><input type="text" id="event-title" placeholder="e.g. House meeting"></div><div class="field"><label>Date</label><input type="date" id="event-date"></div><div class="field"><label>Time (optional)</label><input type="time" id="event-time"></div><div class="field"><label>Notes (optional)</label><textarea id="event-notes" placeholder="Any details&#8230;" style="height:80px;resize:none"></textarea></div><button class="btn btn-primary" id="event-btn" onclick="saveNewEvent()">Add event</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-event')">Cancel</button></div></div>
@@ -920,7 +934,7 @@ function renderResidentHome(){
   const myCheckins=allCheckins.filter(function(c){return c.resident_id===currentUser.id;});
   const thisWeek=myCheckins.filter(function(c){return new Date(c.ts)>=weekStart;});
   // Sobriety days
-  const moveIn=currentUser.move_in_date;
+  const moveIn=currentUser.sobriety_date||currentUser.move_in_date;
   const days=daysSince(moveIn);
   const milestone=days!==null?sobrietyMilestone(days):null;
   const sobrietyEl=document.getElementById('res-sobriety-banner');
@@ -1443,7 +1457,7 @@ function renderMgrResidents(){
   const req=cachedSettings.required||3;const weekStart=getWeekStart();const el=document.getElementById('mgr-resident-list');
   const res=residents();
   if(!res.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udc65</div><h3>No residents yet</h3></div>';return;}
-  el.innerHTML=res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pill=wc>=req?`<span class="pill pill-green">${wc}/${req} \u2713</span>`:`<span class="pill pill-yellow">${wc}/${req}</span>`;const sob=sobrietyBadge(r.move_in_date);
+  el.innerHTML=res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const pill=wc>=req?`<span class="pill pill-green">${wc}/${req} \u2713</span>`:`<span class="pill pill-yellow">${wc}/${req}</span>`;const sob=sobrietyBadge(r.sobriety_date||r.move_in_date);
     return'<div class="resident-row" onclick="viewResident(this.dataset.id)" data-id="'+r.id+'" style="cursor:pointer"><div class="avatar">'+r.name[0]+'</div><div style="flex:1"><div class="resident-name">'+r.name+'</div><div class="resident-sub">Phase '+(r.phase||1)+(r.house?' &bull; '+r.house:'')+'</div>'+(sob?'<div style="margin-top:4px">'+sob+'</div>':'')+' </div><div class="resident-right">'+pill+'</div></div>';}).join('');
 }
 
@@ -1721,7 +1735,7 @@ function printAttendancePDF(data,label,weekStart,req){
 
 function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=
   // Sobriety badge
-  (r.move_in_date?'<div style="margin-bottom:12px">'+sobrietyBadge(r.move_in_date)+'</div>':'')+
+  ((r.sobriety_date||r.move_in_date)?'<div style="margin-bottom:12px">'+sobrietyBadge(r.sobriety_date||r.move_in_date)+(r.move_in_date?'<span style="font-size:11px;color:var(--mid);margin-left:8px">Moved in: '+r.move_in_date+'</span>':'')+'</div>':'')+
   // Print full history button
   '<button onclick="printFullHistory(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="width:100%;background:var(--black);color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px">&#128424; Print full record</button>'+
   `<p style="font-size:13px;color:var(--mid);margin-bottom:14px">${r.house||''} &bull; Phase ${r.phase||1} &bull; Curfew: ${getCurfewLabel(r.phase||1,new Date())}</p>
@@ -1752,7 +1766,8 @@ async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin
 function openAddResident(){document.getElementById('add-name').value='';document.getElementById('add-pin').value='';document.getElementById('modal-add-resident').classList.add('open');}
 function openAddManager(){document.getElementById('add-mgr-name').value='';document.getElementById('add-mgr-id').value='';document.getElementById('add-mgr-pin').value='';document.getElementById('modal-add-manager').classList.add('open');}
 async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const moveInDate=document.getElementById('add-move-in-date')?document.getElementById('add-move-in-date').value||null:null;
-const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house,move_in_date:moveInDate};let addResErr;try{const{error:e2}=await sb.from('residents').insert(newR);addResErr=e2;}catch(e){addResErr={message:e.message};}if(addResErr){toast('Could not add: '+addResErr.message,true);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
+const sobrietyDate=document.getElementById('add-sobriety-date')?document.getElementById('add-sobriety-date').value||null:null;
+const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house,move_in_date:moveInDate,sobriety_date:sobrietyDate};let addResErr;try{const{error:e2}=await sb.from('residents').insert(newR);addResErr=e2;}catch(e){addResErr={message:e.message};}if(addResErr){toast('Could not add: '+addResErr.message,true);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push({id:newR.id,name:newR.name,role:'resident',phase,house});btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(`${name} added.`);renderManagerDashboard();}
 async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.',true);return;}if(!mgrId){toast('Please enter a manager ID.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message,true);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(`${houseName} added.`);buildHouseDropdown();renderOwnerHouseList();populateSelects();}
 function onManageResidentChange(){
   const id=document.getElementById('manage-resident-select').value;
@@ -1766,6 +1781,8 @@ function onManageResidentChange(){
   document.getElementById('reset-pin-value').value='';
   const moveInEl=document.getElementById('edit-move-in-date');
   if(moveInEl)moveInEl.value=r.move_in_date||'';
+  const sobrietyEl2=document.getElementById('edit-sobriety-date');
+  if(sobrietyEl2)sobrietyEl2.value=r.sobriety_date||'';
 
   panel.style.display='block';
 }
@@ -2598,12 +2615,12 @@ const DEMO_RESIDENTS=(function(){
   return[
     {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Anchor House',pin:'2222',move_in_date:daysAgo(187)},
     {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Anchor House',pin:'3333',move_in_date:daysAgo(23)},
-    {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Anchor House',pin:'4444',move_in_date:daysAgo(94)},
+    {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Anchor House',pin:'4444',move_in_date:daysAgo(90),sobriety_date:daysAgo(94)},
     {id:'d5',name:'Robert C.',role:'resident',phase:1,house:'Anchor House',pin:'5555',move_in_date:daysAgo(11)},
-    {id:'d6',name:'Lisa W.',role:'resident',phase:1,house:'Unity House',pin:'6666',move_in_date:daysAgo(67)},
-    {id:'d7',name:'Marcus B.',role:'resident',phase:2,house:'Unity House',pin:'7777',move_in_date:daysAgo(365)},
+    {id:'d6',name:'Lisa W.',role:'resident',phase:1,house:'Unity House',pin:'6666',move_in_date:daysAgo(60),sobriety_date:daysAgo(67)},
+    {id:'d7',name:'Marcus B.',role:'resident',phase:2,house:'Unity House',pin:'7777',move_in_date:daysAgo(300),sobriety_date:daysAgo(365)},
     {id:'d8',name:'Sandra K.',role:'resident',phase:1,house:'Unity House',pin:'8888',move_in_date:daysAgo(44)},
-    {id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111',move_in_date:daysAgo(31)},
+    {id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111',move_in_date:daysAgo(31),sobriety_date:daysAgo(31)},
   ];
 })();
 
@@ -3427,17 +3444,21 @@ function sobrietyMilestone(days){
   return null;
 }
 
-async function saveResidentMoveInDate(){
+async function saveResidentDates(){
   const id=document.getElementById('manage-resident-select').value;
-  const date=document.getElementById('edit-move-in-date').value;
+  const moveIn=document.getElementById('edit-move-in-date').value||null;
+  const sobriety=document.getElementById('edit-sobriety-date')?document.getElementById('edit-sobriety-date').value||null:null;
   if(!id){toast('Select a resident first.',true);return;}
-  if(!date){toast('Please select a date.',true);return;}
+  if(!moveIn&&!sobriety){toast('Please enter at least one date.',true);return;}
+  const updates={};
+  if(moveIn)updates.move_in_date=moveIn;
+  if(sobriety)updates.sobriety_date=sobriety;
   if(!isDemoMode){
-    const{error}=await sb.from('residents').update({move_in_date:date}).eq('id',id);
-    if(error){toast('Could not save date.',true);return;}
+    const{error}=await sb.from('residents').update(updates).eq('id',id);
+    if(error){toast('Could not save dates.',true);return;}
   }
-  allResidents=allResidents.map(function(r){return r.id===id?Object.assign({},r,{move_in_date:date}):r;});
-  toast('Sobriety date saved.');
+  allResidents=allResidents.map(function(r){return r.id===id?Object.assign({},r,updates):r;});
+  toast('Dates saved.');
   renderManagerDashboard();
 }
 
