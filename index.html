@@ -298,8 +298,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div id="res-more-panel" style="display:none;padding:0 20px 20px">
       <div id="res-upcoming-events-card" style="display:none;margin-bottom:16px"><div class="card-title">Upcoming events</div><div id="res-upcoming-events"></div></div>
       <div style="margin-bottom:16px"><div class="card-title">Recent meetings</div><div id="res-log-list"></div><div id="res-all-meetings" style="display:none"></div><button id="res-meetings-toggle" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="toggleResMeetings()">View all meetings</button></div>
-      <div style="margin-bottom:16px"><div class="card-title">      <div style="margin-bottom:16px"><div class="card-title">&#128196; Signed documents</div><div id="res-signed-docs"></div></div>
-      <div style="margin-bottom:16px"><div class="Drug tests</div><div id="res-drug-tests"></div></div>
+      <div style="margin-bottom:16px"><div class="card-title">Drug tests</div><div id="res-drug-tests"></div></div>
       <div><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
     </div>
   </div>
@@ -955,7 +954,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <script>
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
-const sb=(typeof supabase!=='undefined'&&supabase.createClient)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):{from:function(){const m={select:function(){return m;},insert:function(){return Promise.resolve({data:null,error:null});},update:function(){return m;},delete:function(){return m;},eq:function(){return m;},or:function(){return m;},gte:function(){return m;},order:function(){return m;},limit:function(){return m;},single:function(){return Promise.resolve({data:null,error:null});}};return m;}};
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let isDemoMode=false;
 let loginAttempts=0;
 const MAX_LOGIN_ATTEMPTS=5;
@@ -1171,83 +1170,7 @@ function renderLogList(el,ckins,showName){
 
 async function changeMyPin(){const cur=document.getElementById('pin-current').value.trim();const nw=document.getElementById('pin-new').value.trim();const cf=document.getElementById('pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That\'s not your current PIN.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The PINs don\'t match.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');document.getElementById('pin-current').value='';document.getElementById('pin-new').value='';document.getElementById('pin-confirm').value='';}
 
-function renderResSignedDocs(){
-  var el=document.getElementById('res-signed-docs');if(!el)return;
-  var done=cachedResidentDocs.filter(function(d){return d.resident_id===currentUser.id&&d.status==='complete';});
-  if(!done.length){el.innerHTML='<div style="font-size:13px;color:var(--mid);padding:8px 0">No signed documents yet.</div>';return;}
-  el.innerHTML=done.map(function(d){
-    var sd=d.resident_signed_at?fmtDate(new Date(d.resident_signed_at)):'--';
-    var md=d.manager_signed_at?fmtDate(new Date(d.manager_signed_at)):'--';
-    var rs=d.resident_sig?'<img src="'+d.resident_sig+'" style="width:100%;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white">':'';
-    var ms=d.manager_sig?'<img src="'+d.manager_sig+'" style="width:100%;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white">':'';
-    var pb='<button data-did="'+d.id+'" onclick="printSignedDoc(this.dataset.did)" style="background:var(--black);color:white;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">&#128424; PDF</button>';
-    return '<div style="border:1px solid var(--sand);border-radius:10px;overflow:hidden;margin-bottom:10px">'
-      +'<div style="background:var(--cream);padding:12px 14px;display:flex;justify-content:space-between;align-items:center">'
-      +'<div><div style="font-size:14px;font-weight:700">'+d.template_name+'</div>'
-      +'<div style="font-size:12px;color:var(--mid);margin-top:2px">Signed '+sd+' · Countersigned '+md+'</div></div>'
-      +pb+'</div>'
-      +'<div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">'
-      +'<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mid);margin-bottom:5px">Your signature</div>'+rs+'</div>'
-      +'<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mid);margin-bottom:5px">Manager signature</div>'+ms+'</div>'
-      +'</div></div>';
-  }).join('');
-}
-
-function printSignedDoc(docId){
-  var d=cachedResidentDocs.find(function(x){return x.id===docId;});
-  if(!d)return;
-  var org=cachedSettings.house_name||'The Turning Point';
-  var now=new Date();
-  var signedDate=d.resident_signed_at?new Date(d.resident_signed_at).toLocaleString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}):'Unknown';
-  var mgrDate=d.manager_signed_at?new Date(d.manager_signed_at).toLocaleString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'}):'Unknown';
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Signed Document — '+d.template_name+'</title>'
-    +'<style>body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:28px;color:#000;background:white;font-size:14px;}'
-    +'.header{border-bottom:3px solid #000;padding-bottom:16px;margin-bottom:24px;}'
-    +'.sig-block{border:1.5px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:20px;}'
-    +'.sig-header{background:#f5f5f5;padding:10px 14px;font-size:12px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #ddd;}'
-    +'.sig-body{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}'
-    +'.sig-label{font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee;}'
-    +'.sig-img{width:100%;max-height:90px;object-fit:contain;border:1px solid #eee;border-radius:4px;background:white;display:block;}'
-    +'.sig-name{font-size:12px;color:#666;margin-top:5px;}'
-    +'@media print{body{padding:0;}}'
-    +'</style></head><body>'
-    +'<div class="header">'
-    +'<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Signature Record &mdash; Confidential</div>'
-    +'<div style="font-size:24px;font-weight:800;margin-bottom:4px">'+d.template_name+'</div>'
-    +'<div style="font-size:13px;color:#666;">'+org+(d.house?' &mdash; '+d.house:'')+'</div>'
-    +'<div style="font-size:13px;color:#666;margin-top:4px;">Resident: <strong>'+d.resident_name+'</strong></div>'
-    +'<div style="font-size:12px;color:#C0392B;font-weight:600;margin-top:8px;">&#9888; This record certifies that the parties below have reviewed and agreed to the document referenced above.</div>'
-    +'</div>'
-    +(d.template_url?'<div style="background:#f9f9f9;border:1.5px solid #ddd;border-radius:8px;padding:14px;margin-bottom:20px;">'
-    +'<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Original document</div>'
-    +'<div style="font-size:13px;color:#333;">'+d.template_url+'</div>'
-    +'<div style="font-size:11px;color:#999;margin-top:4px;">The original document is available at the URL above.</div>'
-    +'</div>':'')
-    +'<div class="sig-block">'
-    +'<div class="sig-header">Signatures</div>'
-    +'<div class="sig-body">'
-    +'<div>'
-    +'<div class="sig-label">Resident</div>'
-    +(d.resident_sig?'<img src="'+d.resident_sig+'" class="sig-img">':'<div style="height:70px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature on file</div>')
-    +'<div class="sig-name">'+d.resident_name+'</div>'
-    +'<div style="font-size:11px;color:#999;margin-top:3px;">Signed: '+signedDate+'</div>'
-    +'</div>'
-    +'<div>'
-    +'<div class="sig-label">Manager / Countersignature</div>'
-    +(d.manager_sig?'<img src="'+d.manager_sig+'" class="sig-img">':'<div style="height:70px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No countersignature on file</div>')
-    +'<div class="sig-name">'+(d.manager_name||'Manager')+'</div>'
-    +'<div style="font-size:11px;color:#999;margin-top:3px;">Signed: '+mgrDate+'</div>'
-    +'</div>'
-    +'</div></div>'
-    +'<div style="margin-top:32px;padding-top:14px;border-top:1px solid #ddd;font-size:11px;color:#999;">'
-    +'Record generated: '+now.toLocaleString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'})
-    +' &mdash; StepIn &mdash; theturningpoint.github.io/StepIn</div>'
-    +'<script>window.onload=function(){window.print();}<\/script>'
-    +'</body></html>';
-  printHTML(html);
-}
-
-function renderResSignedDocs(){
+function renderResDrugTests(){
   const el=document.getElementById('res-drug-tests');if(!el)return;
   const myTests=cachedDrugTests.filter(t=>t.resident_id===currentUser.id);
   if(!myTests.length){el.innerHTML='<div class="empty" style="padding:16px 0"><div class="empty-icon">&#128137;</div><p style="font-size:13px;color:var(--mid)">No drug tests on record yet.</p></div>';return;}
@@ -1262,7 +1185,7 @@ function toggleResMore(){
   const isOpen=panel.style.display==='block';
   panel.style.display=isOpen?'none':'block';
   if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
-  if(!isOpen){renderResSignedDocs();renderResDrugTests();renderResCurfewDetail();}
+  if(!isOpen){renderResDrugTests();renderResCurfewDetail();}
 }
 function toggleResMeetings(){const allEl=document.getElementById('res-all-meetings');const btn=document.getElementById('res-meetings-toggle');const myCheckins=allCheckins.filter(c=>c.resident_id===currentUser.id);if(allEl.style.display==='block'){allEl.style.display='none';btn.textContent='View all meetings';}else{renderLogList(allEl,myCheckins,false);allEl.style.display='block';btn.textContent='Show less';}}
 
@@ -1301,9 +1224,9 @@ function clearSig(){if(sigCtx){sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.he
 function enterManager(){
   const existingBanner=document.getElementById('demo-banner');if(existingBanner)existingBanner.remove();
   if(isDemoMode){const banner=document.createElement('div');banner.id='demo-banner';banner.style.cssText='background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;text-align:center;padding:10px;font-size:13px;font-weight:700;letter-spacing:0.5px;flex-shrink:0;';banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Exit demo</button>';const screen=document.getElementById('screen-manager');const topbar=screen.querySelector('.topbar');topbar.after(banner);}
-  if(!isDemoMode)loadDrugTests();show('screen-manager');
+  loadDrugTests();show('screen-manager');
   const badge=document.getElementById('mgr-badge');
-  if(isOwner()){badge.textContent='Tanya';badge.classList.add('badge-owner');const attEl=document.getElementById('dash-attendance-list');if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';document.getElementById('mgr-greeting').textContent='Hey Tanya!';document.getElementById('owner-tools').style.display='block';if(!isDemoMode)loadSettings();}
+  if(isOwner()){badge.textContent='Tanya';badge.classList.add('badge-owner');const attEl=document.getElementById('dash-attendance-list');if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';document.getElementById('mgr-greeting').textContent='Hey Tanya!';document.getElementById('owner-tools').style.display='block';loadSettings();}
   else{badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';document.getElementById('owner-tools').style.display='none';}
   mgrTab('dash',document.getElementById('mgr-tab-dash'));
 }
@@ -1470,7 +1393,7 @@ async function reinstateResident(id){const r=allResidents.find(x=>x.id===id);if(
 function buildHouseDropdown(){if(typeof renderOwnerHouseList==='function')renderOwnerHouseList();}
 
 // ── RESIDENT DETAIL MODAL ──
-function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;const req=cachedSettings.required||3;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=((r.sobriety_date||r.move_in_date)?'<div style="margin-bottom:12px">'+sobrietyBadge(r.sobriety_date||r.move_in_date)+(r.move_in_date?'<span style="font-size:11px;color:var(--mid);margin-left:8px">Moved in: '+r.move_in_date+'</span>':'')+'</div>':'')+'<button onclick="printFullHistory(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="width:100%;background:var(--black);color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px">&#128424; Print full record</button><p style="font-size:13px;color:var(--mid);margin-bottom:14px">'+(r.house||'')+' &bull; Phase '+(r.phase||1)+' &bull; Curfew: '+getCurfewLabel(r.phase||1,new Date())+'</p><div class="stats-grid" style="margin-bottom:14px"><div class="stat-box"><div class="stat-num">'+wc+'</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">'+ckins.length+'</div><div class="stat-label">Total</div></div></div><div class="card-title" style="margin-bottom:8px">Recent in/out</div>'+(function(){const logs=allCurfewLog.filter(l=>l.resident_id===id).slice(0,6);if(!logs.length)return'<p class="text-mid" style="margin-bottom:12px">No sign in/out activity yet.</p>';return logs.map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?'Left'+(l.destination?' \u2192 '+l.destination:''):(l.excused?'Excused':'Signed in');const late=l.late?' <span class="pill pill-red">Late</span>':'';const exc=l.excused?' <span class="pill pill-blue">Excused</span>':'';const map=l.lat?' <a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205;</a>':'';return'<div class="curfew-row"><div style="font-size:18px">'+icon+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+label+late+exc+'</div><div style="font-size:11px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+map+'</div></div></div>';}).join('');})()+'<div class="card-title" style="margin:12px 0 8px">Recent meetings</div>'+ckins.slice(0,5).map(c=>{const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205; map</a>':'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div><div class="log-title">'+c.meeting_type+'</div><div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'</div><div class="log-sig">&#9997;&#65039; '+c.signer_name+mapLink+'</div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" class="sig-img" alt="Signature">':'')+'</div></div>';}).join('')||'<p class="text-mid">No meetings recorded.</p>'+'<div style="margin-top:14px"><div class="card-title" style="margin-bottom:8px">Signed documents</div>'+(function(){var sd=cachedResidentDocs.filter(function(d){return d.resident_id===id&&d.status==="complete";});if(!sd.length)return'<p class="text-mid">No signed documents on record.</p>';return sd.map(function(d){var sd2=d.resident_signed_at?fmtDate(new Date(d.resident_signed_at)):'';return'<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--sand)"><div><div style="font-size:13px;font-weight:700">'+d.template_name+'</div><div style="font-size:11px;color:var(--mid)">Signed '+sd2+(d.manager_name?' &middot; '+d.manager_name:'')+'</div></div><button data-did=\"'+d.id+'\" onclick=\"printSignedDoc(this.dataset.did)\" style=\"background:var(--black);color:white;border:none;border-radius:7px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer\">&#128424;</button></div>';}).join('');})()+'</div><div style="margin-top:14px"><div class="card-title" style="margin-bottom:8px">Drug tests</div>'+(function(){const dts=cachedDrugTests.filter(t=>t.resident_id===id).slice(0,5);if(!dts.length)return'<p class="text-mid">No tests on record.</p>';const icons={pass:'<span style="color:var(--success);font-weight:700">&#10003; Pass</span>',fail:'<span style="color:var(--danger);font-weight:700">&#10005; Fail</span>',refused:'<span style="color:var(--warn);font-weight:700">&#9888; Refused</span>'};return dts.map(t=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sand)"><div><div style="font-size:13px;font-weight:600">'+t.test_types+'</div><div style="font-size:11px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; '+t.administered_by+'</div></div>'+(icons[t.result]||t.result)+'</div>').join('');})()+'</div>';document.getElementById('modal-resident-detail').classList.add('open');}
+function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;const req=cachedSettings.required||3;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=((r.sobriety_date||r.move_in_date)?'<div style="margin-bottom:12px">'+sobrietyBadge(r.sobriety_date||r.move_in_date)+(r.move_in_date?'<span style="font-size:11px;color:var(--mid);margin-left:8px">Moved in: '+r.move_in_date+'</span>':'')+'</div>':'')+'<button onclick="printFullHistory(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="width:100%;background:var(--black);color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px">&#128424; Print full record</button><p style="font-size:13px;color:var(--mid);margin-bottom:14px">'+(r.house||'')+' &bull; Phase '+(r.phase||1)+' &bull; Curfew: '+getCurfewLabel(r.phase||1,new Date())+'</p><div class="stats-grid" style="margin-bottom:14px"><div class="stat-box"><div class="stat-num">'+wc+'</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">'+ckins.length+'</div><div class="stat-label">Total</div></div></div><div class="card-title" style="margin-bottom:8px">Recent in/out</div>'+(function(){const logs=allCurfewLog.filter(l=>l.resident_id===id).slice(0,6);if(!logs.length)return'<p class="text-mid" style="margin-bottom:12px">No sign in/out activity yet.</p>';return logs.map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?'Left'+(l.destination?' \u2192 '+l.destination:''):(l.excused?'Excused':'Signed in');const late=l.late?' <span class="pill pill-red">Late</span>':'';const exc=l.excused?' <span class="pill pill-blue">Excused</span>':'';const map=l.lat?' <a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205;</a>':'';return'<div class="curfew-row"><div style="font-size:18px">'+icon+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+label+late+exc+'</div><div style="font-size:11px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+map+'</div></div></div>';}).join('');})()+'<div class="card-title" style="margin:12px 0 8px">Recent meetings</div>'+ckins.slice(0,5).map(c=>{const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205; map</a>':'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div><div class="log-title">'+c.meeting_type+'</div><div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'</div><div class="log-sig">&#9997;&#65039; '+c.signer_name+mapLink+'</div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" class="sig-img" alt="Signature">':'')+'</div></div>';}).join('')||'<p class="text-mid">No meetings recorded.</p>'+'<div style="margin-top:14px"><div class="card-title" style="margin-bottom:8px">Drug tests</div>'+(function(){const dts=cachedDrugTests.filter(t=>t.resident_id===id).slice(0,5);if(!dts.length)return'<p class="text-mid">No tests on record.</p>';const icons={pass:'<span style="color:var(--success);font-weight:700">&#10003; Pass</span>',fail:'<span style="color:var(--danger);font-weight:700">&#10005; Fail</span>',refused:'<span style="color:var(--warn);font-weight:700">&#9888; Refused</span>'};return dts.map(t=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sand)"><div><div style="font-size:13px;font-weight:600">'+t.test_types+'</div><div style="font-size:11px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; '+t.administered_by+'</div></div>'+(icons[t.result]||t.result)+'</div>').join('');})()+'</div>';document.getElementById('modal-resident-detail').classList.add('open');}
 
 // ── REPORT ──
 let currentAttRange='week';
@@ -1834,21 +1757,10 @@ const DEMO_DATA={
   announcement:{id:'ann-demo',message:'House meeting this Thursday at 7pm. Attendance is mandatory for all residents.',created_by:'Demo Manager'},
   events:[{id:'ev-d1',title:'House meeting',event_date:new Date(Date.now()+2*86400000).toISOString().split('T')[0],event_time:'19:00',notes:'Mandatory for all residents',house:'Unity House'},{id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:null},{id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null}],
   incidents:[{id:'inc-d1',incident_type:'Policy violation',incident_date:new Date(Date.now()-2*86400000).toISOString().split('T')[0],incident_time:'14:30',description:'Robert C. was found with an unopened beer in his room during routine inspection.',action_taken:'Verbal warning issued. Resident signed acknowledgment. Contraband disposed of.',authorities_notified:false,resident_id:'d5',resident_name:'Robert C.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-2*86400000).toISOString()},{id:'inc-d2',incident_type:'Curfew violation',incident_date:new Date(Date.now()-5*86400000).toISOString().split('T')[0],incident_time:'23:45',description:'Angela M. returned 45 minutes past her Phase 2 curfew without prior notice.',action_taken:'Written warning issued. Phase review scheduled for next week.',authorities_notified:false,resident_id:'d4',resident_name:'Angela M.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-5*86400000).toISOString()},{id:'inc-d3',incident_type:'Medical emergency',incident_date:new Date(Date.now()-10*86400000).toISOString().split('T')[0],incident_time:'09:15',description:'Sandra K. reported chest pains and difficulty breathing. EMS called immediately.',action_taken:'911 called. EMS responded within 8 minutes. Resident transported to St. Anthony Hospital. Discharged same day.',authorities_notified:true,resident_id:'d8',resident_name:'Sandra K.',reported_by:'Demo Manager',house:'Unity House',created_at:new Date(Date.now()-10*86400000).toISOString()},{id:'inc-d4',incident_type:'Welfare check',incident_date:new Date(Date.now()-14*86400000).toISOString().split('T')[0],incident_time:'11:00',description:'House-wide wellness check following reports of increased stress among residents.',action_taken:'Individual check-ins conducted with all residents. Additional group support session scheduled.',authorities_notified:false,resident_id:null,resident_name:null,reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-14*86400000).toISOString()}],
-  chores:[{id:'ch-d9b',resident_id:'d9',resident_name:'Johnny Test',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},{id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d6',resident_id:'d6',resident_name:'Lisa W.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},{id:'ch-d7',resident_id:'d7',resident_name:'Marcus B.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Unity House'},{id:'ch-d9',resident_id:'d9',resident_name:'Johnny Test',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Unity House'}],
-  docTemplates:[
-    {id:'dtp-1',name:'House Rules Agreement',description:'Please read and sign the house rules. These govern conduct, curfew, and responsibilities during your stay.',url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',required:true,created_at:'2026-01-01T00:00:00Z'},
-    {id:'dtp-2',name:'Release of Information',description:'Authorizes The Turning Point to share necessary information with treatment providers and insurance.',url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',required:true,created_at:'2026-01-01T00:00:00Z'},
-    {id:'dtp-3',name:'Medication Policy',description:'Outlines the house policy on prescription medications, storage, and self-administration.',url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',required:false,created_at:'2026-01-01T00:00:00Z'}
-  ],
-  residentDocs:[
-    {id:'rd-d1',resident_id:'d9',resident_name:'Johnny Test',template_id:'dtp-1',template_name:'House Rules Agreement',template_desc:'Please read and sign the house rules. These govern conduct, curfew, and responsibilities during your stay.',template_url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',status:'pending',house:'Unity House',created_at:'2026-06-15T10:00:00Z'},
-    {id:'rd-d2',resident_id:'d9',resident_name:'Johnny Test',template_id:'dtp-2',template_name:'Release of Information',template_desc:'Authorizes The Turning Point to share necessary information with treatment providers and insurance.',template_url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',status:'pending',house:'Unity House',created_at:'2026-06-15T10:00:00Z'},
-    {id:'rd-d3',resident_id:'d3',resident_name:'Kevin T.',template_id:'dtp-1',template_name:'House Rules Agreement',template_desc:'Please read and sign the house rules.',template_url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',status:'resident_signed',resident_sig:'DEMO_SIG',resident_signed_at:'2026-06-18T14:30:00Z',house:'Anchor House',created_at:'2026-06-10T10:00:00Z'},
-    {id:'rd-d4',resident_id:'d2',resident_name:'Maria S.',template_id:'dtp-1',template_name:'House Rules Agreement',template_desc:'Please read and sign the house rules.',template_url:'https://www.w3.org/WAI/WCAG21/Techniques/pdf/PDF1',status:'complete',resident_sig:'DEMO_SIG',resident_signed_at:'2026-06-12T10:00:00Z',manager_sig:'DEMO_SIG',manager_signed_at:'2026-06-12T11:00:00Z',manager_name:'Demo Manager',house:'Anchor House',created_at:'2026-06-10T10:00:00Z'}
-  ]
+  chores:[{id:'ch-d9b',resident_id:'d9',resident_name:'Johnny Test',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},{id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},{id:'ch-d6',resident_id:'d6',resident_name:'Lisa W.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},{id:'ch-d7',resident_id:'d7',resident_name:'Marcus B.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Unity House'},{id:'ch-d9',resident_id:'d9',resident_name:'Johnny Test',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Unity House'}]
 };
 
-function loadDemoData(){allResidents=DEMO_RESIDENTS;allCheckins=makeDemoCheckins();allCurfewLog=makeDemoCurfew();allChores=DEMO_DATA.chores;allEvents=DEMO_DATA.events;cachedDrugTests=makeDemoDrugTests();cachedSettings=DEMO_DATA.settings;cachedAnnouncement=DEMO_DATA.announcement;cachedAcks=[{announcement_id:'ann-demo',resident_id:'d2',resident_name:'Maria S.'},{announcement_id:'ann-demo',resident_id:'d4',resident_name:'Angela M.'}];allManagers=DEMO_DATA.managers;selectedHouse=null;cachedIncidents=DEMO_DATA.incidents||[];cachedDocTemplates=DEMO_DATA.docTemplates||[];cachedResidentDocs=DEMO_DATA.residentDocs.map(d=>({...d,resident_sig:d.resident_sig==='DEMO_SIG'?DEMO_SIG:d.resident_sig,manager_sig:d.manager_sig==='DEMO_SIG'?DEMO_SIG:d.manager_sig}))||[];}
+function loadDemoData(){allResidents=DEMO_RESIDENTS;allCheckins=makeDemoCheckins();allCurfewLog=makeDemoCurfew();allChores=DEMO_DATA.chores;allEvents=DEMO_DATA.events;cachedDrugTests=makeDemoDrugTests();cachedSettings=DEMO_DATA.settings;cachedAnnouncement=DEMO_DATA.announcement;cachedAcks=[{announcement_id:'ann-demo',resident_id:'d2',resident_name:'Maria S.'},{announcement_id:'ann-demo',resident_id:'d4',resident_name:'Angela M.'}];allManagers=DEMO_DATA.managers;selectedHouse=null;cachedIncidents=DEMO_DATA.incidents||[];}
 
 function enterDemo(role){isDemoMode=true;role=role||'manager';if(role==='manager')currentUser=DEMO_DATA.manager;else if(role==='owner')currentUser=DEMO_DATA.owner;else currentUser=DEMO_DATA.resident;loadDemoData();hideLoading();enterApp();setTimeout(()=>toast('Demo mode \u2014 explore freely, nothing is saved'),800);}
 
@@ -1890,29 +1802,16 @@ function renderResDocsCard(){
   const el=document.getElementById('res-docs-card');if(!el)return;
   const myDocs=cachedResidentDocs.filter(d=>d.resident_id===currentUser.id&&d.status!=='complete');
   if(!myDocs.length){el.innerHTML='';return;}
-  const needSign=myDocs.filter(d=>d.status==='pending');
-  const awaitingMgr=myDocs.filter(d=>d.status==='resident_signed');
-  const borderColor=needSign.length?'var(--pink)':'var(--warn)';
-  const headerColor=needSign.length?'var(--pink)':'var(--warn)';
-  let heading='';
-  if(needSign.length&&awaitingMgr.length)heading=needSign.length+' to sign &middot; '+awaitingMgr.length+' awaiting countersignature';
-  else if(needSign.length)heading=needSign.length+' document'+(needSign.length!==1?'s':'')+' to sign';
-  else heading=awaitingMgr.length+' signed &mdash; awaiting countersignature';
-  el.innerHTML='<div class="card" style="border:2px solid '+borderColor+';background:rgba(192,57,122,0.03);margin-bottom:0">'
+  el.innerHTML='<div class="card" style="border:2px solid var(--pink);background:rgba(192,57,122,0.03);margin-bottom:0">'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
     +'<div style="font-size:28px">📋</div>'
-    +'<div><div style="font-size:15px;font-weight:800;color:'+headerColor+'">'+heading+'</div>'
+    +'<div><div style="font-size:15px;font-weight:800;color:var(--pink)">'+myDocs.length+' document'+(myDocs.length!==1?'s':'')+' to sign</div>'
     +'<div style="font-size:13px;color:var(--mid)">Required by your house manager</div></div></div>'
-    +myDocs.map(d=>{
-      const signed=d.status==='resident_signed';
-      return'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--sand)">'
-        +'<div style="flex:1"><div style="font-size:14px;font-weight:700;color:'+(signed?'var(--mid)':'var(--charcoal)')+'">'+d.template_name+'</div>'
-        +'<div style="font-size:12px;color:var(--mid)">'+d.template_desc+'</div></div>'
-        +(signed
-          ?'<span class="pill pill-yellow" style="margin-left:10px;flex-shrink:0">Awaiting countersign</span>'
-          :'<button class="btn btn-primary btn-sm" data-docid="'+d.id+'" onclick="openSignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0">Sign</button>'
-        )+'</div>';
-    }).join('')
+    +myDocs.map(d=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--sand)">'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:700">'+d.template_name+'</div>'
+      +'<div style="font-size:12px;color:var(--mid)">'+d.template_desc+'</div></div>'
+      +'<button class="btn btn-primary btn-sm" data-docid="'+d.id+'" onclick="openSignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0">Sign</button>'
+      +'</div>').join('')
     +'</div>';
 }
 
