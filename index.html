@@ -1319,6 +1319,20 @@ function renderOwnerHouseList(){
 }
 
 function scrollToExcuse(){document.getElementById('excuse-card').scrollIntoView({behavior:'smooth'});}
+async function deleteAnnouncement(){
+  if(!cachedAnnouncement)return;
+  if(!confirm('Remove this note? It will be saved in history.'))return;
+  if(!isDemoMode){
+    await sb.from('announcements').update({archived:true}).eq('id',cachedAnnouncement.id);
+    await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);
+  }
+  cachedAnnouncement=null;
+  cachedAcks=[];
+  toast('Note removed and archived.');
+  renderMgrAnnouncementStatus();
+  renderManagerDashboard();
+}
+
 function openPostAnnouncement(){
   document.getElementById('announcement-text').value='';
   // Show house selector for Tanya only
@@ -1358,7 +1372,9 @@ async function postAnnouncement(){
   btn.textContent='Post note';btn.classList.remove('btn-disabled');
   closeModal('modal-post-announcement');
   toast('Note posted to '+(isGlobal?'all houses':(targetHouse||'this house'))+'.');
-  renderMgrAnnouncementStatus();renderManagerDashboard();
+  renderMgrAnnouncementStatus();
+  renderManagerDashboard();
+  renderStickyNote();
 }
 
 async function excuseResident(){const val=document.getElementById('excuse-resident-select').value;const date=document.getElementById('excuse-date').value;const reason=document.getElementById('excuse-reason').value.trim();if(!val){toast('Select a resident.');return;}if(!date){toast('Select a date.');return;}if(!reason){toast('Please enter a reason.',true);return;}const[resId,resName]=val.split('|');const r=allResidents.find(x=>x.id===resId);const record={id:'cl-'+Date.now(),resident_id:resId,resident_name:resName,action:'excused',ts:date+'T20:00:00Z',excused:true,excused_reason:reason,late:false,house:r?r.house:null};let clErr;try{const r2=await sb.from('curfew_log').insert(record);clErr=r2.error;}catch(e){clErr={message:e.message};}if(clErr){toast('Could not save. Check your connection.',true);return;}allCurfewLog.unshift(record);toast(`${resName} marked as excused.`);document.getElementById('excuse-reason').value='';renderManagerDashboard();}
@@ -2198,7 +2214,7 @@ function switchReportTab(tab){
   document.getElementById('report-section-drugtests').style.display=tab==='drugtests'?'block':'none';
   document.getElementById('report-tab-attendance').className=tab==='attendance'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
   document.getElementById('report-tab-drugtests').className=tab==='drugtests'?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
-  if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(function(){populateDtResidentFilter();renderDtHistory();renderDtReport(currentDtRange);});}else{populateDtResidentFilter();renderDtHistory();renderDtReport(currentDtRange);}}
+  if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(function(){populateDtResidentFilter();renderDtHistory();});}else{populateDtResidentFilter();renderDtHistory();}}
   // Update flex styles
   document.getElementById('report-tab-attendance').style.flex='1';
   document.getElementById('report-tab-drugtests').style.flex='1';
@@ -2562,8 +2578,12 @@ sb.from=function(table){
 async function openAnnouncementHistory(){
   const el=document.getElementById('announcement-history-content');
   if(!el)return;
-  el.innerHTML='<p class="text-mid">Loading...</p>';
   document.getElementById('modal-announcement-history').classList.add('open');
+  if(isDemoMode){
+    el.innerHTML='<div style="padding:14px 0;border-bottom:1px solid var(--sand)"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase">All houses</span><span style="font-size:12px;color:var(--mid)">Mon, Jun 10</span></div><div style="font-size:15px;color:var(--charcoal);line-height:1.6;margin-bottom:6px">Reminder: all residents must sign the updated house agreement by Friday.</div><div style="font-size:12px;color:var(--soft)">Posted by Demo Manager</div></div><div style="padding:14px 0"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase">Anchor House</span><span style="font-size:12px;color:var(--mid)">Mon, Jun 3</span></div><div style="font-size:15px;color:var(--charcoal);line-height:1.6;margin-bottom:6px">New curfew policy in effect starting this week. Phase 1: 9pm weekdays.</div><div style="font-size:12px;color:var(--soft)">Posted by Demo Manager</div></div>';
+    return;
+  }
+  el.innerHTML='<p class="text-mid">Loading...</p>';
   try{
     let q=sb.from('announcements').select('*').eq('archived',true).order('created_at',{ascending:false}).limit(50);
     if(!isOwner()&&myHouse()){
