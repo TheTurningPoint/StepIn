@@ -288,6 +288,8 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
   <div id="res-sobriety-banner"></div>
 
+  <div id="res-docs-card"></div>
+
   <div class="card" style="padding:0;overflow:hidden">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer" onclick="toggleResMore()">
       <span style="font-size:14px;font-weight:700;color:var(--mid)">More</span>
@@ -357,6 +359,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- DASHBOARD -->
 <div class="body" id="mgr-pane-dash" style="display:block">
   <div id="dash-sticky-note"></div>
+  <div id="dash-docs-alert"></div>
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
       <span class="card-title" style="margin:0">In / Out</span>
@@ -591,7 +594,27 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
       <!-- Owner-only org tools -->
+  <!-- Documents — owner only -->
   <div id="owner-tools" style="display:none">
+    <div class="card" style="padding:0;overflow:hidden;border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important">
+      <button onclick="toggleSettingsSection('docs-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
+        <span style="font-size:15px;font-weight:700;color:var(--gold-light)">&#128196; Documents</span>
+        <span id="docs-panel-arrow" style="font-size:18px;color:var(--gold-light);transition:transform 0.2s">&#8250;</span>
+      </button>
+      <div id="docs-panel" style="display:none;padding:0 20px 20px">
+        <div class="divider" style="margin-top:0"></div>
+        <div class="flex-between" style="margin-bottom:12px">
+          <span class="text-mid">Document templates</span>
+          <button class="btn btn-gold btn-sm" onclick="openAddDocTemplate()">+ Add</button>
+        </div>
+        <div id="doc-templates-list"></div>
+        <div class="divider"></div>
+        <p style="font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">Send to resident</p>
+        <div class="field"><label>Resident</label><select id="docs-send-resident"><option value="">Select resident...</option></select></div>
+        <div id="docs-send-list" style="margin-bottom:12px"></div>
+        <button class="btn btn-gold" onclick="sendDocsToResident()">Send selected documents</button>
+      </div>
+    </div>
     <div class="card" style="padding:0;overflow:hidden;border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important">
       <button onclick="toggleSettingsSection('org-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
         <span style="font-size:15px;font-weight:700;color:var(--gold-light)">Organization &amp; managers</span>
@@ -881,6 +904,51 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-resident-detail" onclick="if(event.target===this)closeModal('modal-resident-detail')"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
 
+<div class="modal-bg" id="modal-sign-doc" onclick="if(event.target===this)closeModal('modal-sign-doc')"><div class="modal"><div class="modal-handle"></div>
+<h2 id="sign-doc-title">Sign document</h2>
+<p class="text-mid" style="margin-bottom:14px" id="sign-doc-desc"></p>
+<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px;margin-bottom:16px">
+  <div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Document</div>
+  <div style="font-size:14px;font-weight:600;color:var(--charcoal);margin-bottom:10px" id="sign-doc-name"></div>
+  <a id="sign-doc-link" href="#" target="_blank" style="display:inline-block;background:var(--black);color:white;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;text-decoration:none">&#128196; Open PDF in Safari</a>
+  <div style="font-size:11px;color:var(--mid);margin-top:8px">Read the document, then sign below.</div>
+</div>
+<div style="font-size:13px;font-weight:700;color:var(--charcoal);margin-bottom:8px">Your signature</div>
+<div class="sig-wrap"><canvas id="doc-sig-canvas"></canvas><div class="sig-label" id="doc-sig-hint">Sign here with your finger</div></div>
+<div style="display:flex;gap:10px;margin-top:10px;margin-bottom:16px">
+  <button class="btn btn-outline btn-sm" onclick="clearDocSig()">Clear</button>
+  <button class="btn btn-primary" id="doc-sign-btn" onclick="submitDocSignature()" style="flex:1">Sign &amp; confirm &#10003;</button>
+</div>
+<button class="btn btn-outline" onclick="closeModal('modal-sign-doc')">Cancel</button>
+</div></div>
+
+<div class="modal-bg" id="modal-countersign-doc" onclick="if(event.target===this)closeModal('modal-countersign-doc')"><div class="modal"><div class="modal-handle"></div>
+<h2>Countersign document</h2>
+<p class="text-mid" style="margin-bottom:14px" id="countersign-doc-desc"></p>
+<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:14px;margin-bottom:14px">
+  <div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resident signature</div>
+  <img id="countersign-res-sig" src="" style="max-width:100%;max-height:80px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;display:block;margin-top:6px">
+</div>
+<div style="font-size:13px;font-weight:700;color:var(--charcoal);margin-bottom:8px">Your countersignature</div>
+<div class="sig-wrap"><canvas id="mgr-sig-canvas"></canvas><div class="sig-label" id="mgr-sig-hint">Sign here with your finger</div></div>
+<div style="display:flex;gap:10px;margin-top:10px;margin-bottom:16px">
+  <button class="btn btn-outline btn-sm" onclick="clearMgrSig()">Clear</button>
+  <button class="btn btn-primary" id="countersign-btn" onclick="submitCountersign()" style="flex:1">Countersign &#10003;</button>
+</div>
+<button class="btn btn-outline" onclick="closeModal('modal-countersign-doc')">Cancel</button>
+</div></div>
+
+<div class="modal-bg" id="modal-add-doc-template" onclick="if(event.target===this)closeModal('modal-add-doc-template')"><div class="modal"><div class="modal-handle"></div>
+<h2>Add document template</h2>
+<p class="text-mid" style="margin-bottom:16px">Add a document for residents to sign. Paste a public PDF URL (Google Drive, Dropbox, etc.).</p>
+<div class="field"><label>Document name</label><input type="text" id="doc-template-name" placeholder="e.g. House Rules Agreement"></div>
+<div class="field"><label>Description <span style="font-weight:400;color:var(--mid)">(shown to resident)</span></label><textarea id="doc-template-desc" placeholder="e.g. Please read and sign the house rules..." style="height:70px;resize:none"></textarea></div>
+<div class="field"><label>PDF URL</label><input type="url" id="doc-template-url" placeholder="https://..."></div>
+<div class="field"><label style="display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:15px;font-weight:500;cursor:pointer"><input type="checkbox" id="doc-template-required"> Required for all new residents</label></div>
+<button class="btn btn-primary" id="doc-template-btn" onclick="saveDocTemplate()">Add document</button>
+<button class="btn btn-outline mt8" onclick="closeModal('modal-add-doc-template')">Cancel</button>
+</div></div>
+
 <div id="toast"></div>
 <iframe id="print-frame" style="display:none;position:fixed;width:0;height:0;border:none"></iframe>
 <script>
@@ -941,6 +1009,7 @@ async function loadAllDataInner(){
       const{data:uData}=await sb.from('residents').select('*').eq('id',currentUser.id).single();if(uData){currentUser={...currentUser,...uData};localStorage.setItem('si_user',JSON.stringify(currentUser));}
       const{data:dtData}=await sb.from('drug_tests').select('*').eq('resident_id',currentUser.id).order('created_at',{ascending:false});cachedDrugTests=dtData||[];
     }
+    await loadDocuments();
   }catch(e){console.log('err',e);}
 }
 
@@ -996,7 +1065,7 @@ function renderResidentHome(){
   }
   const remaining=Math.max(0,req-thisWeek.length);
   document.getElementById('req-status').innerHTML=remaining===0?'<span class="pill pill-green">\u2713 '+thisWeek.length+'/'+req+' complete</span>':'<span class="pill pill-yellow">'+thisWeek.length+'/'+req+' \u2014 '+remaining+' more needed</span>';
-  renderStickyNote();renderCurfewAction();renderResChores();renderResCalendar();
+  renderStickyNote();renderResDocsCard();renderCurfewAction();renderResChores();renderResCalendar();
   // Detail panels (meetings, drug tests, curfew history) load when More is expanded
 }
 
@@ -1191,6 +1260,7 @@ function renderManagerDashboard(){if(isOwner()){renderOwnerDashboard();return;}r
 function renderOwnerDashboard(){
   renderDashDocsAlert();
   const sn=document.getElementById('dash-sticky-note');if(sn&&cachedAnnouncement)sn.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">ACTIVE NOTE</div><div style="font-size:14px;color:#3A3000">'+cachedAnnouncement.message+'</div></div>';else if(sn)sn.innerHTML='';
+  renderDashDocsAlert();
   const curfewEl=document.getElementById('dash-curfew-list');const attEl=document.getElementById('dash-attendance-list');
   if(!selectedHouse){
     const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
@@ -1298,7 +1368,7 @@ async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin
 function openAddResident(){['add-name','add-pin','add-move-in-date','add-sobriety-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('add-phase').value='1';document.getElementById('modal-add-resident').classList.add('open');}
 function openAddManager(){['add-mgr-name','add-mgr-id','add-mgr-pin'].forEach(id=>document.getElementById(id).value='');document.getElementById('modal-add-manager').classList.add('open');}
 
-async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const moveInDate=document.getElementById('add-move-in-date')?document.getElementById('add-move-in-date').value||null:null;const sobrietyDate=document.getElementById('add-sobriety-date')?document.getElementById('add-sobriety-date').value||null:null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house,move_in_date:moveInDate,sobriety_date:sobrietyDate,status:'active'};let addResErr;try{const{error:e2}=await sb.from('residents').insert(newR);addResErr=e2;}catch(e){addResErr={message:e.message};}if(addResErr){toast('Could not add: '+addResErr.message,true);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push(newR);btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(name+' added.');renderManagerDashboard();}
+async function saveNewResident(){const name=document.getElementById('add-name').value.trim();const pin=document.getElementById('add-pin').value.trim();const phase=parseInt(document.getElementById('add-phase').value)||1;if(!name){toast('Please enter a name.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}if(allResidents.find(r=>r.name.toLowerCase()===name.toLowerCase()&&r.house===myHouse())){toast('That name already exists in this house.');return;}const btn=document.getElementById('add-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const house=myHouse()||null;const moveInDate=document.getElementById('add-move-in-date')?document.getElementById('add-move-in-date').value||null:null;const sobrietyDate=document.getElementById('add-sobriety-date')?document.getElementById('add-sobriety-date').value||null:null;const newR={id:'r-'+Date.now(),name,pin,role:'resident',phase,house,move_in_date:moveInDate,sobriety_date:sobrietyDate,status:'active'};let addResErr;try{const{error:e2}=await sb.from('residents').insert(newR);addResErr=e2;}catch(e){addResErr={message:e.message};}if(addResErr){toast('Could not add: '+addResErr.message,true);btn.textContent='Add resident';btn.classList.remove('btn-disabled');return;}allResidents.push(newR);autoSendDocsToNewResident(newR.id,newR.name,newR.house);btn.textContent='Add resident';btn.classList.remove('btn-disabled');closeModal('modal-add-resident');toast(name+' added.');renderManagerDashboard();}
 
 async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.',true);return;}if(!mgrId){toast('Please enter a manager ID.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,pin,role:'manager',house:houseName};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message,true);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(houseName+' added.');buildHouseDropdown();renderOwnerHouseList();populateSelects();}
 
@@ -1648,6 +1718,7 @@ function toggleSettingsSection(panelId){
   if(!isOpen&&panelId==='excuse-panel'){populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
   // When opening org panel, load settings + house list
   if(!isOpen&&panelId==='org-panel'){loadSettings();renderOwnerHouseList();}
+  if(!isOpen&&panelId==='docs-panel'){if(!isDemoMode)loadDocuments().then(()=>renderDocTemplates());else renderDocTemplates();const sel=document.getElementById('docs-send-resident');if(sel){const res=residents();sel.innerHTML='<option value="">Select resident…</option>'+res.map(r=>'<option value="'+r.id+'|'+r.name+'">'+r.name+'</option>').join('');}}
 }
 
 function loadDischargedInline(){
@@ -1701,200 +1772,244 @@ const MEETING_DB=[{"name":"Serenity Group","type":"AA","day":"Monday","time":"7:
 
 
 // ── RESIDENT: show docs card only if pending ──
+// ── DOCUMENTS ──
+let cachedDocTemplates=[];
+let cachedResidentDocs=[];
+let docSigCanvas=null,docSigCtx=null,docSigHasMark=false;
+let mgrSigCanvas=null,mgrSigCtx=null,mgrSigHasMark=false;
+let currentSigningDoc=null;
+let currentCountersignDoc=null;
+
+async function loadDocuments(){
+  if(isDemoMode)return;
+  try{
+    const{data:tData}=await sb.from('document_templates').select('*').order('created_at',{ascending:true});
+    cachedDocTemplates=tData||[];
+    if(isStaff()){
+      const resIds=residents().map(r=>r.id);
+      if(resIds.length){
+        const{data:dData}=await sb.from('resident_documents').select('*').in('resident_id',resIds).order('created_at',{ascending:false});
+        cachedResidentDocs=dData||[];
+      }
+    }else{
+      const{data:dData}=await sb.from('resident_documents').select('*').eq('resident_id',currentUser.id).order('created_at',{ascending:false});
+      cachedResidentDocs=dData||[];
+    }
+  }catch(e){console.log('doc load err',e);}
+}
+
 function renderResDocsCard(){
-  var el=document.getElementById('res-docs-card');if(!el)return;
-  var pending=cachedResidentDocs.filter(function(d){return d.resident_id===currentUser.id&&d.status==='pending';});
+  const el=document.getElementById('res-docs-card');if(!el)return;
+  const myDocs=cachedResidentDocs.filter(d=>d.resident_id===currentUser.id&&d.status!=='complete');
+  if(!myDocs.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="card" style="border:2px solid var(--pink);background:rgba(192,57,122,0.03);margin-bottom:0">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
+    +'<div style="font-size:28px">📋</div>'
+    +'<div><div style="font-size:15px;font-weight:800;color:var(--pink)">'+myDocs.length+' document'+(myDocs.length!==1?'s':'')+' to sign</div>'
+    +'<div style="font-size:13px;color:var(--mid)">Required by your house manager</div></div></div>'
+    +myDocs.map(d=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--sand)">'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:700">'+d.template_name+'</div>'
+      +'<div style="font-size:12px;color:var(--mid)">'+d.template_desc+'</div></div>'
+      +'<button class="btn btn-primary btn-sm" data-docid="'+d.id+'" onclick="openSignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0">Sign</button>'
+      +'</div>').join('')
+    +'</div>';
+}
+
+function renderDashDocsAlert(){
+  const el=document.getElementById('dash-docs-alert');if(!el)return;
+  const pending=cachedResidentDocs.filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
   if(!pending.length){el.innerHTML='';return;}
-  var rows=pending.map(function(d){
-    var t=cachedDocTemplates.find(function(x){return x.id===d.template_id;});
-    if(!t)return'';
-    return'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sand)"><div style="font-size:14px;font-weight:700">'+t.name+'</div><button class="btn btn-primary btn-sm" onclick="openSignDoc(this.dataset.id)" data-id="'+d.id+'">Sign</button></div>';
-  }).join('');
-  el.innerHTML='<div style="background:var(--cream);border:2px solid var(--pink);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px"><div style="font-size:15px;font-weight:800;color:var(--charcoal);margin-bottom:4px">&#128196; '+pending.length+' document'+(pending.length>1?'s':'')+' to sign</div><p class="text-mid" style="margin-bottom:14px;font-size:13px">Please read and sign before your next check-in.</p>'+rows+'</div>';
+  el.innerHTML='<div class="card" style="border:2px solid var(--warn);background:var(--warn-light);margin-bottom:0">'
+    +'<div style="font-size:13px;font-weight:700;color:var(--warn);margin-bottom:10px">&#9997;&#65039; '+pending.length+' document'+(pending.length!==1?'s':'')+' awaiting your countersignature</div>'
+    +pending.map(d=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(230,126,34,0.2)">'
+      +'<div><div style="font-size:14px;font-weight:700">'+d.template_name+'</div>'
+      +'<div style="font-size:12px;color:var(--warn)">'+d.resident_name+' signed &mdash; needs your countersignature</div></div>'
+      +'<button class="btn btn-warn btn-sm" data-docid="'+d.id+'" onclick="openCountersignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0;font-size:12px">Sign</button>'
+      +'</div>').join('')
+    +'</div>';
 }
 
 function openSignDoc(docId){
   const doc=cachedResidentDocs.find(d=>d.id===docId);if(!doc)return;
-  const tmpl=cachedDocTemplates.find(t=>t.id===doc.template_id);if(!tmpl)return;
   currentSigningDoc=doc;
-  document.getElementById('sign-doc-title').textContent=tmpl.name;
-  document.getElementById('sign-doc-desc').textContent=tmpl.description||'';
-  document.getElementById('sign-doc-link').href=tmpl.file_path||'#';
+  document.getElementById('sign-doc-title').textContent='Sign: '+doc.template_name;
+  document.getElementById('sign-doc-name').textContent=doc.template_name;
+  document.getElementById('sign-doc-desc').textContent=doc.template_desc||'Please read this document carefully before signing.';
+  const link=document.getElementById('sign-doc-link');
+  if(doc.template_url){link.href=doc.template_url;link.style.display='inline-block';}
+  else link.style.display='none';
+  docSigHasMark=false;
   document.getElementById('modal-sign-doc').classList.add('open');
-  setTimeout(()=>initDocSigCanvas(),300);
+  setTimeout(initDocSigCanvas,300);
 }
 
 function initDocSigCanvas(){
-  docSigCanvas=document.getElementById('sign-doc-canvas');
+  docSigCanvas=document.getElementById('doc-sig-canvas');
   if(!docSigCanvas)return;
   docSigCtx=docSigCanvas.getContext('2d');
-  docSigHasMark=false;
   const w=docSigCanvas.offsetWidth||300;
   docSigCanvas.width=w;docSigCanvas.height=180;
   docSigCtx.fillStyle='#FFFFFF';docSigCtx.fillRect(0,0,w,180);
   docSigCtx.strokeStyle='#0A0A0A';docSigCtx.lineWidth=2.5;docSigCtx.lineCap='round';docSigCtx.lineJoin='round';
   let drawing=false;
   const getXY=e=>{const r=docSigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
-  docSigCanvas.onmousedown=e=>{drawing=true;docSigCtx.beginPath();const p=getXY(e);docSigCtx.moveTo(p[0],p[1]);};
-  docSigCanvas.onmousemove=e=>{if(!drawing)return;const p=getXY(e);docSigCtx.lineTo(p[0],p[1]);docSigCtx.stroke();docSigHasMark=true;document.getElementById('sign-doc-hint').style.opacity='0';};
+  docSigCanvas.onmousedown=e=>{drawing=true;docSigCtx.beginPath();const[x,y]=getXY(e);docSigCtx.moveTo(x,y);};
+  docSigCanvas.onmousemove=e=>{if(!drawing)return;const[x,y]=getXY(e);docSigCtx.lineTo(x,y);docSigCtx.stroke();docSigHasMark=true;document.getElementById('doc-sig-hint').style.opacity='0';};
   docSigCanvas.onmouseup=()=>drawing=false;
-  docSigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;docSigCtx.beginPath();const p=getXY(e);docSigCtx.moveTo(p[0],p[1]);};
-  docSigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const p=getXY(e);docSigCtx.lineTo(p[0],p[1]);docSigCtx.stroke();docSigHasMark=true;document.getElementById('sign-doc-hint').style.opacity='0';};
+  docSigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;docSigCtx.beginPath();const[x,y]=getXY(e);docSigCtx.moveTo(x,y);};
+  docSigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const[x,y]=getXY(e);docSigCtx.lineTo(x,y);docSigCtx.stroke();docSigHasMark=true;document.getElementById('doc-sig-hint').style.opacity='0';};
   docSigCanvas.ontouchend=()=>drawing=false;
 }
 
 function clearDocSig(){
   if(docSigCtx){docSigCtx.clearRect(0,0,docSigCanvas.width,docSigCanvas.height);docSigCtx.fillStyle='#FFFFFF';docSigCtx.fillRect(0,0,docSigCanvas.width,docSigCanvas.height);}
   docSigHasMark=false;
-  const h=document.getElementById('sign-doc-hint');if(h)h.style.opacity='1';
+  const h=document.getElementById('doc-sig-hint');if(h)h.style.opacity='1';
 }
 
 async function submitDocSignature(){
   if(!docSigHasMark){toast('Please sign before submitting.',true);return;}
   if(!currentSigningDoc)return;
-  const btn=document.getElementById('sign-doc-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const btn=document.getElementById('doc-sign-btn');
+  btn.textContent='Saving…';btn.classList.add('btn-disabled');
   const sigData=docSigCanvas.toDataURL('image/jpeg',0.6);
-  const updates={resident_sig:sigData,resident_signed_at:new Date().toISOString(),status:'resident_signed'};
-  if(!isDemoMode){const{error}=await sb.from('resident_documents').update(updates).eq('id',currentSigningDoc.id);if(error){toast('Could not save. Try again.',true);btn.textContent='Submit signature';btn.classList.remove('btn-disabled');return;}}
+  const updates={status:'resident_signed',resident_sig:sigData,resident_signed_at:new Date().toISOString()};
+  if(!isDemoMode){
+    const{error}=await sb.from('resident_documents').update(updates).eq('id',currentSigningDoc.id);
+    if(error){toast('Could not save. Try again.',true);btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');return;}
+  }
   cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentSigningDoc.id?{...d,...updates}:d);
-  btn.textContent='Submit signature';btn.classList.remove('btn-disabled');
+  btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');
   closeModal('modal-sign-doc');
-  toast('Signed. Thank you.');
+  toast('Document signed! Your manager will countersign shortly.');
   renderResDocsCard();
 }
 
-// ── MANAGER: countersign alert ──
-function renderDashDocsAlert(){
-  const el=document.getElementById('dash-docs-alert');if(!el)return;
-  const res=residents();const resIds=new Set(res.map(r=>r.id));
-  const waiting=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
-  if(!waiting.length){el.innerHTML='';return;}
-  const names=[...new Set(waiting.map(d=>d.resident_name))];
-  el.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--pink);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:800;color:var(--charcoal)">&#128196; '+waiting.length+' document'+(waiting.length>1?'s':'')+' awaiting your signature</div><div style="font-size:12px;color:var(--mid);margin-top:3px">'+names.join(', ')+'</div></div><button class="btn btn-primary btn-sm" onclick="openCountersigList()">Review</button></div>';
-}
-
-function openCountersigList(){
-  const res=residents();const resIds=new Set(res.map(r=>r.id));
-  const waiting=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
-  if(!waiting.length)return;
-  // Open first one
-  openCountersig(waiting[0].id);
-}
-
-function openCountersig(docId){
+function openCountersignDoc(docId){
   const doc=cachedResidentDocs.find(d=>d.id===docId);if(!doc)return;
-  const tmpl=cachedDocTemplates.find(t=>t.id===doc.template_id);if(!tmpl)return;
-  currentCountersigDoc=doc;
-  document.getElementById('countersign-doc-title').textContent=tmpl.name;
-  document.getElementById('countersign-doc-info').innerHTML='<div style="background:var(--cream);border-radius:10px;padding:12px;font-size:13px;line-height:1.8"><strong>Resident:</strong> '+doc.resident_name+'<br><strong>Signed:</strong> '+(doc.resident_signed_at?fmtDate(new Date(doc.resident_signed_at))+' at '+fmtTime(new Date(doc.resident_signed_at)):'Unknown')+'<br>'+(doc.resident_sig&&doc.resident_sig!=='demo'?'<strong>Resident signature:</strong><br><img src="'+doc.resident_sig+'" style="width:100%;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;margin-top:4px">':'')+'</div>';
+  currentCountersignDoc=doc;
+  document.getElementById('countersign-doc-desc').textContent=doc.template_name+' — signed by '+doc.resident_name;
+  const img=document.getElementById('countersign-res-sig');
+  if(doc.resident_sig)img.src=doc.resident_sig;
+  mgrSigHasMark=false;
   document.getElementById('modal-countersign-doc').classList.add('open');
-  setTimeout(()=>initCountersigCanvas(),300);
+  setTimeout(initMgrSigCanvas,300);
 }
 
-function initCountersigCanvas(){
-  countersigCanvas=document.getElementById('countersign-canvas');if(!countersigCanvas)return;
-  countersigCtx=countersigCanvas.getContext('2d');countersigHasMark=false;
-  const w=countersigCanvas.offsetWidth||300;
-  countersigCanvas.width=w;countersigCanvas.height=180;
-  countersigCtx.fillStyle='#FFFFFF';countersigCtx.fillRect(0,0,w,180);
-  countersigCtx.strokeStyle='#0A0A0A';countersigCtx.lineWidth=2.5;countersigCtx.lineCap='round';countersigCtx.lineJoin='round';
+function initMgrSigCanvas(){
+  mgrSigCanvas=document.getElementById('mgr-sig-canvas');
+  if(!mgrSigCanvas)return;
+  mgrSigCtx=mgrSigCanvas.getContext('2d');
+  const w=mgrSigCanvas.offsetWidth||300;
+  mgrSigCanvas.width=w;mgrSigCanvas.height=180;
+  mgrSigCtx.fillStyle='#FFFFFF';mgrSigCtx.fillRect(0,0,w,180);
+  mgrSigCtx.strokeStyle='#0A0A0A';mgrSigCtx.lineWidth=2.5;mgrSigCtx.lineCap='round';mgrSigCtx.lineJoin='round';
   let drawing=false;
-  const getXY=e=>{const r=countersigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
-  countersigCanvas.onmousedown=e=>{drawing=true;countersigCtx.beginPath();const p=getXY(e);countersigCtx.moveTo(p[0],p[1]);};
-  countersigCanvas.onmousemove=e=>{if(!drawing)return;const p=getXY(e);countersigCtx.lineTo(p[0],p[1]);countersigCtx.stroke();countersigHasMark=true;document.getElementById('countersign-hint').style.opacity='0';};
-  countersigCanvas.onmouseup=()=>drawing=false;
-  countersigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;countersigCtx.beginPath();const p=getXY(e);countersigCtx.moveTo(p[0],p[1]);};
-  countersigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const p=getXY(e);countersigCtx.lineTo(p[0],p[1]);countersigCtx.stroke();countersigHasMark=true;document.getElementById('countersign-hint').style.opacity='0';};
-  countersigCanvas.ontouchend=()=>drawing=false;
+  const getXY=e=>{const r=mgrSigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
+  mgrSigCanvas.onmousedown=e=>{drawing=true;mgrSigCtx.beginPath();const[x,y]=getXY(e);mgrSigCtx.moveTo(x,y);};
+  mgrSigCanvas.onmousemove=e=>{if(!drawing)return;const[x,y]=getXY(e);mgrSigCtx.lineTo(x,y);mgrSigCtx.stroke();mgrSigHasMark=true;document.getElementById('mgr-sig-hint').style.opacity='0';};
+  mgrSigCanvas.onmouseup=()=>drawing=false;
+  mgrSigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;mgrSigCtx.beginPath();const[x,y]=getXY(e);mgrSigCtx.moveTo(x,y);};
+  mgrSigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const[x,y]=getXY(e);mgrSigCtx.lineTo(x,y);mgrSigCtx.stroke();mgrSigHasMark=true;document.getElementById('mgr-sig-hint').style.opacity='0';};
+  mgrSigCanvas.ontouchend=()=>drawing=false;
 }
 
-function clearCountersig(){
-  if(countersigCtx){countersigCtx.clearRect(0,0,countersigCanvas.width,countersigCanvas.height);countersigCtx.fillStyle='#FFFFFF';countersigCtx.fillRect(0,0,countersigCanvas.width,countersigCanvas.height);}
-  countersigHasMark=false;const h=document.getElementById('countersign-hint');if(h)h.style.opacity='1';
+function clearMgrSig(){
+  if(mgrSigCtx){mgrSigCtx.clearRect(0,0,mgrSigCanvas.width,mgrSigCanvas.height);mgrSigCtx.fillStyle='#FFFFFF';mgrSigCtx.fillRect(0,0,mgrSigCanvas.width,mgrSigCanvas.height);}
+  mgrSigHasMark=false;
+  const h=document.getElementById('mgr-sig-hint');if(h)h.style.opacity='1';
 }
 
-async function submitCountersig(){
-  if(!countersigHasMark){toast('Please sign before submitting.',true);return;}
-  if(!currentCountersigDoc)return;
-  const btn=document.getElementById('countersign-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
-  const sigData=countersigCanvas.toDataURL('image/jpeg',0.6);
-  const updates={manager_sig:sigData,manager_name:currentUser.name,manager_signed_at:new Date().toISOString(),status:'complete'};
-  if(!isDemoMode){const{error}=await sb.from('resident_documents').update(updates).eq('id',currentCountersigDoc.id);if(error){toast('Could not save.',true);btn.textContent='Confirm & complete';btn.classList.remove('btn-disabled');return;}}
-  cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentCountersigDoc.id?{...d,...updates}:d);
-  btn.textContent='Confirm & complete';btn.classList.remove('btn-disabled');
+async function submitCountersign(){
+  if(!mgrSigHasMark){toast('Please sign before submitting.',true);return;}
+  if(!currentCountersignDoc)return;
+  const btn=document.getElementById('countersign-btn');
+  btn.textContent='Saving…';btn.classList.add('btn-disabled');
+  const sigData=mgrSigCanvas.toDataURL('image/jpeg',0.6);
+  const updates={status:'complete',manager_sig:sigData,manager_signed_at:new Date().toISOString(),manager_name:currentUser.name};
+  if(!isDemoMode){
+    const{error}=await sb.from('resident_documents').update(updates).eq('id',currentCountersignDoc.id);
+    if(error){toast('Could not save. Try again.',true);btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');return;}
+  }
+  cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentCountersignDoc.id?{...d,...updates}:d);
+  btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');
   closeModal('modal-countersign-doc');
-  toast('Document complete.');
+  toast('Document countersigned and complete.');
   renderDashDocsAlert();
-  // Check if more waiting
-  const res=residents();const resIds=new Set(res.map(r=>r.id));
-  const remaining=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
-  if(remaining.length)setTimeout(()=>openCountersig(remaining[0].id),400);
 }
 
-// ── SETTINGS: document templates ──
 function renderDocTemplates(){
-  var el=document.getElementById('docs-template-list');if(!el)return;
-  if(!cachedDocTemplates.length){el.innerHTML='<p class="text-mid" style="font-size:13px">No templates yet. Add your first document above.</p>';return;}
-  el.innerHTML=cachedDocTemplates.map(function(t){
-    return'<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)"><div style="flex:1"><div style="font-size:14px;font-weight:700">'+t.name+'</div><div style="font-size:12px;color:var(--mid);margin-top:2px">'+(t.required_for_onboarding?'<span class="pill pill-green" style="font-size:10px">Required</span>':'<span class="pill pill-gray" style="font-size:10px">Optional</span>')+' '+(t.description||'')+'</div></div><button onclick="deleteDocTemplate(this.dataset.id)" data-id="'+t.id+'" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button></div>';
-  }).join('');
+  const el=document.getElementById('doc-templates-list');if(!el)return;
+  if(!cachedDocTemplates.length){el.innerHTML='<p class="text-mid" style="font-size:13px;margin-bottom:12px">No document templates yet. Add one above.</p>';return;}
+  el.innerHTML=cachedDocTemplates.map(t=>'<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)">'
+    +'<div style="flex:1"><div style="font-size:14px;font-weight:700">'+t.name+'</div>'
+    +'<div style="font-size:12px;color:var(--mid);margin-top:2px">'+t.description+'</div>'
+    +(t.required?'<span class="pill pill-yellow" style="margin-top:4px;display:inline-block">Required</span>':'')
+    +'</div>'
+    +'<button data-tid="'+t.id+'" onclick="deleteDocTemplate(this.dataset.tid)" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0">&#128465;</button>'
+    +'</div>').join('');
+  // Also populate send checkboxes
+  const sendList=document.getElementById('docs-send-list');
+  if(sendList)sendList.innerHTML=cachedDocTemplates.map(t=>'<label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--sand);cursor:pointer;font-size:14px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--charcoal)">'
+    +'<input type="checkbox" class="doc-send-check" value="'+t.id+'" data-name="'+t.name+'" data-desc="'+(t.description||'')+'" data-url="'+(t.url||'')+'"> '+t.name+'</label>').join('');
 }
 
 function openAddDocTemplate(){
-  ['doc-template-name','doc-template-url','doc-template-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  const req=document.getElementById('doc-template-required');if(req)req.checked=true;
+  ['doc-template-name','doc-template-desc','doc-template-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const cb=document.getElementById('doc-template-required');if(cb)cb.checked=false;
   document.getElementById('modal-add-doc-template').classList.add('open');
 }
 
 async function saveDocTemplate(){
   const name=document.getElementById('doc-template-name').value.trim();
-  const url=document.getElementById('doc-template-url').value.trim();
   const desc=document.getElementById('doc-template-desc').value.trim();
+  const url=document.getElementById('doc-template-url').value.trim();
   const required=document.getElementById('doc-template-required').checked;
   if(!name){toast('Please enter a document name.',true);return;}
-  if(!url){toast('Please enter the PDF URL.',true);return;}
-  const btn=document.getElementById('doc-template-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
-  const rec={id:'dtp-'+Date.now(),name,description:desc||null,file_path:url,required_for_onboarding:required,created_by:currentUser.name,house:myHouse()||null,is_global:isOwner(),created_at:new Date().toISOString()};
-  if(!isDemoMode){const{error}=await sb.from('document_templates').insert(rec);if(error){toast('Could not save.',true);btn.textContent='Save template';btn.classList.remove('btn-disabled');return;}}
-  cachedDocTemplates.push(rec);
-  btn.textContent='Save template';btn.classList.remove('btn-disabled');
+  const btn=document.getElementById('doc-template-btn');
+  btn.textContent='Adding…';btn.classList.add('btn-disabled');
+  const newT={id:'dt-'+Date.now(),name,description:desc,url:url||null,required,created_at:new Date().toISOString()};
+  if(!isDemoMode){
+    const{error}=await sb.from('document_templates').insert(newT);
+    if(error){toast('Could not add: '+error.message,true);btn.textContent='Add document';btn.classList.remove('btn-disabled');return;}
+  }
+  cachedDocTemplates.push(newT);
+  btn.textContent='Add document';btn.classList.remove('btn-disabled');
   closeModal('modal-add-doc-template');
-  toast('Template saved.');
+  toast('Document added.');
   renderDocTemplates();
 }
 
 async function deleteDocTemplate(id){
   const t=cachedDocTemplates.find(x=>x.id===id);if(!t)return;
-  if(!confirm('Delete template "'+t.name+'"?'))return;
-  if(!isDemoMode){const{error}=await sb.from('document_templates').delete().eq('id',id);if(error){toast('Could not delete.',true);return;}}
+  if(!confirm('Remove template "'+t.name+'"? This will not affect already-sent documents.'))return;
+  if(!isDemoMode){const{error}=await sb.from('document_templates').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}}
   cachedDocTemplates=cachedDocTemplates.filter(x=>x.id!==id);
-  toast('Template deleted.');
-  renderDocTemplates();
+  toast('Template removed.');renderDocTemplates();
 }
 
 async function sendDocsToResident(){
   const val=document.getElementById('docs-send-resident').value;
-  if(!val){toast('Select a resident.',true);return;}
+  if(!val){toast('Select a resident first.',true);return;}
   const[resId,resName]=val.split('|');
+  const checks=[...document.querySelectorAll('.doc-send-check:checked')];
+  if(!checks.length){toast('Select at least one document.',true);return;}
   const r=allResidents.find(x=>x.id===resId);
-  const required=cachedDocTemplates.filter(t=>t.required_for_onboarding);
-  if(!required.length){toast('No required templates. Add some first.',true);return;}
-  // Check which ones already sent
-  const alreadySent=new Set(cachedResidentDocs.filter(d=>d.resident_id===resId).map(d=>d.template_id));
-  const toSend=required.filter(t=>!alreadySent.has(t.id));
-  if(!toSend.length){toast('All required documents already sent to '+resName+'.');return;}
-  const records=toSend.map(t=>({id:'rd-'+Date.now()+'-'+t.id,template_id:t.id,resident_id:resId,resident_name:resName,house:r?r.house:(myHouse()||null),status:'pending',sent_at:new Date().toISOString(),created_at:new Date().toISOString()}));
-  if(!isDemoMode){const{error}=await sb.from('resident_documents').insert(records);if(error){toast('Could not send.',true);return;}}
-  cachedResidentDocs=[...cachedResidentDocs,...records];
-  toast(toSend.length+' document'+(toSend.length>1?'s':'')+' sent to '+resName+'.');
+  const records=checks.map(cb=>({id:'rd-'+Date.now()+'-'+cb.value,resident_id:resId,resident_name:resName,template_id:cb.value,template_name:cb.dataset.name,template_desc:cb.dataset.desc,template_url:cb.dataset.url,status:'pending',house:r?r.house:null,created_at:new Date().toISOString()}));
+  if(!isDemoMode){
+    const{error}=await sb.from('resident_documents').insert(records);
+    if(error){toast('Could not send: '+error.message,true);return;}
+  }
+  cachedResidentDocs=[...records,...cachedResidentDocs];
+  checks.forEach(cb=>cb.checked=false);
+  toast(checks.length+' document'+(checks.length!==1?'s':'')+' sent to '+resName+'.');
 }
 
-// Auto-send docs when new resident added — called from saveNewResident after success
-function autoSendDocsToNewResident(resId,resName,house){
-  const required=cachedDocTemplates.filter(t=>t.required_for_onboarding);
+async function autoSendDocsToNewResident(resId,resName,house){
+  const required=cachedDocTemplates.filter(t=>t.required);
   if(!required.length)return;
-  const records=required.map(t=>({id:'rd-'+Date.now()+'-'+t.id,template_id:t.id,resident_id:resId,resident_name:resName,house:house||null,status:'pending',sent_at:new Date().toISOString(),created_at:new Date().toISOString()}));
-  if(!isDemoMode){sb.from('resident_documents').insert(records).then(({error})=>{if(error)console.log('doc send err',error);});}
+  const records=required.map(t=>({id:'rd-'+Date.now()+'-'+t.id,resident_id:resId,resident_name:resName,template_id:t.id,template_name:t.name,template_desc:t.description||'',template_url:t.url||null,status:'pending',house:house||null,created_at:new Date().toISOString()}));
+  if(!isDemoMode){try{await sb.from('resident_documents').insert(records);}catch(e){console.log('doc send err',e);}}
   cachedResidentDocs=[...cachedResidentDocs,...records];
 }
 
