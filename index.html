@@ -276,16 +276,30 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
 </div>
 <div class="body" id="res-tab-home">
-  <div id="res-sobriety-banner"></div>
+
   <div id="res-sticky-note"></div>
   <div id="res-curfew-action"></div>
-  <div class="stats-grid" id="res-stats"></div>
-  <div id="res-curfew-detail"></div>
-  <div class="card" id="res-upcoming-events-card" style="display:none"><div class="card-title">&#128197; Upcoming events</div><div id="res-upcoming-events"></div></div>
-  <div class="card"><div class="card-title">This week</div><div id="req-status" style="margin-bottom:14px"></div><button class="btn btn-primary" onclick="startCheckin()">Check in to a meeting</button></div>
-  <div class="card"><div class="card-title">Recent meetings</div><div id="res-log-list"></div><div id="res-all-meetings" style="display:none"></div><button id="res-meetings-toggle" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="toggleResMeetings()">View all meetings</button></div>
-  <div class="card"><div class="card-title">&#128137; My drug tests</div><div id="res-drug-tests"></div></div>
-  <div class="card"><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
+
+  <div class="card">
+    <div id="req-status" style="margin-bottom:14px"></div>
+    <button class="btn btn-primary" onclick="startCheckin()">Check in to a meeting</button>
+  </div>
+
+  <div id="res-sobriety-banner"></div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;cursor:pointer" onclick="toggleResMore()">
+      <span style="font-size:14px;font-weight:700;color:var(--mid)">More</span>
+      <span id="res-more-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+    </div>
+    <div id="res-more-panel" style="display:none;padding:0 20px 20px">
+      <div id="res-upcoming-events-card" style="display:none;margin-bottom:16px"><div class="card-title">&#128197; Upcoming events</div><div id="res-upcoming-events"></div></div>
+      <div style="margin-bottom:16px"><div class="card-title">Recent meetings</div><div id="res-log-list"></div><div id="res-all-meetings" style="display:none"></div><button id="res-meetings-toggle" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="toggleResMeetings()">View all meetings</button></div>
+      <div style="margin-bottom:16px"><div class="card-title">&#128137; Drug tests</div><div id="res-drug-tests"></div></div>
+      <div><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
+    </div>
+  </div>
+
 </div>
 <div class="body" id="res-tab-chores" style="display:none">
   <div class="card"><div class="card-title">&#129529; This week&#8217;s chores</div><div id="res-chore-list"></div></div>
@@ -909,15 +923,10 @@ function renderResidentHome(){
     if(days!==null){sobrietyEl.innerHTML='<div style="background:var(--black);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:4px"><div style="font-size:48px;font-weight:800;color:white;line-height:1">'+days+'</div><div style="font-size:14px;color:rgba(255,255,255,0.6);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px">days sober</div>'+(milestone?'<div style="font-size:14px;color:var(--pink);font-weight:700;margin-top:10px">'+milestone+'</div>':'')+' </div>';}
     else sobrietyEl.innerHTML='';
   }
-  const weekLabel=thisWeek.length+'&thinsp;/&thinsp;'+req;
-  const weekColor=thisWeek.length>=req?'var(--success)':thisWeek.length>0?'var(--warn)':'var(--pink)';
-  document.getElementById('res-stats').innerHTML='<div class="stat-box"><div class="stat-num" style="color:'+weekColor+'">'+weekLabel+'</div><div class="stat-label">Meetings this week</div></div><div class="stat-box"><div class="stat-num">'+myCheckins.length+'</div><div class="stat-label">All-time meetings</div></div>';
   const remaining=Math.max(0,req-thisWeek.length);
   document.getElementById('req-status').innerHTML=remaining===0?'<span class="pill pill-green">\u2713 '+thisWeek.length+'/'+req+' complete</span>':'<span class="pill pill-yellow">'+thisWeek.length+'/'+req+' \u2014 '+remaining+' more needed</span>';
-  renderLogList(document.getElementById('res-log-list'),myCheckins.slice(0,5),false);
-  renderStickyNote();renderCurfewAction();renderResCurfewDetail();renderResChores();renderResCalendar();renderResDrugTests();
-  if(events().length>0){document.getElementById('res-upcoming-events-card').style.display='block';renderEventList(document.getElementById('res-upcoming-events'),events().slice(0,3),false);}
-  else document.getElementById('res-upcoming-events-card').style.display='none';
+  renderStickyNote();renderCurfewAction();renderResChores();renderResCalendar();
+  // Detail panels (meetings, drug tests, curfew history) load when More is expanded
 }
 
 function renderStickyNote(){
@@ -1030,6 +1039,14 @@ function renderResDrugTests(){
   const resultLabel={pass:'&#10003; Pass',fail:'&#10005; Fail',refused:'&#9888; Refused'};
   el.innerHTML=myTests.slice(0,5).map(t=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)"><div style="background:'+(resultBg[t.result]||'var(--cream)')+';color:'+(resultColor[t.result]||'var(--mid)')+';border-radius:8px;padding:6px 10px;font-size:12px;font-weight:800;flex-shrink:0;min-width:60px;text-align:center">'+(resultLabel[t.result]||t.result)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:700">'+t.test_types+'</div><div style="font-size:12px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; '+t.administered_by+'</div></div></div>').join('');}
 
+function toggleResMore(){
+  const panel=document.getElementById('res-more-panel');
+  const arrow=document.getElementById('res-more-arrow');
+  const isOpen=panel.style.display==='block';
+  panel.style.display=isOpen?'none':'block';
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
+  if(!isOpen){renderResDrugTests();renderResCurfewDetail();}
+}
 function toggleResMeetings(){const allEl=document.getElementById('res-all-meetings');const btn=document.getElementById('res-meetings-toggle');const myCheckins=allCheckins.filter(c=>c.resident_id===currentUser.id);if(allEl.style.display==='block'){allEl.style.display='none';btn.textContent='View all meetings';}else{renderLogList(allEl,myCheckins,false);allEl.style.display='block';btn.textContent='Show less';}}
 
 // ── CHECK-IN ──
