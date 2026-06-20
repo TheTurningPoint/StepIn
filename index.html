@@ -810,7 +810,7 @@ const curfewLog=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));r
 const chores=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allChores.filter(c=>ids.has(c.resident_id));};
 const events=()=>{const h=myHouse();return h?allEvents.filter(e=>e.house===h||!e.house):allEvents;};
 
-function getCurfewTime(phase,date){const day=date.getDay();const isWeekend=day===0||day===6;return phase===1?(isWeekend?22:21):(isWeekend?23:22);}
+function getCurfewTime(phase,date){const day=date.getDay();const isWeekend=day===5||day===6;return phase===1?(isWeekend?22:21):(isWeekend?23:22);}
 function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h===21?'9:00 PM':h===22?'10:00 PM':'11:00 PM';}
 function isPastCurfew(phase){const now=new Date();return now.getHours()>=getCurfewTime(phase,now);}
 function getMyStatus(){const today=new Date().toDateString();const logs=allCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!logs.length)return{status:'unknown',last:null};const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
