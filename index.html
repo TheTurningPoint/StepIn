@@ -247,7 +247,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="divider"></div>
 <p style="font-size:13px;font-weight:700;color:var(--mid);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">&#127981; Try a live demo</p>
 <div style="display:flex;gap:8px">
-  <button class="btn btn-sm" onclick="enterDemo('resident')" style="flex:1;background:var(--cream);border:2px solid var(--pink);color:var(--pink);font-weight:700">Resident</button>
+  <button class="btn btn-sm" onclick="enterDemo('resident')" style="flex:1;background:var(--cream);border:2px solid var(--pink);color:var(--pink);font-weight:700">Resident<br><span style="font-size:10px;font-weight:500;opacity:0.7">Johnny Test</span></button>
   <button class="btn btn-sm" onclick="enterDemo('manager')" style="flex:1;background:var(--pink);color:white;font-weight:700">Manager</button>
   <button class="btn btn-sm" onclick="enterDemo('owner')" style="flex:1;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;font-weight:700">Tanya</button>
 </div>
@@ -487,14 +487,14 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 </div>
 
 <!-- MODALS -->
-<div class="modal-bg" id="modal-find-meeting"><div class="modal"><div class="modal-handle"></div>
+<div class="modal-bg" id="modal-find-meeting" onclick="if(event.target===this)closeModal('modal-find-meeting')"><div class="modal"><div class="modal-handle"></div>
 <h2>&#128205; Meetings near you</h2>
 <div id="find-meeting-status" style="font-size:14px;color:var(--mid);margin-bottom:12px"></div>
 <div id="find-meeting-list"></div>
 <button class="btn btn-outline mt16" onclick="closeModal('modal-find-meeting')">Close</button>
 </div></div>
 
-<div class="modal-bg" id="modal-post-announcement"><div class="modal"><div class="modal-handle"></div>
+<div class="modal-bg" id="modal-post-announcement" onclick="if(event.target===this)closeModal('modal-post-announcement')"><div class="modal"><div class="modal-handle"></div>
 <h2>&#128204; Post sticky note</h2>
 <p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p>
 <div id="announcement-house-selector" style="display:none">
@@ -511,16 +511,16 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 </div></div>
 
 <!-- Announcement history modal -->
-<div class="modal-bg" id="modal-announcement-history"><div class="modal"><div class="modal-handle"></div>
+<div class="modal-bg" id="modal-announcement-history" onclick="if(event.target===this)closeModal('modal-announcement-history')"><div class="modal"><div class="modal-handle"></div>
 <h2>&#128203; Note history</h2>
 <div id="announcement-history-content"></div>
 <button class="btn btn-outline mt16" onclick="closeModal('modal-announcement-history')">Close</button>
 </div></div>
-<div class="modal-bg" id="modal-add-resident"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
-<div class="modal-bg" id="modal-add-manager"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Anchor House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Anchor House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
-<div class="modal-bg" id="modal-add-chore"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
-<div class="modal-bg" id="modal-add-event"><div class="modal"><div class="modal-handle"></div><h2>Add event</h2><div class="field"><label>Event title</label><input type="text" id="event-title" placeholder="e.g. House meeting"></div><div class="field"><label>Date</label><input type="date" id="event-date"></div><div class="field"><label>Time (optional)</label><input type="time" id="event-time"></div><div class="field"><label>Notes (optional)</label><textarea id="event-notes" placeholder="Any details&#8230;" style="height:80px;resize:none"></textarea></div><button class="btn btn-primary" id="event-btn" onclick="saveNewEvent()">Add event</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-event')">Cancel</button></div></div>
-<div class="modal-bg" id="modal-drug-test"><div class="modal"><div class="modal-handle"></div>
+<div class="modal-bg" id="modal-add-resident" onclick="if(event.target===this)closeModal('modal-add-resident')"><div class="modal"><div class="modal-handle"></div><h2>Add new resident</h2><div class="field"><label>Full name</label><input type="text" id="add-name" placeholder="Resident's full name"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><div class="field"><label>Starting phase</label><select id="add-phase"><option value="1">Phase 1</option><option value="2">Phase 2</option></select></div><button class="btn btn-primary" id="add-btn" onclick="saveNewResident()">Add resident</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-resident')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-add-manager" onclick="if(event.target===this)closeModal('modal-add-manager')"><div class="modal"><div class="modal-handle"></div><h2>Add new house</h2><div class="field"><label>House name</label><input type="text" id="add-mgr-name" placeholder="e.g. Anchor House"></div><div class="field"><label>Manager login ID</label><input type="text" id="add-mgr-id" placeholder="e.g. Anchor House Manager"></div><div class="field"><label>4-digit PIN</label><input type="password" id="add-mgr-pin" placeholder="e.g. 1234" maxlength="4" inputmode="numeric"></div><button class="btn btn-gold" id="add-mgr-btn" onclick="saveNewManager()">Add house</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-manager')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-add-chore" onclick="if(event.target===this)closeModal('modal-add-chore')"><div class="modal"><div class="modal-handle"></div><h2>Add chore</h2><div class="field"><label>Chore description</label><input type="text" id="chore-title" placeholder="e.g. Clean bathroom"></div><div class="field"><label>Assign to</label><select id="chore-resident"><option value="">Select resident&#8230;</option></select></div><button class="btn btn-primary" id="chore-btn" onclick="saveNewChore()">Add chore</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-chore')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-add-event" onclick="if(event.target===this)closeModal('modal-add-event')"><div class="modal"><div class="modal-handle"></div><h2>Add event</h2><div class="field"><label>Event title</label><input type="text" id="event-title" placeholder="e.g. House meeting"></div><div class="field"><label>Date</label><input type="date" id="event-date"></div><div class="field"><label>Time (optional)</label><input type="time" id="event-time"></div><div class="field"><label>Notes (optional)</label><textarea id="event-notes" placeholder="Any details&#8230;" style="height:80px;resize:none"></textarea></div><button class="btn btn-primary" id="event-btn" onclick="saveNewEvent()">Add event</button><button class="btn btn-outline mt8" onclick="closeModal('modal-add-event')">Cancel</button></div></div>
+<div class="modal-bg" id="modal-drug-test" onclick="if(event.target===this)closeModal('modal-drug-test')"><div class="modal"><div class="modal-handle"></div>
 <h2>&#128137; Log drug test</h2>
 
 <!-- Step indicator -->
@@ -601,7 +601,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 </div></div>
 
-<div class="modal-bg" id="modal-drug-test-history">
+<div class="modal-bg" id="modal-drug-test-history" onclick="if(event.target===this)closeModal('modal-drug-test-history')">
 <div class="modal">
   <div class="modal-handle"></div>
   <div class="flex-between" style="margin-bottom:16px">
@@ -622,7 +622,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- Individual resident drug test PDF window -->
 <div id="dt-print-frame" style="display:none"></div>
 
-<div class="modal-bg" id="modal-resident-detail"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
+<div class="modal-bg" id="modal-resident-detail" onclick="if(event.target===this)closeModal('modal-resident-detail')"><div class="modal"><div class="modal-handle"></div><h2 id="detail-name"></h2><div id="detail-content"></div><button class="btn btn-outline mt16" onclick="closeModal('modal-resident-detail')">Close</button></div></div>
 <div id="toast"></div>
 <script>
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
@@ -1280,7 +1280,7 @@ async function postAnnouncement(){
     await sb.from('announcements').update({archived:true}).eq('id',cachedAnnouncement.id);
     await sb.from('announcement_acks').delete().eq('announcement_id',cachedAnnouncement.id);
   }
-  const newA={id:'ann-'+Date.now(),message:msg,created_by:currentUser.name,house:targetHouse,is_global:isGlobal,archived:false};
+  const newA={id:'ann-'+Date.now(),message:msg,created_by:currentUser.name,house:targetHouse,is_global:isGlobal,archived:false,created_at:new Date().toISOString()};
   const{error}=await sb.from('announcements').insert(newA);
   if(error){toast('Could not post.',true);btn.textContent='Post note';btn.classList.remove('btn-disabled');return;}
   cachedAnnouncement=newA;cachedAcks=[];
@@ -2091,9 +2091,10 @@ function renderDtReport(range){
 
 // ── DEMO MODE ──
 let isDemoMode=false;
+let loginAttempts=0;const MAX_LOGIN_ATTEMPTS=5;
 
 const DEMO_RESIDENTS=[
-  {id:'d1',name:'James R.',role:'resident',phase:1,house:'Anchor House',pin:'1111'},
+  {id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111'},
   {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Anchor House',pin:'2222'},
   {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Anchor House',pin:'3333'},
   {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Anchor House',pin:'4444'},
@@ -2101,6 +2102,7 @@ const DEMO_RESIDENTS=[
   {id:'d6',name:'Lisa W.',role:'resident',phase:1,house:'Unity House',pin:'6666'},
   {id:'d7',name:'Marcus B.',role:'resident',phase:2,house:'Unity House',pin:'7777'},
   {id:'d8',name:'Sandra K.',role:'resident',phase:1,house:'Unity House',pin:'8888'},
+  {id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111'},
 ];
 
 function makeDemoCheckins(){
@@ -2126,6 +2128,7 @@ function makeDemoCheckins(){
     {rid:'d6',rn:'Lisa W.',days:[0,2],mIdx:[0,3]},
     {rid:'d7',rn:'Marcus B.',days:[0,1,2,3,4],mIdx:[1,2,3,4,5]},
     {rid:'d8',rn:'Sandra K.',days:[0,1],mIdx:[0,1]},
+    {rid:'d9',rn:'Johnny Test',days:[0,2,4],mIdx:[1,3,5]},
   ];
   let id=0;
   checkinPlan.forEach(function(plan){
@@ -2181,6 +2184,8 @@ function makeDemoCurfew(){
   logs.push({id:'cl-d6',resident_id:'d6',resident_name:'Lisa W.',action:'in',ts:new Date(now.setHours(21,0,0,0)).toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
   logs.push({id:'cl-d7',resident_id:'d7',resident_name:'Marcus B.',action:'out',ts:new Date(now.setHours(19,30,0,0)).toISOString(),late:false,excused:false,destination:'NA Meeting — Lakewood',house:'Unity House'});
   logs.push({id:'cl-d8',resident_id:'d8',resident_name:'Sandra K.',action:'in',ts:new Date(now.setHours(23,15,0,0)).toISOString(),late:true,excused:false,destination:null,house:'Unity House'});
+  // Johnny Test - Unity House
+  logs.push({id:'cl-d9',resident_id:'d9',resident_name:'Johnny Test',action:'in',ts:new Date(now.setHours(20,45,0,0)).toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
   return logs;
 }
 
@@ -2199,6 +2204,7 @@ function makeDemoDrugTests(){
     {rid:'d6',rn:'Lisa W.',daysAgo:1,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d7',rn:'Marcus B.',daysAgo:3,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d8',rn:'Sandra K.',daysAgo:6,types:'Urine',result:'fail',notes:'Urine: Fail | Observed: Yes',house:'Unity House'},
+    {rid:'d9',rn:'Johnny Test',daysAgo:2,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
   ];
   plan.forEach(function(p,i){
     const d=new Date(now);d.setDate(d.getDate()-p.daysAgo);
@@ -2216,7 +2222,7 @@ function makeDemoDrugTests(){
 const DEMO_DATA={
   manager:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Anchor House',pin:'0000'},
   owner:{id:'demo-owner',name:'Tanya',role:'owner',house:null,pin:'9999'},
-  resident:{id:'d1',name:'James R.',role:'resident',phase:1,house:'Anchor House',pin:'1111'},
+  resident:{id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111'},
   managers:[
     {id:'demo-mgr',name:'Anchor House Manager',role:'manager',house:'Anchor House'},
     {id:'demo-mgr2',name:'Unity House Manager',role:'manager',house:'Unity House'},
@@ -2236,6 +2242,7 @@ const DEMO_DATA={
     {id:'ch-d5',resident_id:'d5',resident_name:'Robert C.',title:'Clean fridge',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
     {id:'ch-d6',resident_id:'d6',resident_name:'Lisa W.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},
     {id:'ch-d7',resident_id:'d7',resident_name:'Marcus B.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Unity House'},
+    {id:'ch-d9',resident_id:'d9',resident_name:'Johnny Test',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Unity House'},
   ],
 };
 
@@ -2336,8 +2343,8 @@ function toast(msg,isError){
 }
 function getWeekStart(){const now=new Date();const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);const start=new Date(now);start.setDate(diff);start.setHours(0,0,0,0);return start;}
 function getWeekStartDate(){return getWeekStart().toISOString().split('T')[0];}
-function fmtDate(d){return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
-function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+function fmtDate(d){try{if(!d||isNaN(d.getTime()))return 'Unknown date';return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}catch(e){return 'Unknown date';}}
+function fmtTime(d){try{if(!d||isNaN(d.getTime()))return '';return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}catch(e){return '';}}
 function fmtTimeStr(t){try{const[h,m]=t.split(':');const d=new Date();d.setHours(parseInt(h),parseInt(m));return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}catch(e){return t;}}
 document.querySelectorAll('.modal-bg').forEach(bg=>bg.addEventListener('click',e=>{if(e.target===bg)bg.classList.remove('open');}));
 </script></body></html>
