@@ -308,14 +308,14 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
 <div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
 <div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><div id="ci-distance-display"></div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
-<div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:12px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
+<div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:13px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
 
 <!-- MANAGER / OWNER SCREEN -->
 <div id="screen-manager" class="screen">
 <div class="topbar">
   <div><div class="logo">Step<span>In</span></div><div class="sub" id="mgr-greeting"></div></div>
-  <div class="topbar-right"><button class="refresh-btn" onclick="refreshDashboard()">&#8635; Refresh</button><span class="badge-role" id="mgr-badge">Manager</span><button class="btn-ghost" onclick="logout()">Sign out</button></div>
+  <div class="topbar-right"><button class="refresh-btn" onclick="refreshDashboard()" style="background:var(--cream);border:1.5px solid var(--sand);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer">&#8635; Refresh</button><span class="badge-role" id="mgr-badge">Manager</span><button class="btn-ghost" onclick="logout()">Sign out</button></div>
 </div>
 
 <!-- TOP TABS -->
@@ -731,13 +731,26 @@ function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident
 
 // ── RESIDENT ──
 async function enterResident(){
-  show('screen-resident');const h=new Date().getHours();const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  show('screen-resident');
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   document.getElementById('res-greeting').textContent=g+', '+currentUser.name.split(' ')[0];
-  try{await loadAllData();}catch(e){toast('Could not load data. Check your connection.',true);}
+  // Set home tab active by default
+  document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));
+  const homeBtn=document.getElementById('res-nav-home');
+  if(homeBtn)homeBtn.classList.add('active');
+  ['home','chores','calendar','meetings','pin'].forEach(t=>{
+    const el=document.getElementById('res-tab-'+t);
+    if(el)el.style.display=t==='home'?'block':'none';
+  });
+  if(!isDemoMode){
+    try{await loadAllData();}catch(e){toast('Could not load data. Check your connection.',true);}
+  }
   renderResidentHome();
 }
 
 function renderResidentHome(){
+  window.scrollTo(0,0);
   const req=cachedSettings.required||3;const weekStart=getWeekStart();const thisWeek=allCheckins.filter(c=>new Date(c.ts)>=weekStart);
   document.getElementById('res-stats').innerHTML=`<div class="stat-box"><div class="stat-num">${thisWeek.length}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${allCheckins.length}</div><div class="stat-label">Total</div></div>`;
   const remaining=Math.max(0,req-thisWeek.length);
@@ -915,7 +928,7 @@ function startCheckin(){
   },{timeout:15000,enableHighAccuracy:true,maximumAge:0});
 }
 function locProceed(){if(!checkinData.lat){toast('Location not ready.',true);return;}ciShow('details');}
-function cancelCheckin(){if(confirm('Cancel this check-in?')){show('screen-resident');renderResidentHome();}}
+function cancelCheckin(){show('screen-resident');renderResidentHome();}
 async function finishCheckin(){await loadAllData();show('screen-resident');renderResidentHome();}
 function haversineDistance(lat1,lng1,lat2,lng2){
   const R=3959;
@@ -1078,7 +1091,19 @@ function renderOwnerDashboard(){
       attEl.innerHTML='';
       return;
     }
-    curfewEl.innerHTML='<p style="font-size:13px;color:var(--mid);margin-bottom:12px">Select a house from the dropdown to see resident details.</p>'+houses.map(house=>{
+    // Cross-house summary totals
+    const totalRes=allResidents.filter(function(r){return r.role==='resident';}).length;
+    const weekStart2=getWeekStart();
+    const totalMtgs=allCheckins.filter(function(c){return new Date(c.ts)>=weekStart2;}).length;
+    const totalLate=allCurfewLog.filter(function(l){return l.late&&!l.excused;}).length;
+    const totalTests=cachedDrugTests.filter(function(t){return new Date(t.test_date)>=new Date(Date.now()-7*86400000);}).length;
+    const summaryBar='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px">'+
+      '<div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--charcoal)">'+totalRes+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Residents</div></div>'+
+      '<div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--success)">'+totalMtgs+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Meetings</div></div>'+
+      '<div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--pink)">'+totalTests+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Drug Tests</div></div>'+
+      '<div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:'+(totalLate>0?'var(--danger)':'var(--success)')+'">'+totalLate+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Late</div></div>'+
+    '</div>';
+    curfewEl.innerHTML=summaryBar+'<p style="font-size:13px;color:var(--mid);margin-bottom:12px">Tap a house to view residents and curfew details.</p>'+houses.map(house=>{
       const hRes=allResidents.filter(r=>r.house===house);
       const hMgr=allManagers.find(m=>m.house===house);
       const onTrack=hRes.filter(r=>allCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=req).length;
@@ -2153,11 +2178,9 @@ function makeDemoCurfew(){
   logs.push({id:'cl-d5',resident_id:'d5',resident_name:'Robert C.',action:'in',ts:t5.toISOString(),late:false,excused:true,excused_reason:'Work night shift',house:'Anchor House'});
   // Unity House
   const t6=new Date(now);t6.setHours(21,0,0,0);
-  logs.push({id:'cl-d6',resident_id:'d6',resident_name:'Lisa W.',action:'in',ts:t6.toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
-  const t7=new Date(now);t7.setHours(19,30,0,0);
-  logs.push({id:'cl-d7',resident_id:'d7',resident_name:'Marcus B.',action:'out',ts:t7.toISOString(),late:false,excused:false,destination:'NA Meeting',house:'Unity House'});
-  const t8=new Date(now);t8.setHours(23,15,0,0);
-  logs.push({id:'cl-d8',resident_id:'d8',resident_name:'Sandra K.',action:'in',ts:t8.toISOString(),late:true,excused:false,destination:null,house:'Unity House'});
+  logs.push({id:'cl-d6',resident_id:'d6',resident_name:'Lisa W.',action:'in',ts:new Date(now.setHours(21,0,0,0)).toISOString(),late:false,excused:false,destination:null,house:'Unity House'});
+  logs.push({id:'cl-d7',resident_id:'d7',resident_name:'Marcus B.',action:'out',ts:new Date(now.setHours(19,30,0,0)).toISOString(),late:false,excused:false,destination:'NA Meeting — Lakewood',house:'Unity House'});
+  logs.push({id:'cl-d8',resident_id:'d8',resident_name:'Sandra K.',action:'in',ts:new Date(now.setHours(23,15,0,0)).toISOString(),late:true,excused:false,destination:null,house:'Unity House'});
   return logs;
 }
 
