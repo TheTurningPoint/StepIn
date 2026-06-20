@@ -358,6 +358,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
 
+  <!-- Drug tests — always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
       <span class="card-title" style="margin:0">&#128137; Drug tests</span>
@@ -369,16 +370,44 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <p class="text-mid" style="margin-bottom:0">Log urine and breathalyzer tests with dual signatures.</p>
   </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
+  <!-- Chores — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('chores-panel')">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#129529; Chores this week</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddChore()">+ Add</button>
+        <span id="chores-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </div>
+    <div id="chores-panel" style="display:none;padding:0 20px 20px"><div id="mgr-chore-list"></div></div>
+  </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
+  <!-- Events — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('events-panel')">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128197; Events</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddEvent()">+ Add</button>
+        <span id="events-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </div>
+    <div id="events-panel" style="display:none;padding:0 20px 20px"><div id="mgr-event-list"></div></div>
+  </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span>
-<div style="display:flex;gap:8px">
-  <button class="btn btn-outline btn-sm" onclick="openAnnouncementHistory()">History</button>
-  <button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button>
-</div></div><div id="mgr-announcement-status"></div></div>
+  <!-- Sticky note — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('note-panel')">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128204; Sticky note</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openAnnouncementHistory()">History</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPostAnnouncement()">Post</button>
+        <span id="note-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </div>
+    <div id="note-panel" style="display:none;padding:0 20px 20px"><div id="mgr-announcement-status"></div></div>
+  </div>
 
+  <!-- Incident log — always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
       <span class="card-title" style="margin:0">&#9888;&#65039; Incident log</span>
@@ -390,6 +419,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <p class="text-mid" style="margin-bottom:0">Document incidents for NARR compliance and licensing records.</p>
   </div>
 
+  <!-- Add resident — always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:4px">
       <span class="card-title" style="margin:0">&#128101; Add resident</span>
@@ -1396,6 +1426,18 @@ function printHTML(html){try{const frame=document.getElementById('print-frame');
 // ── UTILS ──
 
 
+function toggleActionSection(panelId){
+  var panel=document.getElementById(panelId);
+  var arrow=document.getElementById(panelId+'-arrow');
+  var isOpen=panel.style.display==='block';
+  panel.style.display=isOpen?'none':'block';
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
+  if(!isOpen){
+    if(panelId==='chores-panel')renderMgrChores();
+    if(panelId==='events-panel')renderMgrCalendar();
+    if(panelId==='note-panel')renderMgrAnnouncementStatus();
+  }
+}
 function toggleSettingsSection(panelId){
   const panel=document.getElementById(panelId);
   const arrow=document.getElementById(panelId+'-arrow');
