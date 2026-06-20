@@ -3150,14 +3150,13 @@ function toggleDischargedView(){
     el.innerHTML='<p class="text-mid">No discharged residents on record.</p>';
   }else{
     el.innerHTML=discharged.map(function(r){
-      const dd='viewDischargedResident("'+r.id+'")';
-      return '<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--sand);cursor:pointer" onclick="'+dd+'">'+
-        '<div class="avatar" style="width:36px;height:36px;font-size:14px;opacity:0.5;flex-shrink:0">'+r.name[0]+'</div>'+
-        '<div style="flex:1">'+
+      return '<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--sand);cursor:pointer" onclick="viewDischargedResident(this.dataset.id)" data-id="'+r.id+'">'+
+        '<div class="avatar" style="width:36px;height:36px;font-size:14px;opacity:0.5;flex-shrink:0" style="pointer-events:none">'+r.name[0]+'</div>'+
+        '<div style="flex:1;pointer-events:none">'+
           '<div style="font-size:15px;font-weight:700;color:var(--mid)">'+r.name+'</div>'+
           '<div style="font-size:12px;color:var(--soft);margin-top:2px">Discharged'+(r.discharge_date?' &bull; '+r.discharge_date:'')+(r.discharge_reason?'<br>'+r.discharge_reason:'')+'</div>'+
         '</div>'+
-        '<div style="color:var(--mid);font-size:18px">&#8250;</div>'+
+        '<div style="color:var(--mid);font-size:18px;pointer-events:none">&#8250;</div>'+
       '</div>';
     }).join('');
   }
@@ -3174,9 +3173,10 @@ function viewDischargedResident(id){
   const icons={pass:'<span style="color:var(--success);font-weight:700">&#10003; Pass</span>',fail:'<span style="color:var(--danger);font-weight:700">&#10005; Fail</span>',refused:'<span style="color:var(--warn);font-weight:700">&#9888; Refused</span>'};
   document.getElementById('detail-name').textContent=r.name;
   document.getElementById('detail-content').innerHTML=
-    '<div style="background:#FEF3C7;border:1.5px solid var(--warn);border-radius:10px;padding:12px 14px;margin-bottom:16px">'+
-      '<div style="font-size:13px;font-weight:700;color:var(--warn)">&#128682; Discharged'+(r.discharge_date?' &mdash; '+r.discharge_date:'')+'</div>'+
-      (r.discharge_reason?'<div style="font-size:12px;color:var(--mid);margin-top:4px">'+r.discharge_reason+'</div>':'')+
+    '<div style="background:#FEF3C7;border:1.5px solid var(--warn);border-radius:10px;padding:12px 14px;margin-bottom:12px">'+
+      '<div style="font-size:13px;font-weight:700;color:var(--warn);margin-bottom:4px">&#128682; Discharged'+(r.discharge_date?' &mdash; '+r.discharge_date:'')+'</div>'+
+      (r.discharge_reason?'<div style="font-size:12px;color:var(--mid);margin-bottom:8px">'+r.discharge_reason+'</div>':'')+
+      '<button onclick="reinstateResident(this.dataset.id)" data-id="'+r.id+'" style="background:var(--success);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">&#9166; Reinstate as active resident</button>'+
     '</div>'+
     '<div class="stats-grid" style="margin-bottom:16px">'+
       '<div class="stat-box"><div class="stat-num">'+ckins.length+'</div><div class="stat-label">Meetings</div></div>'+
@@ -3317,6 +3317,29 @@ function buildHouseDropdown(){
   // House list is managed via renderOwnerHouseList and populateSelects
   // This is a no-op stub kept for compatibility
   if(typeof renderOwnerHouseList==='function')renderOwnerHouseList();
+}
+
+async function reinstateResident(id){
+  const r=allResidents.find(function(x){return x.id===id;});
+  if(!r)return;
+  if(!confirm('Reinstate '+r.name+' as an active resident?'))return;
+  if(!isDemoMode){
+    const{error}=await sb.from('residents').update({
+      status:'active',
+      discharge_date:null,
+      discharge_reason:null
+    }).eq('id',id);
+    if(error){toast('Could not reinstate: '+error.message,true);return;}
+  }
+  allResidents=allResidents.map(function(x){
+    return x.id===id?Object.assign({},x,{status:'active',discharge_date:null,discharge_reason:null}):x;
+  });
+  closeModal('modal-resident-detail');
+  toggleDischargedView(); // collapse the list so it reloads fresh
+  toggleDischargedView(); // reopen with updated data
+  toast(r.name+' reinstated as active resident.');
+  renderManagerDashboard();
+  populateSelects();
 }
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
