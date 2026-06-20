@@ -773,12 +773,15 @@ async function enterResident(){
 
 function renderResidentHome(){
   window.scrollTo(0,0);
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();const thisWeek=allCheckins.filter(c=>new Date(c.ts)>=weekStart);
-  document.getElementById('res-stats').innerHTML=`<div class="stat-box"><div class="stat-num">${thisWeek.length}</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">${allCheckins.length}</div><div class="stat-label">Total</div></div>`;
+  const req=cachedSettings.required||3;const weekStart=getWeekStart();
+  // Filter to current resident's check-ins only
+  const myCheckins=allCheckins.filter(function(c){return c.resident_id===currentUser.id;});
+  const thisWeek=myCheckins.filter(function(c){return new Date(c.ts)>=weekStart;});
+  document.getElementById('res-stats').innerHTML='<div class="stat-box"><div class="stat-num">'+thisWeek.length+'</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">'+myCheckins.length+'</div><div class="stat-label">Total</div></div>';
   const remaining=Math.max(0,req-thisWeek.length);
-  document.getElementById('req-status').innerHTML=remaining===0?`<span class="pill pill-green">\u2713 ${thisWeek.length}/${req} complete</span>`:`<span class="pill pill-yellow">${thisWeek.length}/${req} \u2014 ${remaining} more needed</span>`;
-  renderLogList(document.getElementById('res-log-list'),allCheckins.slice(0,5),false);
-  renderLogList(document.getElementById('res-history-list'),allCheckins,false);
+  document.getElementById('req-status').innerHTML=remaining===0?'<span class="pill pill-green">\u2713 '+thisWeek.length+'/'+req+' complete</span>':'<span class="pill pill-yellow">'+thisWeek.length+'/'+req+' \u2014 '+remaining+' more needed</span>';
+  renderLogList(document.getElementById('res-log-list'),myCheckins.slice(0,5),false);
+  renderLogList(document.getElementById('res-history-list'),myCheckins,false);
   renderStickyNote();renderCurfewAction();renderResCurfewDetail();renderResChores();renderResCalendar();
   if(events().length>0){document.getElementById('res-upcoming-events-card').style.display='block';renderEventList(document.getElementById('res-upcoming-events'),events().slice(0,3),false);}
   else document.getElementById('res-upcoming-events-card').style.display='none';
