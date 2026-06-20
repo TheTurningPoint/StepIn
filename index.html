@@ -417,10 +417,24 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         </div>
       </div>
       <div class="divider"></div>
-      <button class="btn btn-danger" onclick="removeResident()">Remove this resident</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-warn" style="flex:1" onclick="dischargeResident()">&#128682; Discharge</button>
+        <button class="btn btn-danger" style="flex:1" onclick="removeResident()">&#128465; Delete</button>
+      </div>
+      <p style="font-size:12px;color:var(--mid);margin-top:8px;line-height:1.5"><strong>Discharge</strong> marks them inactive — records kept, name removed from active lists.<br><strong>Delete</strong> removes the account entirely. Use only for data entry errors.</p>
       <p class="text-mid" style="margin-top:8px;font-size:12px">Their records will be kept on file.</p>
     </div>
   </div>
+  <!-- Discharged / Alumni -->
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:4px">
+      <span class="card-title" style="margin:0">&#128203; Alumni / Discharged</span>
+      <button class="btn btn-outline btn-sm" onclick="toggleDischargedView()">View</button>
+    </div>
+    <p class="text-mid" style="font-size:12px">Discharged residents removed from active lists. Records preserved.</p>
+    <div id="discharged-list" style="display:none;margin-top:12px"></div>
+  </div>
+
   <div class="card"><div class="card-title">Change my PIN</div>
     <div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div>
     <div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div>
@@ -758,7 +772,7 @@ const isStaff=()=>currentUser&&(currentUser.role==='manager'||currentUser.role==
 const myHouse=()=>isOwner()?(selectedHouse||null):currentUser&&currentUser.house;
 
 // Filtered views
-const residents=()=>isOwner()&&selectedHouse?allResidents.filter(r=>r.house===selectedHouse):isOwner()?allResidents:allResidents.filter(r=>r.house===currentUser.house);
+const residents=()=>{const active=allResidents.filter(function(r){return r.status!=='discharged';});return isOwner()&&selectedHouse?active.filter(r=>r.house===selectedHouse):isOwner()?active:active.filter(r=>r.house===currentUser.house);};
 const checkins=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allCheckins.filter(c=>ids.has(c.resident_id));};
 const curfewLog=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allCurfewLog.filter(l=>ids.has(l.resident_id));};
 const chores=()=>{const res=residents();const ids=new Set(res.map(r=>r.id));return allChores.filter(c=>ids.has(c.resident_id));};
@@ -1731,7 +1745,47 @@ async function editResidentName(){
   renderMgrResidents();
 }
 
-async function removeResident(){const id=document.getElementById('manage-resident-select').value;if(!id){toast('Select a resident first.');return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm(`Remove ${r.name}? Records kept.`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allResidents=allResidents.filter(x=>x.id!==id);const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';toast(r.name+' removed.');renderManagerDashboard();populateSelects();}
+async function dischargeResident(){
+  const id=document.getElementById('manage-resident-select').value;
+  if(!id){toast('Select a resident first.');return;}
+  const r=allResidents.find(function(x){return x.id===id;});
+  if(!r)return;
+  const reason=prompt('Discharge reason (optional — for records):','Program completed');
+  if(reason===null)return; // cancelled
+  if(!confirm('Discharge '+r.name+'? They will be removed from active lists but all records are kept.'))return;
+  if(!isDemoMode){
+    const{error}=await sb.from('residents').update({
+      status:'discharged',
+      discharge_date:new Date().toISOString().split('T')[0],
+      discharge_reason:reason||'Not specified'
+    }).eq('id',id);
+    if(error){toast('Could not discharge: '+error.message,true);return;}
+  }
+  allResidents=allResidents.map(function(x){
+    return x.id===id?Object.assign({},x,{status:'discharged',discharge_date:new Date().toISOString().split('T')[0],discharge_reason:reason||'Not specified'}):x;
+  });
+  const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';
+  const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';
+  toast(r.name+' discharged. Records preserved.');
+  renderManagerDashboard();populateSelects();
+}
+
+async function removeResident(){
+  const id=document.getElementById('manage-resident-select').value;
+  if(!id){toast('Select a resident first.');return;}
+  const r=allResidents.find(function(x){return x.id===id;});
+  if(!r)return;
+  if(!confirm('PERMANENTLY DELETE '+r.name+'? Use this only for data entry errors. All records will be lost. This cannot be undone.'))return;
+  if(!isDemoMode){
+    const{error}=await sb.from('residents').delete().eq('id',id);
+    if(error){toast('Could not remove.',true);return;}
+  }
+  allResidents=allResidents.filter(function(x){return x.id!==id;});
+  const mrs=document.getElementById('manage-resident-select');if(mrs)mrs.value='';
+  const mrp=document.getElementById('manage-resident-panel');if(mrp)mrp.style.display='none';
+  toast(r.name+' permanently deleted.');
+  renderManagerDashboard();populateSelects();
+}
 async function removeManager(){const id=document.getElementById('remove-mgr-select').value;if(!id){toast('Select a manager first.');return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm(`Remove manager ${m.name}?`))return;const{error}=await sb.from('residents').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allManagers=allManagers.filter(x=>x.id!==id);toast(`${m.name} removed.`);populateSelects();buildHouseDropdown();renderOwnerHouseList();}
 
 
@@ -3067,6 +3121,27 @@ function printHTML(html,title){
   const w=window.open('','_blank','width=800,height=900');
   if(w){w.document.write(html);w.document.close();}
   else{toast('To print: tap the share button \u2197 then select Print.',true);}
+}
+
+function toggleDischargedView(){
+  const el=document.getElementById('discharged-list');
+  if(!el)return;
+  if(el.style.display==='block'){el.style.display='none';return;}
+  const discharged=allResidents.filter(function(r){return r.status==='discharged';});
+  if(!discharged.length){
+    el.innerHTML='<p class="text-mid">No discharged residents on record.</p>';
+  }else{
+    el.innerHTML=discharged.map(function(r){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)">'+
+        '<div class="avatar" style="width:32px;height:32px;font-size:13px;opacity:0.5">'+r.name[0]+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-size:14px;font-weight:700;color:var(--mid)">'+r.name+'</div>'+
+          '<div style="font-size:12px;color:var(--soft)">Discharged'+(r.discharge_date?' '+r.discharge_date:'')+(r.discharge_reason?' &bull; '+r.discharge_reason:'')+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  el.style.display='block';
 }
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
