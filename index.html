@@ -628,6 +628,9 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let isDemoMode=false;
+let loginAttempts=0;
+const MAX_LOGIN_ATTEMPTS=5;
 let currentUser=null,sigCanvas,sigCtx,sigDrawing=false,sigHasMark=false,checkinData={},
     allResidents=[],allManagers=[],allCheckins=[],allCurfewLog=[],allChores=[],allEvents=[],
     cachedSettings={required:3,house_name:''},cachedAnnouncement=null,cachedAcks=[],
@@ -2109,11 +2112,8 @@ function renderDtReport(range){
 }
 
 // ── DEMO MODE ──
-let isDemoMode=false;
-let loginAttempts=0;const MAX_LOGIN_ATTEMPTS=5;
 
 const DEMO_RESIDENTS=[
-  {id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111'},
   {id:'d2',name:'Maria S.',role:'resident',phase:2,house:'Anchor House',pin:'2222'},
   {id:'d3',name:'Kevin T.',role:'resident',phase:1,house:'Anchor House',pin:'3333'},
   {id:'d4',name:'Angela M.',role:'resident',phase:2,house:'Anchor House',pin:'4444'},
@@ -2139,7 +2139,7 @@ function makeDemoCheckins(){
   ];
   // Anchor House residents - varied attendance
   const checkinPlan=[
-    {rid:'d1',rn:'James R.',days:[0,1,2],mIdx:[0,2,6]},
+    {rid:'d9',rn:'Johnny Test',days:[0,1,2],mIdx:[0,2,6]},
     {rid:'d2',rn:'Maria S.',days:[0,2,3],mIdx:[1,3,4]},
     {rid:'d3',rn:'Kevin T.',days:[1],mIdx:[2]},
     {rid:'d4',rn:'Angela M.',days:[0,1,2,3],mIdx:[0,1,2,4]},
@@ -2164,7 +2164,7 @@ function makeDemoCheckins(){
   });
   // Add some historical checkins from past weeks
   for(var w=1;w<=3;w++){
-    ['d1','d2','d4','d6','d7'].forEach(function(rid,i){
+    ['d9','d2','d4','d6','d7'].forEach(function(rid,i){
       const rn=DEMO_RESIDENTS.find(function(r){return r.id===rid;}).name;
       for(var d2=0;d2<3;d2++){
         const dt=new Date(monday);dt.setDate(dt.getDate()-w*7+d2*2);dt.setHours(19,0,0,0);
@@ -2185,7 +2185,7 @@ function makeDemoCurfew(){
   const logs=[];
   // James - home
   const t1=new Date(now);t1.setHours(20,30,0,0);
-  logs.push({id:'cl-d1',resident_id:'d1',resident_name:'James R.',action:'in',ts:t1.toISOString(),late:false,excused:false,destination:null,house:'Anchor House'});
+  logs.push({id:'cl-d2b',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:t1.toISOString(),late:false,excused:false,destination:null,house:'Anchor House'});
   // Maria - home
   const t2=new Date(now);t2.setHours(21,15,0,0);
   logs.push({id:'cl-d2',resident_id:'d2',resident_name:'Maria S.',action:'in',ts:t2.toISOString(),late:false,excused:false,destination:null,house:'Anchor House'});
@@ -2213,12 +2213,12 @@ function makeDemoDrugTests(){
   const tests=[];
   const admins=['Sarah M. (Manager)','Demo Manager','John R. (Manager)'];
   const plan=[
-    {rid:'d1',rn:'James R.',daysAgo:0,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d9',rn:'Johnny Test',daysAgo:0,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d3',rn:'Kevin T.',daysAgo:1,types:'Urine + Breathalyzer',result:'fail',notes:'Urine: Fail | Breath: Pass | Observed: Yes',house:'Anchor House'},
     {rid:'d5',rn:'Robert C.',daysAgo:2,types:'Urine',result:'refused',notes:'Urine: Refused | Observed: Yes | Resident refused to comply',house:'Anchor House'},
     {rid:'d2',rn:'Maria S.',daysAgo:5,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
     {rid:'d4',rn:'Angela M.',daysAgo:7,types:'Breathalyzer',result:'pass',notes:'Breath: Pass | Observed: Yes',house:'Anchor House'},
-    {rid:'d1',rn:'James R.',daysAgo:14,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Anchor House'},
+    {rid:'d9',rn:'Johnny Test',daysAgo:14,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d3',rn:'Kevin T.',daysAgo:21,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Anchor House'},
     {rid:'d6',rn:'Lisa W.',daysAgo:1,types:'Urine',result:'pass',notes:'Urine: Pass | Observed: Yes',house:'Unity House'},
     {rid:'d7',rn:'Marcus B.',daysAgo:3,types:'Urine + Breathalyzer',result:'pass',notes:'Urine: Pass | Breath: Pass | Observed: Yes',house:'Unity House'},
@@ -2254,7 +2254,7 @@ const DEMO_DATA={
     {id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null},
   ],
   chores:[
-    {id:'ch-d1',resident_id:'d1',resident_name:'James R.',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},
+    {id:'ch-d9b',resident_id:'d9',resident_name:'Johnny Test',title:'Clean bathroom',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Unity House'},
     {id:'ch-d2',resident_id:'d2',resident_name:'Maria S.',title:'Vacuum common area',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
     {id:'ch-d3',resident_id:'d3',resident_name:'Kevin T.',title:'Take out trash',completed_date:null,week_start:'2024-01-01',house:'Anchor House'},
     {id:'ch-d4',resident_id:'d4',resident_name:'Angela M.',title:'Mop kitchen floor',completed_date:new Date().toISOString().split('T')[0],week_start:'2024-01-01',house:'Anchor House'},
