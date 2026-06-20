@@ -368,7 +368,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div id="dash-attendance-list"></div>
   </div>
 
-  <div class="card">
+  <div class="card" id="residents-card">
     <div style="margin-bottom:14px">
       <span class="card-title">&#128101; Residents</span>
       <p class="text-mid" style="font-size:12px;margin-top:4px">Add residents from the Actions tab.</p>
@@ -813,6 +813,84 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div id="toast"></div>
 <iframe id="print-frame" style="display:none;position:fixed;width:0;height:0;border:none"></iframe>
 <script>
+/*
+=============================================================
+  StepIn v2.1 — theturningpoint.github.io/StepIn
+  Built for The Turning Point sober living management
+=============================================================
+
+ARCHITECTURE
+  Single HTML file. No build process. Push index.html to GitHub Pages.
+  Backend: Supabase (PostgreSQL + auth).
+  All state lives in memory. Page reload re-fetches from Supabase.
+
+SCREENS (controlled by show(id))
+  screen-login     — PIN login + demo entry
+  screen-resident  — Resident view (home, chores, meetings, events, PIN)
+  screen-checkin   — GPS-verified meeting check-in flow (3 steps)
+  screen-manager   — Manager/Owner view (dash, actions, report, settings)
+
+  CRITICAL: Never add inline display styles to screen divs.
+  Never modify show(). These caused the bleed bug.
+
+ROLES
+  resident  — signs in/out, checks in to meetings, views chores/events
+  manager   — manages residents, logs drug tests/incidents, views reports
+  owner     — Tanya only; sees all houses, org settings, manager management
+
+KEY GLOBALS
+  currentUser      — logged-in user object
+  selectedHouse    — owner drill-down (null = show all houses)
+  allResidents     — all residents loaded on login
+  allCheckins      — all meeting check-ins
+  allCurfewLog     — sign in/out records
+  allChores        — current week chores
+  allEvents        — upcoming events
+  cachedDrugTests  — drug test records
+  cachedIncidents  — incident records
+  cachedSettings   — {required, house_name}
+  cachedAnnouncement — active sticky note
+  isDemoMode       — true when using demo login (no writes to Supabase)
+
+KEY FUNCTIONS
+  show(id)                  — switches active screen (CSS class only, never inline style)
+  mgrTab(tab, btn)          — switches manager pane (dash/tools/report/settings)
+  resTab(tab, btn)          — switches resident tab
+  toggleSettingsSection(id) — settings accordion
+  toggleActionSection(id)   — actions tab accordion
+  toggleResMore()           — resident home More accordion
+  enterApp()                — routes to enterManager() or enterResident() after login
+  loadAllData()             — fetches everything from Supabase
+  renderManagerDashboard()  — routes to renderOwnerDashboard() or renderMgrDashboard()
+  renderReport()            — weekly attendance report
+  renderDtHistory()         — drug test log
+  renderIncidentReport()    — incident log
+  printHTML(html)           — prints via iframe (Safari compatible)
+  getCurfewTime(phase,date) — Phase1: Sun-Thu 21:00, Fri-Sat 22:00
+                              Phase2: Sun-Thu 22:00, Fri-Sat 23:00
+
+CURFEW LOGIC
+  Phase 1: Sun–Thu 9pm, Fri–Sat 10pm
+  Phase 2: Sun–Thu 10pm, Fri–Sat 11pm
+  Weekend = Friday (5) + Saturday (6). Sunday follows weeknight rules.
+
+DEMO MODE
+  enterDemo('resident'|'manager'|'owner')
+  Mocks sb.from() — all writes are no-ops. Data resets on page reload.
+
+SUPABASE TABLES
+  residents       — users (residents + managers + owner)
+  checkins        — meeting check-in records with GPS + signature
+  curfew_log      — sign in/out events
+  chores          — weekly chore assignments
+  events          — upcoming house events
+  announcements   — sticky notes (one active at a time per house)
+  announcement_acks — resident acknowledgments
+  drug_tests      — drug/breathalyzer test records with dual signatures
+  incidents       — incident log records
+  settings        — org config (id=1, required meetings, house name)
+=============================================================
+*/
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -1124,17 +1202,35 @@ function renderOwnerDashboard(){
     const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
     const req=cachedSettings.required||3;const weekStart=getWeekStart();
     if(!houses.length){if(curfewEl)curfewEl.innerHTML='<p class="text-mid">No houses yet.</p>';if(attEl)attEl.innerHTML='';return;}
+    const resCardAll=document.getElementById('residents-card');if(resCardAll)resCardAll.style.display='none';
     const totalRes=allResidents.filter(r=>r.role==='resident').length;
     const totalMtgs=allCheckins.filter(c=>new Date(c.ts)>=weekStart).length;
     const totalLate=allCurfewLog.filter(l=>l.late&&!l.excused).length;
     const totalTests=cachedDrugTests.filter(t=>new Date(t.test_date)>=new Date(Date.now()-7*86400000)).length;
     const summaryBar='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--charcoal)">'+totalRes+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Residents</div></div><div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--success)">'+totalMtgs+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Meetings</div></div><div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:var(--pink)">'+totalTests+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Drug Tests</div></div><div style="background:var(--white);border-radius:10px;padding:12px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px;font-weight:800;color:'+(totalLate>0?'var(--danger)':'var(--success)')+'">'+totalLate+'</div><div style="font-size:10px;color:var(--mid);text-transform:uppercase;font-weight:700;margin-top:2px">Late</div></div></div>';
-    if(curfewEl)curfewEl.innerHTML=summaryBar+'<p style="font-size:13px;color:var(--mid);margin-bottom:12px">Tap a house to view details.</p>'+houses.map(house=>{const hRes=allResidents.filter(r=>r.house===house);const hMgr=allManagers.find(m=>m.house===house);const onTrack=hRes.filter(r=>allCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=(cachedSettings.required||3)).length;const today=new Date().toDateString();const homeCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.action==='in'&&!last.late;}).length;const lateCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.late;}).length;return'<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:12px;cursor:pointer" onclick="selectHouse(\''+house+'\')"><div style="font-size:17px;font-weight:800;color:var(--black);margin-bottom:4px">&#127968; '+house+'</div><div style="font-size:12px;color:var(--mid);margin-bottom:12px">Manager: '+(hMgr?hMgr.name:'None assigned')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--pink)">'+hRes.length+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">RESIDENTS</div></div><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--success)">'+onTrack+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">ON TRACK</div></div><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:'+(lateCount>0?'var(--danger)':'var(--success)')+'">'+homeCount+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">HOME</div></div></div><div style="font-size:12px;color:var(--pink);margin-top:10px;font-weight:600">Tap to view details &#8594;</div></div>';}).join('');
+    if(curfewEl)curfewEl.innerHTML=summaryBar+'<p style="font-size:13px;color:var(--mid);margin-bottom:12px">Tap a house to view details.</p>'+houses.map(house=>{const hRes=allResidents.filter(r=>r.house===house);const hMgr=allManagers.find(m=>m.house===house);const onTrack=hRes.filter(r=>allCheckins.filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length>=(cachedSettings.required||3)).length;const today=new Date().toDateString();const homeCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.action==='in'&&!last.late;}).length;const lateCount=hRes.filter(r=>{const logs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today&&!l.excused);const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return last&&last.late;}).length;return'<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:12px;cursor:pointer" onclick="selectHouse(\''+house+'\')"><div style="font-size:17px;font-weight:800;color:var(--black);margin-bottom:4px">&#127968; '+house+'</div><div style="font-size:12px;color:var(--mid);margin-bottom:12px">Manager: '+(hMgr?hMgr.name:'None assigned')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--pink)">'+hRes.length+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">RESIDENTS</div></div><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:var(--success)">'+onTrack+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">ON TRACK</div></div><div style="text-align:center;background:var(--cream);border-radius:8px;padding:10px"><div style="font-size:20px;font-weight:800;color:'+(lateCount>0?'var(--danger)':'var(--success)')+'">'+homeCount+'/'+hRes.length+'</div><div style="font-size:10px;color:var(--mid);font-weight:600">HOME</div></div></div><div style="font-size:12px;color:var(--pink);margin-top:10px;font-weight:600">Tap to view details &#8594;</div></div>';}).join('');
     if(attEl)attEl.innerHTML='';const attCard=attEl?attEl.closest('.card'):null;if(attCard)attCard.style.display='none';
   }else{
-    const backBtn='<button onclick="selectedHouse=null;renderManagerDashboard();" style="background:none;border:none;color:var(--pink);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;padding:0">&#8592; All houses</button>';
     const res=residents();const req=cachedSettings.required||3;const weekStart=getWeekStart();
-    if(curfewEl)curfewEl.innerHTML=backBtn+(res.length?res.map(r=>{const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const today=new Date().toDateString();const todayLogs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);const excused=todayLogs.find(l=>l.excused);const lastLog=todayLogs.filter(l=>!l.excused).sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];let curfewStatus='No action';let sc='unknown';if(excused){curfewStatus='Excused';sc='excused';}else if(lastLog&&lastLog.action==='in'){curfewStatus=lastLog.late?'Late':'Home';sc=lastLog.late?'late':'home';}else if(lastLog&&lastLog.action==='out'){curfewStatus='Out'+(lastLog.destination?' \u2192 '+lastLog.destination:'');sc='out';}const pillClass={home:'pill-green',late:'pill-red',out:'pill-yellow',excused:'pill-blue',unknown:'pill-gray'};const attColor=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';return'<div class="resident-row" onclick="viewResident(\''+r.id+'\')" style="cursor:pointer"><div class="avatar">'+r.name[0]+'</div><div style="flex:1"><div class="resident-name">'+r.name+'</div><div class="resident-sub">Phase '+(r.phase||1)+' &bull; Meetings: <span style="color:'+attColor+';font-weight:700">'+wc+'/'+req+'</span> &bull; <span class="pill '+(pillClass[sc]||'pill-gray')+'" style="font-size:10px">'+curfewStatus+'</span></div></div></div>';}).join(''):'<p class="text-mid">No residents in this house.</p>');
+    const hMgr=allManagers.find(m=>m.house===selectedHouse);
+    const resCard=document.getElementById('residents-card');if(resCard)resCard.style.display='none';
+    const backBtn='<button onclick="selectedHouse=null;renderManagerDashboard();" style="display:flex;align-items:center;gap:6px;background:var(--cream);border:1.5px solid var(--sand);border-radius:20px;color:var(--charcoal);font-size:13px;font-weight:700;cursor:pointer;padding:8px 14px;margin-bottom:14px">&#8592; All houses</button>';
+    const houseHeader='<div style="margin-bottom:16px"><div style="font-size:20px;font-weight:800;color:var(--black);margin-bottom:2px">&#127968; '+selectedHouse+'</div><div style="font-size:13px;color:var(--mid)">Manager: '+(hMgr?hMgr.name:'None assigned')+'</div></div>';
+    const pillClass={home:'pill-green',late:'pill-red',out:'pill-yellow',excused:'pill-blue',unknown:'pill-gray'};
+    const rows=res.length?res.map(r=>{
+      const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;
+      const attColor=wc>=req?'var(--success)':wc>0?'var(--warn)':'var(--danger)';
+      const today=new Date().toDateString();
+      const todayLogs=allCurfewLog.filter(l=>l.resident_id===r.id&&new Date(l.ts).toDateString()===today);
+      const excused=todayLogs.find(l=>l.excused);
+      const lastLog=todayLogs.filter(l=>!l.excused).sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];
+      let curfewStatus='No action';let sc='unknown';
+      if(excused){curfewStatus='Excused';sc='excused';}
+      else if(lastLog&&lastLog.action==='in'){curfewStatus=lastLog.late?'Late':'Home';sc=lastLog.late?'late':'home';}
+      else if(lastLog&&lastLog.action==='out'){curfewStatus='Out'+(lastLog.destination?'→ '+lastLog.destination:'');sc='out';}
+      return'<div class="resident-row" onclick="viewResident(\''+r.id+'\')" style="cursor:pointer"><div class="avatar">'+r.name[0]+'</div><div style="flex:1"><div class="resident-name">'+r.name+'</div><div class="resident-sub">Phase '+(r.phase||1)+' · <span style="color:'+attColor+';font-weight:700">'+wc+'/'+req+' meetings</span> · <span class="pill '+(pillClass[sc]||'pill-gray')+'" style="font-size:10px">'+curfewStatus+'</span></div></div></div>';
+    }).join(''):'<p class="text-mid">No residents in this house.</p>';
+    if(curfewEl)curfewEl.innerHTML=backBtn+houseHeader+rows;
     if(attEl)attEl.innerHTML='';const attCard=attEl?attEl.closest('.card'):null;if(attCard)attCard.style.display='none';
   }
 }
