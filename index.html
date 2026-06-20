@@ -308,7 +308,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" style="max-width:480px;margin:0 auto">
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
-<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St or First Baptist Church"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
+<div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field"><label>Address or location</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St, Denver CO (skip if unknown)"></div><button class="btn btn-primary" onclick="ciDetails()">Next — Get someone to sign &#8594;</button></div></div>
 <div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><div id="ci-distance-display"></div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">Hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there. Ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You’re all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:13px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done — go back home</button></div></div>
 </div></div>
@@ -1175,7 +1175,7 @@ async function ciDetails(){
   const addr=document.getElementById('ci-addr').value.trim();
   if(!type){toast('Please select a meeting type.',true);return;}
   if(!name){toast('Please enter the meeting name.',true);return;}
-  if(!addr){toast('Please enter the meeting address.',true);return;}
+  // address is optional — GPS coordinates always captured
   // Show loading state
   const btn=document.querySelector('#ci-step-details .btn-primary');
   if(btn){btn.textContent='Verifying location…';btn.classList.add('btn-disabled');}
@@ -1184,7 +1184,7 @@ async function ciDetails(){
   checkinData.address=addr;
   checkinData.ts=new Date().toISOString();
   checkinData.distance_from_meeting=null;
-  // Geocode the meeting address
+  // Geocode only if address provided
   if(!isDemoMode&&checkinData.lat&&checkinData.lng&&addr){
     const geo=await geocodeAddress(addr);
     if(geo){
@@ -1195,12 +1195,17 @@ async function ciDetails(){
       checkinData.distance_from_meeting=dist.toFixed(2);
       checkinData.meeting_lat=geo.lat.toFixed(6);
       checkinData.meeting_lng=geo.lng.toFixed(6);
+    }else{
+      // Address not found online — GPS still recorded, distance skipped
+      checkinData.distance_from_meeting=null;
     }
   }else if(isDemoMode&&checkinData.lat&&checkinData.lng){
-    // Demo - simulate distance
     checkinData.distance_from_meeting='0.3';
     checkinData.meeting_lat=checkinData.lat;
     checkinData.meeting_lng=checkinData.lng;
+  }else{
+    // No address — GPS still recorded, distance skipped
+    checkinData.distance_from_meeting=null;
   }
   if(btn){btn.textContent='Next — Get someone to sign ➔';btn.classList.remove('btn-disabled');}
   document.getElementById('sig-resident-name').textContent=currentUser.name;
@@ -1214,7 +1219,7 @@ async function ciDetails(){
       const label=d<=0.1?'At the meeting location':d<=1?d.toFixed(1)+' miles from meeting':''+d.toFixed(1)+' miles from meeting address';
       distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid '+color+';border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:10px"><span style="font-size:20px">&#128205;</span><div><div style="font-size:14px;font-weight:700;color:'+color+'">'+label+'</div><div style="font-size:12px;color:var(--mid)">Recorded with this check-in</div></div></div>';
     }else{
-      distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; Location distance could not be verified — GPS coordinates recorded</div></div>';
+      distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; Your GPS location is recorded. Distance not calculated — address not provided or not found online.</div></div>';
     }
   }
   setTimeout(initSigCanvas,200);
