@@ -265,10 +265,10 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="nav-btn" id="res-nav-pin" onclick="resTab('pin',this)"><span class="nav-icon">&#128273;</span>PIN</button>
 </div>
 <div class="body" id="res-tab-home">
-  <div id="res-curfew-detail"></div>
-  <div class="stats-grid" id="res-stats"></div>
   <div id="res-sticky-note"></div>
   <div id="res-curfew-action"></div>
+  <div class="stats-grid" id="res-stats"></div>
+  <div id="res-curfew-detail"></div>
   <div class="card" id="res-upcoming-events-card" style="display:none"><div class="card-title">&#128197; Upcoming events</div><div id="res-upcoming-events"></div></div>
   <div class="card"><div class="card-title">This week</div><div id="req-status" style="margin-bottom:14px"></div><button class="btn btn-primary" onclick="startCheckin()">Check in to a meeting</button></div>
   <div class="card"><div class="card-title">Recent meetings</div><div id="res-log-list"></div></div>
@@ -781,7 +781,7 @@ function renderResidentHome(){
   const remaining=Math.max(0,req-thisWeek.length);
   document.getElementById('req-status').innerHTML=remaining===0?'<span class="pill pill-green">\u2713 '+thisWeek.length+'/'+req+' complete</span>':'<span class="pill pill-yellow">'+thisWeek.length+'/'+req+' \u2014 '+remaining+' more needed</span>';
   renderLogList(document.getElementById('res-log-list'),myCheckins.slice(0,5),false);
-  renderLogList(document.getElementById('res-history-list'),myCheckins,false);
+
   renderStickyNote();renderCurfewAction();renderResCurfewDetail();renderResChores();renderResCalendar();
   if(events().length>0){document.getElementById('res-upcoming-events-card').style.display='block';renderEventList(document.getElementById('res-upcoming-events'),events().slice(0,3),false);}
   else document.getElementById('res-upcoming-events-card').style.display='none';
@@ -836,10 +836,11 @@ async function doCurfewAction(action,destination){
 function renderResCurfewDetail(){
   const el=document.getElementById('res-curfew-detail');if(!el)return;
   const phase=currentUser.phase||1;
-  el.innerHTML=`<div class="card"><div class="card-title">My curfew</div><div style="font-size:14px"><strong>Phase ${phase}</strong><br>Weekday: ${phase===1?'9:00 PM':'10:00 PM'}<br>Weekend: ${phase===1?'10:00 PM':'11:00 PM'}</div></div>`;
+  el.innerHTML='';
   const histEl=document.getElementById('res-curfew-history');if(!histEl)return;
-  if(!allCurfewLog.length){histEl.innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><h3>No check-ins yet</h3><p>Your sign in and out history will appear here.</p></div>';return;}
-  histEl.innerHTML=allCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';return`<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;}).join('');
+  const myCurfewLog=allCurfewLog.filter(function(l){return l.resident_id===currentUser.id;});
+  if(!myCurfewLog.length){histEl.innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><h3>No check-ins yet</h3><p>Your sign in and out history will appear here.</p></div>';return;}
+  histEl.innerHTML=myCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?` <span class="pill pill-red">Late</span>`:'';const excTag=l.excused?` <span class="pill pill-blue">Excused</span>`:'';return`<div class="curfew-row"><div style="font-size:20px">${icon}</div><div style="flex:1"><div style="font-size:14px;font-weight:600">${label}${lateTag}${excTag}</div><div style="font-size:12px;color:var(--mid)">${fmtDate(d)} at ${fmtTime(d)}</div></div></div>`;}).join('');
 }
 
 function renderResMeetingFinder(){
@@ -895,7 +896,26 @@ function renderMeetingList(el,filter){
 }
 
 function choreCompleteToday(c){return c.completed_date===new Date().toISOString().split('T')[0];}
-function renderResChores(){const el=document.getElementById('res-chore-list');if(!el)return;if(!allChores.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#129529;</div><h3>No chores assigned yet</h3><p>Check back — your manager will add chores soon.</p></div>';return;}el.innerHTML=allChores.map(c=>{const isMe=c.resident_id===currentUser.id;const doneClass=choreCompleteToday(c)?'done':'';const checkIcon=choreCompleteToday(c)?'\u2713':'';const onclick=isMe&&!choreCompleteToday(c)?`onclick="completeChore('${c.id}')" style="cursor:pointer"`:'';return`<div class="chore-item"><div class="chore-check ${doneClass}" ${onclick}>${checkIcon}</div><div style="flex:1"><div class="chore-name" style="${choreCompleteToday(c)?'text-decoration:line-through;color:var(--mid)':''}">${c.title}</div><div class="chore-who">${c.resident_name}${c.completed?` <span class="chore-done-label">\u2713 Done</span>`:''}</div></div></div>`;}).join('');}
+function renderResChores(){
+  const el=document.getElementById('res-chore-list');
+  if(!el)return;
+  const myChores=allChores.filter(function(c){return c.resident_id===currentUser.id;});
+  if(!myChores.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#129529;</div><h3>No chores assigned yet</h3><p>Your manager will add your chores here.</p></div>';
+    return;
+  }
+  el.innerHTML=myChores.map(function(c){
+    const done=choreCompleteToday(c);
+    const checkEl=done
+      ?'<div class="chore-check done">&#10003;</div>'
+      :'<div class="chore-check" onclick="completeChore(\'' +c.id+ '\')" style="cursor:pointer"></div>';
+    const nameStyle=done?'text-decoration:line-through;color:var(--mid)':'';
+    const subLabel=done
+      ?'<span class="chore-done-label">&#10003; Done for today</span>'
+      :'<span style="font-size:12px;color:var(--mid)">Tap circle to mark complete</span>';
+    return '<div class="chore-item">'+checkEl+'<div style="flex:1"><div class="chore-name" style="'+nameStyle+'">'+c.title+'</div><div class="chore-who">'+subLabel+'</div></div></div>';
+  }).join('');
+}
 function renderResCalendar(){const el=document.getElementById('res-calendar-list');if(!el)return;renderEventList(el,events(),false);}
 
 function renderEventList(el,evts,showDelete){
@@ -903,9 +923,24 @@ function renderEventList(el,evts,showDelete){
   el.innerHTML=evts.map(e=>{const d=new Date(e.event_date+'T12:00:00');const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});const timeStr=e.event_time?` at ${fmtTimeStr(e.event_time)}`:'';const deleteBtn=showDelete?`<button onclick="deleteEvent('${e.id}')" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button>`:'';return`<div class="event-item"><div class="flex-between"><div><span class="event-date-badge">${dateStr}${timeStr}</span><div class="event-title">${e.title}</div>${e.notes?`<div class="event-meta">${e.notes}</div>`:''}</div>${deleteBtn}</div></div>`;}).join('');
 }
 
-async function completeChore(id){const today=new Date().toISOString().split('T')[0];const{error}=await sb.from('chores').update({completed_date:today}).eq('id',id);if(error){toast('Could not update.',true);return;}allChores=allChores.map(c=>c.id===id?{...c,completed_date:today}:c);renderResChores();if(isStaff())renderMgrChores();toast('Chore done for today!');}
+async function completeChore(id){
+  const today=new Date().toISOString().split('T')[0];
+  if(isDemoMode){
+    // Demo mode - update locally only
+    allChores=allChores.map(function(c){return c.id===id?Object.assign({},c,{completed_date:today}):c;});
+    renderResChores();
+    toast('Chore marked done! \u2713');
+    return;
+  }
+  const{error}=await sb.from('chores').update({completed_date:today}).eq('id',id);
+  if(error){toast('Could not update.',true);return;}
+  allChores=allChores.map(function(c){return c.id===id?Object.assign({},c,{completed_date:today}):c;});
+  renderResChores();
+  if(isStaff())renderMgrChores();
+  toast('Chore marked done! \u2713');
+}
 
-function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','chores','calendar','meetings','pin'].forEach(t=>{const el=document.getElementById('res-tab-'+t);if(el)el.style.display=t===tab?'block':'none';});if(tab==='home'){renderResCurfewDetail();renderResChores();}if(tab==='chores')renderResChores();if(tab==='calendar')renderResCalendar();if(tab==='meetings')renderResMeetingFinder();}
+function resTab(tab,btn){document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['home','chores','calendar','meetings','pin'].forEach(t=>{const el=document.getElementById('res-tab-'+t);if(el)el.style.display=t===tab?'block':'none';});if(tab==='home'){renderResidentHome();}if(tab==='chores')renderResChores();if(tab==='calendar')renderResCalendar();if(tab==='meetings')renderResMeetingFinder();}
 
 function renderLogList(el,ckins,showName){
   if(!ckins.length){el.innerHTML='<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No meetings yet</h3><p>After your next meeting, tap “Check in to a meeting” above.</p></div>';return;}
