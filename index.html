@@ -8,58 +8,59 @@
   --pink:#C0397A;
   --pink-light:#E05A9A;
   --pink-dark:#8B2458;
-  --pink-glow:rgba(192,57,122,0.15);
+  --pink-glow:rgba(192,57,122,0.10);
   --gold:#7B3F00;
   --gold-light:#C8860A;
-  --cream:#FDF0F6;
-  --sand:#F0D8E8;
+  --cream:#FAF0F5;
+  --sand:#EDD5E3;
   --charcoal:#1A1A1A;
-  --mid:#8B6070;
+  --mid:#7A5566;
   --soft:#B890A0;
   --white:#FFFFFF;
-  --danger:#C0392B;
-  --danger-light:#FEE2E2;
-  --success:#27AE60;
-  --success-light:#DCFCE7;
-  --warn:#E67E22;
-  --warn-light:#FEF3C7;
-  --radius:16px;
-  --radius-sm:10px;
-  --shadow:0 4px 24px rgba(0,0,0,0.12);
-  --shadow-sm:0 2px 8px rgba(0,0,0,0.08);
-  --shadow-card:0 2px 16px rgba(192,57,122,0.08);
+  --danger:#B83232;
+  --danger-light:#FDE8E8;
+  --success:#2A7A50;
+  --success-light:#DDF3E8;
+  --warn:#C47A1A;
+  --warn-light:#FDF0D8;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 2px 12px rgba(0,0,0,0.10);
+  --shadow-sm:0 1px 4px rgba(0,0,0,0.07);
+  --shadow-card:0 1px 6px rgba(0,0,0,0.07);
+  --topbar:#1C0A12;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:#F7EDF4;color:var(--charcoal);min-height:100vh;overscroll-behavior:none;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:#F0E8ED;color:var(--charcoal);min-height:100vh;overscroll-behavior:none;}
 .screen{display:none;min-height:100vh;flex-direction:column;}.screen.active{display:flex;}
 
 /* TOPBAR */
-.topbar{background:var(--black);color:var(--white);padding:52px 20px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);}
+.topbar{background:var(--topbar);color:var(--white);padding:52px 20px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);}
 .topbar .logo{font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;}
 .topbar .logo span{color:var(--pink-light);}
 .topbar .sub{font-size:14px;color:rgba(255,255,255,0.45);margin-top:2px;font-weight:500;}
 .topbar-right{display:flex;align-items:center;gap:8px;}
-.badge-role{font-size:13px;font-weight:700;background:var(--pink-dark);color:var(--white);padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
-.badge-owner{background:linear-gradient(135deg,var(--gold),var(--gold-light))!important;}
+.badge-role{font-size:12px;font-weight:700;background:var(--pink-dark);color:var(--white);padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.badge-owner{background:var(--gold-light)!important;}
 .btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer;padding:6px 12px;border-radius:20px;}
 
 /* BODY */
 .body{flex:1;overflow-y:auto;padding:20px;background:#F7EDF4;}
 
 /* CARDS */
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:20px;margin-bottom:16px;border:1px solid rgba(192,57,122,0.06);}
-.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mid);margin-bottom:14px;}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:20px;margin-bottom:14px;border:1px solid rgba(0,0,0,0.07);}
+.card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--mid);margin-bottom:12px;}
 
 /* BUTTONS */
 .btn{width:100%;padding:16px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.2px;}
 .btn:active{opacity:0.88;transform:scale(0.98);}
-.btn-primary{background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);box-shadow:0 4px 16px rgba(192,57,122,0.35);}
-.btn-navy{background:var(--black);color:var(--white);box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.btn-primary{background:var(--pink);color:var(--white);box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(139,36,88,0.4),0 2px 8px rgba(192,57,122,0.2);}
+.btn-navy{background:var(--black);color:var(--white);box-shadow:inset 0 1px 0 rgba(255,255,255,0.10),0 1px 3px rgba(0,0,0,0.35);}
 .btn-outline{background:transparent;border:2px solid var(--pink);color:var(--pink);}
-.btn-danger{background:linear-gradient(135deg,#E74C3C,var(--danger));color:var(--white);box-shadow:0 4px 12px rgba(192,57,43,0.3);}
-.btn-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--white);box-shadow:0 4px 12px rgba(123,63,0,0.3);}
-.btn-success{background:linear-gradient(135deg,#2ECC71,var(--success));color:var(--white);box-shadow:0 4px 12px rgba(39,174,96,0.3);}
-.btn-warn{background:linear-gradient(135deg,#F39C12,var(--warn));color:var(--white);box-shadow:0 4px 12px rgba(230,126,34,0.3);}
+.btn-danger{background:var(--danger);color:var(--white);}
+.btn-gold{background:var(--gold-light);color:var(--white);}
+.btn-success{background:var(--success);color:var(--white);}
+.btn-warn{background:var(--warn);color:var(--white);}
 .btn-sm{padding:10px 18px;font-size:13px;font-weight:700;width:auto;border-radius:var(--radius-sm);}
 .btn-disabled{opacity:0.4;pointer-events:none;}
 
@@ -72,21 +73,21 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* LOGIN */
 #screen-login{background:var(--black);}
-.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;background:radial-gradient(ellipse at top,rgba(192,57,122,0.2) 0%,transparent 60%),var(--black);}
+.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;background:radial-gradient(ellipse at top,rgba(192,57,122,0.25) 0%,transparent 55%),var(--topbar);}
 .login-logo-img{width:90px;height:90px;object-fit:contain;margin-bottom:16px;filter:drop-shadow(0 4px 24px rgba(192,57,122,0.4));}
 .login-logo{font-size:36px;font-weight:800;color:var(--white);margin-bottom:4px;letter-spacing:-1px;}
 .login-logo span{color:var(--pink-light);}
 .login-tagline{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:36px;text-align:center;line-height:1.7;font-weight:500;}
-.login-card{background:rgba(255,255,255,0.97);border-radius:24px;padding:32px 28px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,0.4);}
+.login-card{background:rgba(255,255,255,0.98);border-radius:14px;padding:28px 24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
 .login-card h2{font-size:20px;font-weight:800;margin-bottom:22px;color:var(--black);letter-spacing:-0.3px;}
 
 /* PILLS */
-.pill{display:inline-block;font-size:13px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.3px;}
-.pill-green{background:var(--success-light);color:#166534;}
-.pill-yellow{background:var(--warn-light);color:#92400E;}
-.pill-red{background:var(--danger-light);color:#991B1B;}
-.pill-blue{background:#DBEAFE;color:#1E40AF;}
-.pill-gray{background:var(--sand);color:var(--mid);}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;text-transform:uppercase;letter-spacing:0.4px;border:1px solid transparent;}
+.pill-green{background:var(--success-light);color:#166534;border-color:#A8DEC0;}
+.pill-yellow{background:var(--warn-light);color:#92400E;border-color:#F0C880;}
+.pill-red{background:var(--danger-light);color:#991B1B;border-color:#F0A0A0;}
+.pill-blue{background:#DBEAFE;color:#1E40AF;border-color:#BFDBFE;}
+.pill-gray{background:var(--sand);color:var(--mid);border-color:#D8C0CE;}
 
 /* LOG ITEMS */
 .log-item{border-bottom:1px solid var(--sand);padding:14px 0;display:flex;align-items:flex-start;gap:14px;}.log-item:last-child{border-bottom:none;}
@@ -108,12 +109,12 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 /* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .stat-box{background:var(--white);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-card);text-align:center;border:1px solid rgba(192,57,122,0.06);}
-.stat-num{font-size:32px;font-weight:800;color:var(--pink);letter-spacing:-1px;}
-.stat-label{font-size:13px;color:var(--mid);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-num{font-size:28px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;}
+.stat-label{font-size:11px;color:var(--mid);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
 
 /* RESIDENTS */
 .resident-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--sand);cursor:pointer;}.resident-row:last-child{border-bottom:none;}
-.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(192,57,122,0.3);}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--pink);color:var(--white);font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .avatar-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold))!important;box-shadow:0 2px 8px rgba(123,63,0,0.3)!important;}
 .resident-name{font-size:15px;font-weight:700;letter-spacing:-0.2px;}
 .resident-sub{font-size:14px;color:var(--mid);margin-top:1px;}
@@ -125,7 +126,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 #toast.show{transform:translateX(-50%) translateY(0);}
 
 /* LOADING */
-#loading{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background:radial-gradient(ellipse at center,rgba(192,57,122,0.15) 0%,var(--black) 70%);}
+#loading{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background:radial-gradient(ellipse at center,rgba(192,57,122,0.15) 0%,var(--topbar) 70%);}
 #loading .spin{width:44px;height:44px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--pink-light);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:20px;}
 #loading p{color:rgba(255,255,255,0.5);font-size:14px;font-weight:500;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -133,12 +134,12 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* MODALS */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}.modal-bg.open{display:flex;}
-.modal{background:var(--white);border-radius:24px 24px 0 0;padding:28px 24px 44px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
+.modal{background:var(--white);border-radius:16px 16px 0 0;padding:24px 22px 40px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
 .modal-handle{width:36px;height:4px;background:var(--sand);border-radius:2px;margin:0 auto 24px;}
 .modal h2{font-size:20px;font-weight:800;margin-bottom:18px;letter-spacing:-0.3px;}
 
 /* REPORT */
-.report-header{background:linear-gradient(135deg,var(--black),#1A0A14);color:var(--white);border-radius:var(--radius);padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
+.report-header{background:var(--black);color:var(--white);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;}
 .report-title{font-size:18px;font-weight:800;letter-spacing:-0.3px;}
 .report-date{font-size:14px;color:rgba(255,255,255,0.45);margin-top:4px;font-weight:500;}
 .report-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--sand);font-size:14px;}.report-row:last-child{border-bottom:none;}
@@ -154,13 +155,13 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .empty p{font-size:14px;color:var(--mid);line-height:1.6;}
 
 /* BOTTOM NAV */
-.bottom-nav{display:flex;background:var(--black);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 28px;flex-shrink:0;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;transition:color 0.15s;}
+.bottom-nav{display:flex;background:var(--topbar);border-top:1px solid rgba(255,255,255,0.06);padding:10px 0 28px;flex-shrink:0;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;transition:color 0.15s;}
 .nav-btn.active{color:var(--pink-light);}
 .nav-icon{font-size:22px;line-height:1;}
 
 /* TOP TABS */
-.top-tabs{display:flex;background:var(--black);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.top-tabs{display:flex;background:var(--topbar);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
 .top-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid transparent;transition:all 0.15s;}
 .top-tab.active{color:var(--pink-light);border-bottom-color:var(--pink-light);}
 .top-tab-icon{font-size:20px;line-height:1;}
@@ -180,7 +181,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* EVENTS */
 .event-item{padding:14px 0;border-bottom:1px solid var(--sand);}.event-item:last-child{border-bottom:none;}
-.event-date-badge{display:inline-block;background:linear-gradient(135deg,var(--pink),var(--pink-dark));color:var(--white);font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;margin-bottom:6px;letter-spacing:0.3px;}
+.event-date-badge{display:inline-block;background:var(--pink);color:var(--white);font-size:13px;font-weight:700;padding:4px 10px;border-radius:8px;margin-bottom:6px;letter-spacing:0.3px;}
 .event-title{font-size:15px;font-weight:700;}
 .event-meta{font-size:14px;color:var(--mid);margin-top:3px;line-height:1.6;}
 
@@ -203,7 +204,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* QUICK ACTIONS */
 .quick-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.quick-btn{background:var(--white);border:1px solid rgba(192,57,122,0.08);border-radius:var(--radius);padding:16px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm);transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.quick-btn{background:var(--white);border:1px solid rgba(0,0,0,0.08);border-radius:var(--radius);padding:14px 8px;text-align:center;cursor:pointer;box-shadow:var(--shadow-sm);transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .quick-btn:active{transform:scale(0.95);box-shadow:none;}
 .quick-btn-icon{font-size:26px;line-height:1;}
 .quick-btn-label{font-size:13px;font-weight:700;color:var(--charcoal);line-height:1.3;letter-spacing:0.1px;}
@@ -233,7 +234,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 /* DESKTOP / WIDE SCREEN */
 @media (min-width: 600px) {
-  body{display:flex;justify-content:center;background:#1A1A1A;}
+  body{display:flex;justify-content:center;background:#111010;}
   .screen{max-width:480px;width:100%;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5);}
   #loading{max-width:480px;width:100%;left:50%;transform:translateX(-50%);}
   #toast{max-width:420px;}
@@ -293,23 +294,23 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <span id="res-more-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </div>
     <div id="res-more-panel" style="display:none;padding:0 20px 20px">
-      <div id="res-upcoming-events-card" style="display:none;margin-bottom:16px"><div class="card-title">&#128197; Upcoming events</div><div id="res-upcoming-events"></div></div>
+      <div id="res-upcoming-events-card" style="display:none;margin-bottom:16px"><div class="card-title">Upcoming events</div><div id="res-upcoming-events"></div></div>
       <div style="margin-bottom:16px"><div class="card-title">Recent meetings</div><div id="res-log-list"></div><div id="res-all-meetings" style="display:none"></div><button id="res-meetings-toggle" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="toggleResMeetings()">View all meetings</button></div>
-      <div style="margin-bottom:16px"><div class="card-title">&#128137; Drug tests</div><div id="res-drug-tests"></div></div>
+      <div style="margin-bottom:16px"><div class="card-title">Drug tests</div><div id="res-drug-tests"></div></div>
       <div><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
     </div>
   </div>
 
 </div>
 <div class="body" id="res-tab-chores" style="display:none">
-  <div class="card"><div class="card-title">&#129529; This week&#8217;s chores</div><div id="res-chore-list"></div></div>
+  <div class="card"><div class="card-title">This week&#8217;s chores</div><div id="res-chore-list"></div></div>
 </div>
 <div class="body" id="res-tab-calendar" style="display:none">
-  <div class="card"><div class="card-title">&#128197; Upcoming events</div><div id="res-calendar-list"></div></div>
+  <div class="card"><div class="card-title">Upcoming events</div><div id="res-calendar-list"></div></div>
 </div>
 <div class="body" id="res-tab-meetings" style="display:none">
   <div class="card">
-    <div class="card-title">&#128205; Find a meeting</div>
+    <div class="card-title">Find a meeting</div>
     <p class="text-mid" style="margin-bottom:16px">Browse meetings near you. Go to one, then use <strong>Check in</strong> on the home screen to record your attendance.</p>
     <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="meeting-filter-btns">
       <button onclick="filterMeetings('all')" class="btn btn-primary btn-sm" id="mf-all">All</button>
@@ -370,7 +371,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
   <div class="card" id="residents-card">
     <div style="margin-bottom:14px">
-      <span class="card-title">&#128101; Residents</span>
+      <span class="card-title">Residents</span>
       <p class="text-mid" style="font-size:12px;margin-top:4px">Add residents from the Actions tab.</p>
     </div>
     <div id="mgr-resident-list"></div>
@@ -382,74 +383,110 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
 
-  <!-- Drug tests — always visible -->
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:12px">
-      <span class="card-title" style="margin:0">&#128137; Drug tests</span>
+  <!-- LOG section label -->
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:14px 2px 8px">Log</div>
+
+  <!-- Drug tests — two-tone tool card -->
+  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(192,57,122,0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+    <div style="background:var(--pink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:white">Drug tests</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px">Urine &middot; Breathalyzer &middot; Dual signature</div>
+      </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-outline btn-sm" onclick="openDrugTestHistory()">History</button>
-        <button class="btn btn-primary btn-sm" onclick="openDrugTest()">+ Log</button>
+        <button class="btn btn-sm" onclick="openDrugTestHistory()" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.2);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);font-size:12px;padding:7px 12px">History</button>
+        <button class="btn btn-sm" onclick="openDrugTest()" style="background:white;color:var(--pink);border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.8),0 1px 3px rgba(139,36,88,0.25);font-size:12px;padding:7px 12px">+ Log</button>
       </div>
     </div>
-    <p class="text-mid" style="margin-bottom:0">Log urine and breathalyzer tests with dual signatures.</p>
+    <div style="background:white;padding:10px 16px" id="dt-last-test-footer">
+      <div style="font-size:12px;color:var(--mid)">Tap + Log to record a new test.</div>
+    </div>
   </div>
 
-  <!-- Chores — accordion -->
-  <div class="card" style="padding:0;overflow:hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('chores-panel')">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#129529; Chores this week</span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddChore()">+ Add</button>
+  <!-- Incident log — two-tone, dark -->
+  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+    <div style="background:var(--charcoal);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:white">Incident log</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px">NARR compliance &middot; Timestamped records</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="openIncidentHistory()" style="background:rgba(255,255,255,0.10);color:white;border:1px solid rgba(255,255,255,0.14);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);font-size:12px;padding:7px 12px">History</button>
+        <button class="btn btn-sm" onclick="openIncidentLog()" style="background:var(--pink);color:white;border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(139,36,88,0.3);font-size:12px;padding:7px 12px">+ Log</button>
+      </div>
+    </div>
+    <div style="background:white;padding:10px 16px">
+      <div style="font-size:12px;color:var(--mid)" id="incident-last-footer">Tap + Log to record an incident.</div>
+    </div>
+  </div>
+
+  <!-- THIS WEEK section label -->
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:10px 2px 8px">This week</div>
+
+  <!-- Chores — accordion with progress ring -->
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('chores-panel')">
+      <div id="chores-progress-ring" style="width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--success) 0deg,var(--sand) 0deg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:28px;height:28px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--success)" id="chores-ring-label">0/0</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--charcoal)">Chores this week</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:1px" id="chores-sub">Loading...</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddChore()" style="font-size:11px;padding:7px 12px">+ Add</button>
         <span id="chores-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
       </div>
     </div>
-    <div id="chores-panel" style="display:none;padding:0 20px 20px"><div id="mgr-chore-list"></div></div>
+    <div id="chores-panel" style="display:none;border-top:1px solid var(--sand);padding:12px 16px 16px"><div id="mgr-chore-list"></div></div>
   </div>
 
-  <!-- Events — accordion -->
-  <div class="card" style="padding:0;overflow:hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('events-panel')">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128197; Events</span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddEvent()">+ Add</button>
+  <!-- Events — accordion with date badge -->
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('events-panel')">
+      <div id="events-date-badge" style="width:38px;height:38px;border-radius:8px;background:var(--pink-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.5px" id="events-badge-day">—</div>
+        <div style="font-size:16px;font-weight:800;color:white;line-height:1" id="events-badge-date">—</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--charcoal)">Events</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:1px" id="events-sub">Loading...</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddEvent()" style="font-size:11px;padding:7px 12px">+ Add</button>
         <span id="events-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
       </div>
     </div>
-    <div id="events-panel" style="display:none;padding:0 20px 20px"><div id="mgr-event-list"></div></div>
+    <div id="events-panel" style="display:none;border-top:1px solid var(--sand);padding:12px 16px 16px"><div id="mgr-event-list"></div></div>
   </div>
 
-  <!-- Sticky note — accordion -->
-  <div class="card" style="padding:0;overflow:hidden">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer" onclick="toggleActionSection('note-panel')">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128204; Sticky note</span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openAnnouncementHistory()">History</button>
-        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPostAnnouncement()">Post</button>
+  <!-- Sticky note — accordion with yellow pin -->
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('note-panel')">
+      <div style="width:38px;height:38px;border-radius:8px;background:#FFF9C4;border:1.5px solid #F0D000;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📌</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:var(--charcoal)">Sticky note</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:1px" id="note-sub">No active note</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openAnnouncementHistory()" style="font-size:11px;padding:7px 12px">History</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPostAnnouncement()" style="font-size:11px;padding:7px 12px">Post</button>
         <span id="note-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
       </div>
     </div>
-    <div id="note-panel" style="display:none;padding:0 20px 20px"><div id="mgr-announcement-status"></div></div>
+    <div id="note-panel" style="display:none;border-top:1px solid var(--sand);padding:12px 16px 16px"><div id="mgr-announcement-status"></div></div>
   </div>
 
-  <!-- Incident log — always visible -->
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:12px">
-      <span class="card-title" style="margin:0">&#9888;&#65039; Incident log</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-outline btn-sm" onclick="openIncidentHistory()">History</button>
-        <button class="btn btn-primary btn-sm" onclick="openIncidentLog()">+ Log</button>
-      </div>
-    </div>
-    <p class="text-mid" style="margin-bottom:0">Document incidents for NARR compliance and licensing records.</p>
-  </div>
+  <!-- RESIDENTS section label -->
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:10px 2px 8px">Residents</div>
 
-  <!-- Add resident — always visible -->
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:4px">
-      <span class="card-title" style="margin:0">&#128101; Add resident</span>
-      <button class="btn btn-primary btn-sm" onclick="openAddResident()">+ Add</button>
+  <!-- Add resident — dashed, standalone -->
+  <div style="background:white;border-radius:12px;padding:14px 16px;border:1.5px dashed var(--sand);display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--charcoal)">Add resident</div>
+      <div style="font-size:12px;color:var(--mid);margin-top:2px">Add a new resident to this house</div>
     </div>
-    <p class="text-mid" style="font-size:12px;margin-bottom:0">Add a new resident to this house.</p>
+    <button class="btn btn-primary btn-sm" onclick="openAddResident()" style="font-size:12px;padding:9px 14px">+ Add</button>
   </div>
 
 </div>
@@ -459,7 +496,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <!-- Manage a resident -->
   <div class="card" style="padding:0;overflow:hidden">
     <button onclick="toggleSettingsSection('manage-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128101; Manage a resident</span>
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Manage a resident</span>
       <span id="manage-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </button>
     <div id="manage-panel" style="display:none;padding:0 20px 20px">
@@ -516,7 +553,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <!-- Alumni / Discharged -->
   <div class="card" style="padding:0;overflow:hidden">
     <button onclick="toggleSettingsSection('alumni-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128203; Alumni / Discharged</span>
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Alumni / Discharged</span>
       <span id="alumni-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </button>
     <div id="alumni-panel" style="display:none;padding:0 20px 20px">
@@ -528,7 +565,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <!-- Excuse a resident -->
   <div class="card" style="padding:0;overflow:hidden">
     <button onclick="toggleSettingsSection('excuse-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128338; Excuse a resident</span>
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Excuse a resident</span>
       <span id="excuse-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </button>
     <div id="excuse-panel" style="display:none;padding:0 20px 20px">
@@ -542,7 +579,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <!-- Change my PIN -->
   <div class="card" style="padding:0;overflow:hidden">
     <button onclick="toggleSettingsSection('pin-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128273; Change my PIN</span>
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Change my PIN</span>
       <span id="pin-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </button>
     <div id="pin-panel" style="display:none;padding:0 20px 20px">
@@ -553,11 +590,11 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     </div>
   </div>
 
-  <!-- Owner-only org tools -->
+      <!-- Owner-only org tools -->
   <div id="owner-tools" style="display:none">
     <div class="card" style="padding:0;overflow:hidden;border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important">
       <button onclick="toggleSettingsSection('org-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-        <span style="font-size:15px;font-weight:700;color:var(--gold-light)">&#9881; Organization &amp; managers</span>
+        <span style="font-size:15px;font-weight:700;color:var(--gold-light)">Organization &amp; managers</span>
         <span id="org-panel-arrow" style="font-size:18px;color:var(--gold-light);transition:transform 0.2s">&#8250;</span>
       </button>
       <div id="org-panel" style="display:none;padding:0 20px 20px">
@@ -592,7 +629,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="body" id="mgr-pane-report" style="display:none">
   <div style="display:flex;gap:8px;margin-bottom:20px">
     <button class="btn btn-primary btn-sm" id="report-tab-attendance" onclick="switchReportTab('attendance')" style="flex:1">&#128203; Attendance</button>
-    <button class="btn btn-outline btn-sm" id="report-tab-drugtests" onclick="switchReportTab('drugtests')" style="flex:1">&#128137; Drug tests</button>
+    <button class="btn btn-outline btn-sm" id="report-tab-drugtests" onclick="switchReportTab('drugtests')" style="flex:1">Drug tests</button>
     <button class="btn btn-outline btn-sm" id="report-tab-incidents" onclick="switchReportTab('incidents')" style="flex:1">&#9888;&#65039; Incidents</button>
   </div>
 
@@ -694,14 +731,14 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <!-- MODALS -->
 <div class="modal-bg" id="modal-find-meeting" onclick="if(event.target===this)closeModal('modal-find-meeting')"><div class="modal"><div class="modal-handle"></div>
-<h2>&#128205; Meetings near you</h2>
+<h2>Meetings near you</h2>
 <div id="find-meeting-status" style="font-size:14px;color:var(--mid);margin-bottom:12px"></div>
 <div id="find-meeting-list"></div>
 <button class="btn btn-outline mt16" onclick="closeModal('modal-find-meeting')">Close</button>
 </div></div>
 
 <div class="modal-bg" id="modal-post-announcement" onclick="if(event.target===this)closeModal('modal-post-announcement')"><div class="modal"><div class="modal-handle"></div>
-<h2>&#128204; Post sticky note</h2>
+<h2>Post sticky note</h2>
 <p class="text-mid" style="margin-bottom:16px">Appears on every resident&#8217;s home screen until they tap "Got it".</p>
 <div id="announcement-house-selector" style="display:none">
   <div class="field"><label>Post to</label><select id="announcement-house-target"><option value="all">All houses</option></select></div>
@@ -713,7 +750,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-incident-log" onclick="if(event.target===this)closeModal('modal-incident-log')">
 <div class="modal"><div class="modal-handle"></div>
-  <h2>&#9888;&#65039; Log incident</h2>
+  <h2>Log incident</h2>
   <p class="text-mid" style="margin-bottom:16px">Document any incident requiring a record. All entries are permanent and timestamped.</p>
   <div class="field"><label>Resident involved</label><select id="incident-resident"><option value="">Select resident (or leave blank for house-wide)</option></select></div>
   <div class="field"><label>Incident type</label><select id="incident-type"><option value="">Select type...</option><option>Policy violation</option><option>Altercation</option><option>Medical emergency</option><option>Police contact</option><option>Positive drug test follow-up</option><option>Curfew violation</option><option>Property damage</option><option>Welfare check</option><option>Other</option></select></div>
@@ -730,14 +767,14 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-incident-history" onclick="if(event.target===this)closeModal('modal-incident-history')">
 <div class="modal"><div class="modal-handle"></div>
-  <h2>&#128203; Incident log</h2>
+  <h2>Incident log</h2>
   <div class="field" style="margin-bottom:12px"><select id="incident-history-filter" onchange="renderIncidentHistory()" style="font-size:14px"><option value="all">All residents</option></select></div>
   <div id="incident-history-content"></div>
   <button class="btn btn-outline mt16" onclick="closeModal('modal-incident-history')">Close</button>
 </div></div>
 
 <div class="modal-bg" id="modal-announcement-history" onclick="if(event.target===this)closeModal('modal-announcement-history')"><div class="modal"><div class="modal-handle"></div>
-<h2>&#128203; Note history</h2>
+<h2>Note history</h2>
 <div id="announcement-history-content"></div>
 <button class="btn btn-outline mt16" onclick="closeModal('modal-announcement-history')">Close</button>
 </div></div>
@@ -777,7 +814,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 </div></div>
 
 <div class="modal-bg" id="modal-drug-test" onclick="if(event.target===this)closeModal('modal-drug-test')"><div class="modal"><div class="modal-handle"></div>
-<h2>&#128137; Log drug test</h2>
+<h2>Log drug test</h2>
 <div class="steps" id="dt-steps" style="margin-bottom:16px"></div>
 <div id="dt-step-1">
 <div class="field"><label>Resident</label><select id="dt-resident"><option value="">Select resident&#8230;</option></select></div>
@@ -834,7 +871,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="modal-bg" id="modal-drug-test-history" onclick="if(event.target===this)closeModal('modal-drug-test-history')">
 <div class="modal"><div class="modal-handle"></div>
   <div class="flex-between" style="margin-bottom:16px">
-    <h2 style="margin:0">&#128137; Drug test log</h2>
+    <h2 style="margin:0">Drug test log</h2>
     <button onclick="printDrugTestLog()" style="background:var(--black);color:white;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">&#128424; Print all</button>
   </div>
   <div class="field" style="margin-bottom:12px"><select id="dt-modal-resident-filter" onchange="renderDtHistory()" style="font-size:14px"><option value="all">All residents</option></select></div>
@@ -847,84 +884,6 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div id="toast"></div>
 <iframe id="print-frame" style="display:none;position:fixed;width:0;height:0;border:none"></iframe>
 <script>
-/*
-=============================================================
-  StepIn v2.1 — theturningpoint.github.io/StepIn
-  Built for The Turning Point sober living management
-=============================================================
-
-ARCHITECTURE
-  Single HTML file. No build process. Push index.html to GitHub Pages.
-  Backend: Supabase (PostgreSQL + auth).
-  All state lives in memory. Page reload re-fetches from Supabase.
-
-SCREENS (controlled by show(id))
-  screen-login     — PIN login + demo entry
-  screen-resident  — Resident view (home, chores, meetings, events, PIN)
-  screen-checkin   — GPS-verified meeting check-in flow (3 steps)
-  screen-manager   — Manager/Owner view (dash, actions, report, settings)
-
-  CRITICAL: Never add inline display styles to screen divs.
-  Never modify show(). These caused the bleed bug.
-
-ROLES
-  resident  — signs in/out, checks in to meetings, views chores/events
-  manager   — manages residents, logs drug tests/incidents, views reports
-  owner     — Tanya only; sees all houses, org settings, manager management
-
-KEY GLOBALS
-  currentUser      — logged-in user object
-  selectedHouse    — owner drill-down (null = show all houses)
-  allResidents     — all residents loaded on login
-  allCheckins      — all meeting check-ins
-  allCurfewLog     — sign in/out records
-  allChores        — current week chores
-  allEvents        — upcoming events
-  cachedDrugTests  — drug test records
-  cachedIncidents  — incident records
-  cachedSettings   — {required, house_name}
-  cachedAnnouncement — active sticky note
-  isDemoMode       — true when using demo login (no writes to Supabase)
-
-KEY FUNCTIONS
-  show(id)                  — switches active screen (CSS class only, never inline style)
-  mgrTab(tab, btn)          — switches manager pane (dash/tools/report/settings)
-  resTab(tab, btn)          — switches resident tab
-  toggleSettingsSection(id) — settings accordion
-  toggleActionSection(id)   — actions tab accordion
-  toggleResMore()           — resident home More accordion
-  enterApp()                — routes to enterManager() or enterResident() after login
-  loadAllData()             — fetches everything from Supabase
-  renderManagerDashboard()  — routes to renderOwnerDashboard() or renderMgrDashboard()
-  renderReport()            — weekly attendance report
-  renderDtHistory()         — drug test log
-  renderIncidentReport()    — incident log
-  printHTML(html)           — prints via iframe (Safari compatible)
-  getCurfewTime(phase,date) — Phase1: Sun-Thu 21:00, Fri-Sat 22:00
-                              Phase2: Sun-Thu 22:00, Fri-Sat 23:00
-
-CURFEW LOGIC
-  Phase 1: Sun–Thu 9pm, Fri–Sat 10pm
-  Phase 2: Sun–Thu 10pm, Fri–Sat 11pm
-  Weekend = Friday (5) + Saturday (6). Sunday follows weeknight rules.
-
-DEMO MODE
-  enterDemo('resident'|'manager'|'owner')
-  Mocks sb.from() — all writes are no-ops. Data resets on page reload.
-
-SUPABASE TABLES
-  residents       — users (residents + managers + owner)
-  checkins        — meeting check-in records with GPS + signature
-  curfew_log      — sign in/out events
-  chores          — weekly chore assignments
-  events          — upcoming house events
-  announcements   — sticky notes (one active at a time per house)
-  announcement_acks — resident acknowledgments
-  drug_tests      — drug/breathalyzer test records with dual signatures
-  incidents       — incident log records
-  settings        — org config (id=1, required meetings, house name)
-=============================================================
-*/
 const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -1044,7 +1003,7 @@ function renderResidentHome(){
 function renderStickyNote(){
   const el=document.getElementById('res-sticky-note');if(!el)return;
   if(!cachedAnnouncement||cachedAcks.some(a=>a.resident_id===currentUser.id)){el.innerHTML='';return;}
-  el.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:2px 3px 8px rgba(0,0,0,0.15)"><div style="font-size:13px;font-weight:700;color:#7B6000;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">&#128204; Notice from management</div><div style="font-size:15px;color:#3A3000;line-height:1.6;margin-bottom:14px">'+cachedAnnouncement.message+'</div><button class="btn btn-navy btn-sm" onclick="ackAnnouncement()" style="background:#7B6000">Got it &#10003;</button></div>';
+  el.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:2px 3px 8px rgba(0,0,0,0.15)"><div style="font-size:13px;font-weight:700;color:#7B6000;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Notice from management</div><div style="font-size:15px;color:#3A3000;line-height:1.6;margin-bottom:14px">'+cachedAnnouncement.message+'</div><button class="btn btn-navy btn-sm" onclick="ackAnnouncement()" style="background:#7B6000">Got it &#10003;</button></div>';
 }
 async function ackAnnouncement(){if(!cachedAnnouncement)return;const record={id:'ack-'+Date.now(),announcement_id:cachedAnnouncement.id,resident_id:currentUser.id,resident_name:currentUser.name};const{error}=await sb.from('announcement_acks').insert(record);if(error){toast('Could not acknowledge.');return;}cachedAcks.push(record);renderStickyNote();toast('Got it!');}
 
@@ -1214,7 +1173,7 @@ function mgrTab(tab,btn){
   document.querySelectorAll('.top-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
   ['dash','tools','report','settings'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
   if(tab==='dash'){renderManagerDashboard();renderMgrResidents();}
-  if(tab==='tools'){if(isOwner())selectedHouse=null;renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
+  if(tab==='tools'){if(isOwner())selectedHouse=null;renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];renderActionsTab();}
   if(tab==='report'){if(isOwner())selectedHouse=null;renderReport();switchReportTab('attendance');}
   if(tab==='settings'){
     // Close all accordion panels on entry so it's always collapsed/clean
@@ -1230,7 +1189,8 @@ function mgrTab(tab,btn){
 function renderManagerDashboard(){if(isOwner()){renderOwnerDashboard();return;}renderMgrDashboard();}
 
 function renderOwnerDashboard(){
-  const sn=document.getElementById('dash-sticky-note');if(sn&&cachedAnnouncement)sn.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE</div><div style="font-size:14px;color:#3A3000">'+cachedAnnouncement.message+'</div></div>';else if(sn)sn.innerHTML='';
+  renderDashDocsAlert();
+  const sn=document.getElementById('dash-sticky-note');if(sn&&cachedAnnouncement)sn.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">ACTIVE NOTE</div><div style="font-size:14px;color:#3A3000">'+cachedAnnouncement.message+'</div></div>';else if(sn)sn.innerHTML='';
   const curfewEl=document.getElementById('dash-curfew-list');const attEl=document.getElementById('dash-attendance-list');
   if(!selectedHouse){
     const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
@@ -1272,7 +1232,8 @@ function renderOwnerDashboard(){
 function selectHouse(house){selectedHouse=house;renderManagerDashboard();renderMgrResidents();renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();}
 
 function renderMgrDashboard(){
-  const sn=document.getElementById('dash-sticky-note');if(sn&&cachedAnnouncement)sn.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">&#128204; ACTIVE NOTE &mdash; '+cachedAcks.length+'/'+residents().length+' acknowledged</div><div style="font-size:14px;color:#3A3000">'+cachedAnnouncement.message+'</div></div>';else if(sn)sn.innerHTML='';
+  renderDashDocsAlert();
+  const sn=document.getElementById('dash-sticky-note');if(sn&&cachedAnnouncement)sn.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:14px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#7B6000;margin-bottom:4px">ACTIVE NOTE &mdash; '+cachedAcks.length+'/'+residents().length+' acknowledged</div><div style="font-size:14px;color:#3A3000">'+cachedAnnouncement.message+'</div></div>';else if(sn)sn.innerHTML='';
   const curfewEl=document.getElementById('dash-curfew-list');const res=residents();
   if(!res.length){if(curfewEl)curfewEl.innerHTML='<p class="text-mid">No residents yet.</p>';const attEl2=document.getElementById('dash-attendance-list');if(attEl2)attEl2.innerHTML='<p class="text-mid">No residents yet.</p>';return;}
   const today=new Date().toDateString();
@@ -1627,6 +1588,40 @@ function printHTML(html){try{const frame=document.getElementById('print-frame');
 // ── UTILS ──
 
 
+function renderActionsTab(){
+  // Update chores progress ring
+  const c=chores();
+  const done=c.filter(function(ch){return choreCompleteToday(ch);}).length;
+  const total=c.length;
+  const pct=total>0?done/total:0;
+  const deg=Math.round(pct*360);
+  const ring=document.getElementById('chores-progress-ring');
+  if(ring)ring.style.background='conic-gradient(var(--success) '+deg+'deg, var(--sand) '+deg+'deg)';
+  const lbl=document.getElementById('chores-ring-label');
+  if(lbl){lbl.textContent=done+'/'+total;lbl.style.color=pct===1?'var(--success)':pct>0?'var(--warn)':'var(--mid)';}
+  const sub=document.getElementById('chores-sub');
+  if(sub)sub.textContent=total===0?'No chores this week':done+' of '+total+' complete';
+  // Update events badge with next event date
+  const ev=events();
+  const badge_day=document.getElementById('events-badge-day');
+  const badge_date=document.getElementById('events-badge-date');
+  const ev_sub=document.getElementById('events-sub');
+  if(ev.length>0){
+    const next=ev[0];
+    const d=new Date(next.event_date+'T12:00:00');
+    const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    if(badge_day)badge_day.textContent=dayNames[d.getDay()];
+    if(badge_date)badge_date.textContent=d.getDate();
+    if(ev_sub)ev_sub.textContent='Next: '+next.title+(next.event_time?' at '+fmtTimeStr(next.event_time):'');
+  }else{
+    if(badge_day)badge_day.textContent='—';
+    if(badge_date)badge_date.textContent='—';
+    if(ev_sub)ev_sub.textContent='No upcoming events';
+  }
+  // Update sticky note sub
+  const note_sub=document.getElementById('note-sub');
+  if(note_sub)note_sub.textContent=cachedAnnouncement?'Active: '+cachedAnnouncement.message.slice(0,40)+(cachedAnnouncement.message.length>40?'…':''):'No active note';
+}
 function toggleActionSection(panelId){
   var panel=document.getElementById(panelId);
   var arrow=document.getElementById(panelId+'-arrow');
@@ -1702,4 +1697,205 @@ const _sbFrom=sb.from.bind(sb);sb.from=function(table){if(!isDemoMode)return _sb
 
 // ── MEETING DATABASE ──
 const MEETING_DB=[{"name":"Serenity Group","type":"AA","day":"Monday","time":"7:00 PM","address":"2000 E 12th Ave, Denver, CO 80206","lat":39.7337,"lng":-104.9584},{"name":"Monday Night Big Book","type":"AA","day":"Monday","time":"8:00 PM","address":"1400 Williams St, Denver, CO 80218","lat":39.7285,"lng":-104.9609},{"name":"Tuesday Noon Group","type":"AA","day":"Tuesday","time":"12:00 PM","address":"1849 York St, Denver, CO 80206","lat":39.7338,"lng":-104.9507},{"name":"Lakewood Serenity","type":"AA","day":"Tuesday","time":"7:30 PM","address":"9th Ave & Kipling St, Lakewood, CO 80215","lat":39.7142,"lng":-105.0877},{"name":"Wednesday Step Study","type":"AA","day":"Wednesday","time":"7:00 PM","address":"2201 E Colfax Ave, Denver, CO 80206","lat":39.7403,"lng":-104.9533},{"name":"Wheat Ridge Wednesday","type":"AA","day":"Wednesday","time":"7:30 PM","address":"4905 Miller St, Wheat Ridge, CO 80033","lat":39.7665,"lng":-105.1027},{"name":"Arvada Morning Group","type":"AA","day":"Thursday","time":"7:00 AM","address":"7525 W 53rd Ave, Arvada, CO 80002","lat":39.8281,"lng":-105.1003},{"name":"Thursday Evening Group","type":"AA","day":"Thursday","time":"7:00 PM","address":"1400 Williams St, Denver, CO 80218","lat":39.7285,"lng":-104.9609},{"name":"Friday Night Live","type":"AA","day":"Friday","time":"7:30 PM","address":"2000 E 12th Ave, Denver, CO 80206","lat":39.7337,"lng":-104.9584},{"name":"Lakewood Friday Night","type":"AA","day":"Friday","time":"8:00 PM","address":"1240 Simms St, Lakewood, CO 80401","lat":39.7411,"lng":-105.1283},{"name":"Saturday Morning Miracle","type":"AA","day":"Saturday","time":"9:00 AM","address":"1849 York St, Denver, CO 80206","lat":39.7338,"lng":-104.9507},{"name":"Weekend Warriors","type":"AA","day":"Saturday","time":"7:00 PM","address":"2201 E Colfax Ave, Denver, CO 80206","lat":39.7403,"lng":-104.9533},{"name":"Sunday Serenity","type":"AA","day":"Sunday","time":"10:00 AM","address":"4905 Miller St, Wheat Ridge, CO 80033","lat":39.7665,"lng":-105.1027},{"name":"Sunday Evening Big Book","type":"AA","day":"Sunday","time":"7:00 PM","address":"1400 Williams St, Denver, CO 80218","lat":39.7285,"lng":-104.9609},{"name":"Noon AA Downtown","type":"AA","day":"Monday","time":"12:00 PM","address":"1849 York St, Denver, CO 80206","lat":39.7338,"lng":-104.9507},{"name":"Noon AA Downtown","type":"AA","day":"Wednesday","time":"12:00 PM","address":"1849 York St, Denver, CO 80206","lat":39.7338,"lng":-104.9507},{"name":"Noon AA Downtown","type":"AA","day":"Friday","time":"12:00 PM","address":"1849 York St, Denver, CO 80206","lat":39.7338,"lng":-104.9507},{"name":"Clean & Serene","type":"NA","day":"Monday","time":"7:30 PM","address":"2100 Stout St, Denver, CO 80205","lat":39.7469,"lng":-104.9893},{"name":"NA Tuesday Night","type":"NA","day":"Tuesday","time":"7:00 PM","address":"1370 Pennsylvania St, Denver, CO 80203","lat":39.7313,"lng":-104.9793},{"name":"Wheat Ridge NA","type":"NA","day":"Wednesday","time":"7:00 PM","address":"6363 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0695},{"name":"Thursday NA Group","type":"NA","day":"Thursday","time":"8:00 PM","address":"2100 Stout St, Denver, CO 80205","lat":39.7469,"lng":-104.9893},{"name":"NA Friday Night Step Study","type":"NA","day":"Friday","time":"7:30 PM","address":"1370 Pennsylvania St, Denver, CO 80203","lat":39.7313,"lng":-104.9793},{"name":"Saturday NA Lakewood","type":"NA","day":"Saturday","time":"7:00 PM","address":"9th Ave & Kipling St, Lakewood, CO 80215","lat":39.7142,"lng":-105.0877},{"name":"Sunday NA Recovery","type":"NA","day":"Sunday","time":"6:00 PM","address":"6363 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0695},{"name":"NA Noon Group","type":"NA","day":"Tuesday","time":"12:00 PM","address":"2100 Stout St, Denver, CO 80205","lat":39.7469,"lng":-104.9893},{"name":"NA Noon Group","type":"NA","day":"Thursday","time":"12:00 PM","address":"2100 Stout St, Denver, CO 80205","lat":39.7469,"lng":-104.9893},{"name":"Al-Anon Monday Night","type":"Al-Anon","day":"Monday","time":"7:00 PM","address":"1400 Williams St, Denver, CO 80218","lat":39.7285,"lng":-104.9609},{"name":"Al-Anon Wednesday","type":"Al-Anon","day":"Wednesday","time":"7:30 PM","address":"2201 E Colfax Ave, Denver, CO 80206","lat":39.7403,"lng":-104.9533},{"name":"SMART Recovery Denver","type":"SMART Recovery","day":"Tuesday","time":"6:30 PM","address":"1700 Lincoln St, Denver, CO 80203","lat":39.7398,"lng":-104.9849},{"name":"SMART Recovery Lakewood","type":"SMART Recovery","day":"Thursday","time":"7:00 PM","address":"1240 Simms St, Lakewood, CO 80401","lat":39.7411,"lng":-105.1283},{"name":"Morning Reflections","type":"AA","day":"Monday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Noon Discussion","type":"AA","day":"Monday","time":"12:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Men's Stag","type":"AA","day":"Monday","time":"6:30 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"H.O.W.","type":"AA","day":"Monday","time":"8:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Morning Reflections","type":"AA","day":"Tuesday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Noon Discussion","type":"AA","day":"Tuesday","time":"12:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"West Side Women's","type":"AA","day":"Tuesday","time":"6:30 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Plug in the Jug","type":"AA","day":"Tuesday","time":"8:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Morning Reflections","type":"AA","day":"Wednesday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Noon Discussion","type":"AA","day":"Wednesday","time":"12:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Big Book Study","type":"AA","day":"Wednesday","time":"6:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Beginner's Meeting","type":"AA","day":"Wednesday","time":"8:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Morning Reflections","type":"AA","day":"Thursday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Step Sisters","type":"AA","day":"Thursday","time":"11:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Keep It Simple","type":"AA","day":"Thursday","time":"1:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"11th Step Meeting","type":"AA","day":"Thursday","time":"6:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"12 x 12 Study","type":"AA","day":"Thursday","time":"8:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Morning Reflections","type":"AA","day":"Friday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Noon Discussion","type":"AA","day":"Friday","time":"12:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Simple Solutions","type":"AA","day":"Friday","time":"6:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"As We See It","type":"AA","day":"Friday","time":"8:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Morning Reflections","type":"AA","day":"Saturday","time":"7:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Al-Anon Double Winners","type":"Al-Anon","day":"Saturday","time":"10:00 AM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Hang in There","type":"AA","day":"Saturday","time":"12:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875},{"name":"Speaker Meeting","type":"AA","day":"Saturday","time":"7:00 PM","address":"6025 W 38th Ave, Wheat Ridge, CO 80033","lat":39.7636,"lng":-105.0875}];
+
+
+
+// ── RESIDENT: show docs card only if pending ──
+function renderResDocsCard(){
+  var el=document.getElementById('res-docs-card');if(!el)return;
+  var pending=cachedResidentDocs.filter(function(d){return d.resident_id===currentUser.id&&d.status==='pending';});
+  if(!pending.length){el.innerHTML='';return;}
+  var rows=pending.map(function(d){
+    var t=cachedDocTemplates.find(function(x){return x.id===d.template_id;});
+    if(!t)return'';
+    return'<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sand)"><div style="font-size:14px;font-weight:700">'+t.name+'</div><button class="btn btn-primary btn-sm" onclick="openSignDoc(this.dataset.id)" data-id="'+d.id+'">Sign</button></div>';
+  }).join('');
+  el.innerHTML='<div style="background:var(--cream);border:2px solid var(--pink);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px"><div style="font-size:15px;font-weight:800;color:var(--charcoal);margin-bottom:4px">&#128196; '+pending.length+' document'+(pending.length>1?'s':'')+' to sign</div><p class="text-mid" style="margin-bottom:14px;font-size:13px">Please read and sign before your next check-in.</p>'+rows+'</div>';
+}
+
+function openSignDoc(docId){
+  const doc=cachedResidentDocs.find(d=>d.id===docId);if(!doc)return;
+  const tmpl=cachedDocTemplates.find(t=>t.id===doc.template_id);if(!tmpl)return;
+  currentSigningDoc=doc;
+  document.getElementById('sign-doc-title').textContent=tmpl.name;
+  document.getElementById('sign-doc-desc').textContent=tmpl.description||'';
+  document.getElementById('sign-doc-link').href=tmpl.file_path||'#';
+  document.getElementById('modal-sign-doc').classList.add('open');
+  setTimeout(()=>initDocSigCanvas(),300);
+}
+
+function initDocSigCanvas(){
+  docSigCanvas=document.getElementById('sign-doc-canvas');
+  if(!docSigCanvas)return;
+  docSigCtx=docSigCanvas.getContext('2d');
+  docSigHasMark=false;
+  const w=docSigCanvas.offsetWidth||300;
+  docSigCanvas.width=w;docSigCanvas.height=180;
+  docSigCtx.fillStyle='#FFFFFF';docSigCtx.fillRect(0,0,w,180);
+  docSigCtx.strokeStyle='#0A0A0A';docSigCtx.lineWidth=2.5;docSigCtx.lineCap='round';docSigCtx.lineJoin='round';
+  let drawing=false;
+  const getXY=e=>{const r=docSigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
+  docSigCanvas.onmousedown=e=>{drawing=true;docSigCtx.beginPath();const p=getXY(e);docSigCtx.moveTo(p[0],p[1]);};
+  docSigCanvas.onmousemove=e=>{if(!drawing)return;const p=getXY(e);docSigCtx.lineTo(p[0],p[1]);docSigCtx.stroke();docSigHasMark=true;document.getElementById('sign-doc-hint').style.opacity='0';};
+  docSigCanvas.onmouseup=()=>drawing=false;
+  docSigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;docSigCtx.beginPath();const p=getXY(e);docSigCtx.moveTo(p[0],p[1]);};
+  docSigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const p=getXY(e);docSigCtx.lineTo(p[0],p[1]);docSigCtx.stroke();docSigHasMark=true;document.getElementById('sign-doc-hint').style.opacity='0';};
+  docSigCanvas.ontouchend=()=>drawing=false;
+}
+
+function clearDocSig(){
+  if(docSigCtx){docSigCtx.clearRect(0,0,docSigCanvas.width,docSigCanvas.height);docSigCtx.fillStyle='#FFFFFF';docSigCtx.fillRect(0,0,docSigCanvas.width,docSigCanvas.height);}
+  docSigHasMark=false;
+  const h=document.getElementById('sign-doc-hint');if(h)h.style.opacity='1';
+}
+
+async function submitDocSignature(){
+  if(!docSigHasMark){toast('Please sign before submitting.',true);return;}
+  if(!currentSigningDoc)return;
+  const btn=document.getElementById('sign-doc-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const sigData=docSigCanvas.toDataURL('image/jpeg',0.6);
+  const updates={resident_sig:sigData,resident_signed_at:new Date().toISOString(),status:'resident_signed'};
+  if(!isDemoMode){const{error}=await sb.from('resident_documents').update(updates).eq('id',currentSigningDoc.id);if(error){toast('Could not save. Try again.',true);btn.textContent='Submit signature';btn.classList.remove('btn-disabled');return;}}
+  cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentSigningDoc.id?{...d,...updates}:d);
+  btn.textContent='Submit signature';btn.classList.remove('btn-disabled');
+  closeModal('modal-sign-doc');
+  toast('Signed. Thank you.');
+  renderResDocsCard();
+}
+
+// ── MANAGER: countersign alert ──
+function renderDashDocsAlert(){
+  const el=document.getElementById('dash-docs-alert');if(!el)return;
+  const res=residents();const resIds=new Set(res.map(r=>r.id));
+  const waiting=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
+  if(!waiting.length){el.innerHTML='';return;}
+  const names=[...new Set(waiting.map(d=>d.resident_name))];
+  el.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--pink);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px"><div><div style="font-size:14px;font-weight:800;color:var(--charcoal)">&#128196; '+waiting.length+' document'+(waiting.length>1?'s':'')+' awaiting your signature</div><div style="font-size:12px;color:var(--mid);margin-top:3px">'+names.join(', ')+'</div></div><button class="btn btn-primary btn-sm" onclick="openCountersigList()">Review</button></div>';
+}
+
+function openCountersigList(){
+  const res=residents();const resIds=new Set(res.map(r=>r.id));
+  const waiting=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
+  if(!waiting.length)return;
+  // Open first one
+  openCountersig(waiting[0].id);
+}
+
+function openCountersig(docId){
+  const doc=cachedResidentDocs.find(d=>d.id===docId);if(!doc)return;
+  const tmpl=cachedDocTemplates.find(t=>t.id===doc.template_id);if(!tmpl)return;
+  currentCountersigDoc=doc;
+  document.getElementById('countersign-doc-title').textContent=tmpl.name;
+  document.getElementById('countersign-doc-info').innerHTML='<div style="background:var(--cream);border-radius:10px;padding:12px;font-size:13px;line-height:1.8"><strong>Resident:</strong> '+doc.resident_name+'<br><strong>Signed:</strong> '+(doc.resident_signed_at?fmtDate(new Date(doc.resident_signed_at))+' at '+fmtTime(new Date(doc.resident_signed_at)):'Unknown')+'<br>'+(doc.resident_sig&&doc.resident_sig!=='demo'?'<strong>Resident signature:</strong><br><img src="'+doc.resident_sig+'" style="width:100%;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;margin-top:4px">':'')+'</div>';
+  document.getElementById('modal-countersign-doc').classList.add('open');
+  setTimeout(()=>initCountersigCanvas(),300);
+}
+
+function initCountersigCanvas(){
+  countersigCanvas=document.getElementById('countersign-canvas');if(!countersigCanvas)return;
+  countersigCtx=countersigCanvas.getContext('2d');countersigHasMark=false;
+  const w=countersigCanvas.offsetWidth||300;
+  countersigCanvas.width=w;countersigCanvas.height=180;
+  countersigCtx.fillStyle='#FFFFFF';countersigCtx.fillRect(0,0,w,180);
+  countersigCtx.strokeStyle='#0A0A0A';countersigCtx.lineWidth=2.5;countersigCtx.lineCap='round';countersigCtx.lineJoin='round';
+  let drawing=false;
+  const getXY=e=>{const r=countersigCanvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[t.clientX-r.left,t.clientY-r.top];};
+  countersigCanvas.onmousedown=e=>{drawing=true;countersigCtx.beginPath();const p=getXY(e);countersigCtx.moveTo(p[0],p[1]);};
+  countersigCanvas.onmousemove=e=>{if(!drawing)return;const p=getXY(e);countersigCtx.lineTo(p[0],p[1]);countersigCtx.stroke();countersigHasMark=true;document.getElementById('countersign-hint').style.opacity='0';};
+  countersigCanvas.onmouseup=()=>drawing=false;
+  countersigCanvas.ontouchstart=e=>{e.preventDefault();drawing=true;countersigCtx.beginPath();const p=getXY(e);countersigCtx.moveTo(p[0],p[1]);};
+  countersigCanvas.ontouchmove=e=>{e.preventDefault();if(!drawing)return;const p=getXY(e);countersigCtx.lineTo(p[0],p[1]);countersigCtx.stroke();countersigHasMark=true;document.getElementById('countersign-hint').style.opacity='0';};
+  countersigCanvas.ontouchend=()=>drawing=false;
+}
+
+function clearCountersig(){
+  if(countersigCtx){countersigCtx.clearRect(0,0,countersigCanvas.width,countersigCanvas.height);countersigCtx.fillStyle='#FFFFFF';countersigCtx.fillRect(0,0,countersigCanvas.width,countersigCanvas.height);}
+  countersigHasMark=false;const h=document.getElementById('countersign-hint');if(h)h.style.opacity='1';
+}
+
+async function submitCountersig(){
+  if(!countersigHasMark){toast('Please sign before submitting.',true);return;}
+  if(!currentCountersigDoc)return;
+  const btn=document.getElementById('countersign-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const sigData=countersigCanvas.toDataURL('image/jpeg',0.6);
+  const updates={manager_sig:sigData,manager_name:currentUser.name,manager_signed_at:new Date().toISOString(),status:'complete'};
+  if(!isDemoMode){const{error}=await sb.from('resident_documents').update(updates).eq('id',currentCountersigDoc.id);if(error){toast('Could not save.',true);btn.textContent='Confirm & complete';btn.classList.remove('btn-disabled');return;}}
+  cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentCountersigDoc.id?{...d,...updates}:d);
+  btn.textContent='Confirm & complete';btn.classList.remove('btn-disabled');
+  closeModal('modal-countersign-doc');
+  toast('Document complete.');
+  renderDashDocsAlert();
+  // Check if more waiting
+  const res=residents();const resIds=new Set(res.map(r=>r.id));
+  const remaining=cachedResidentDocs.filter(d=>resIds.has(d.resident_id)&&d.status==='resident_signed');
+  if(remaining.length)setTimeout(()=>openCountersig(remaining[0].id),400);
+}
+
+// ── SETTINGS: document templates ──
+function renderDocTemplates(){
+  var el=document.getElementById('docs-template-list');if(!el)return;
+  if(!cachedDocTemplates.length){el.innerHTML='<p class="text-mid" style="font-size:13px">No templates yet. Add your first document above.</p>';return;}
+  el.innerHTML=cachedDocTemplates.map(function(t){
+    return'<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)"><div style="flex:1"><div style="font-size:14px;font-weight:700">'+t.name+'</div><div style="font-size:12px;color:var(--mid);margin-top:2px">'+(t.required_for_onboarding?'<span class="pill pill-green" style="font-size:10px">Required</span>':'<span class="pill pill-gray" style="font-size:10px">Optional</span>')+' '+(t.description||'')+'</div></div><button onclick="deleteDocTemplate(this.dataset.id)" data-id="'+t.id+'" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px">&#128465;</button></div>';
+  }).join('');
+}
+
+function openAddDocTemplate(){
+  ['doc-template-name','doc-template-url','doc-template-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const req=document.getElementById('doc-template-required');if(req)req.checked=true;
+  document.getElementById('modal-add-doc-template').classList.add('open');
+}
+
+async function saveDocTemplate(){
+  const name=document.getElementById('doc-template-name').value.trim();
+  const url=document.getElementById('doc-template-url').value.trim();
+  const desc=document.getElementById('doc-template-desc').value.trim();
+  const required=document.getElementById('doc-template-required').checked;
+  if(!name){toast('Please enter a document name.',true);return;}
+  if(!url){toast('Please enter the PDF URL.',true);return;}
+  const btn=document.getElementById('doc-template-btn');btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const rec={id:'dtp-'+Date.now(),name,description:desc||null,file_path:url,required_for_onboarding:required,created_by:currentUser.name,house:myHouse()||null,is_global:isOwner(),created_at:new Date().toISOString()};
+  if(!isDemoMode){const{error}=await sb.from('document_templates').insert(rec);if(error){toast('Could not save.',true);btn.textContent='Save template';btn.classList.remove('btn-disabled');return;}}
+  cachedDocTemplates.push(rec);
+  btn.textContent='Save template';btn.classList.remove('btn-disabled');
+  closeModal('modal-add-doc-template');
+  toast('Template saved.');
+  renderDocTemplates();
+}
+
+async function deleteDocTemplate(id){
+  const t=cachedDocTemplates.find(x=>x.id===id);if(!t)return;
+  if(!confirm('Delete template "'+t.name+'"?'))return;
+  if(!isDemoMode){const{error}=await sb.from('document_templates').delete().eq('id',id);if(error){toast('Could not delete.',true);return;}}
+  cachedDocTemplates=cachedDocTemplates.filter(x=>x.id!==id);
+  toast('Template deleted.');
+  renderDocTemplates();
+}
+
+async function sendDocsToResident(){
+  const val=document.getElementById('docs-send-resident').value;
+  if(!val){toast('Select a resident.',true);return;}
+  const[resId,resName]=val.split('|');
+  const r=allResidents.find(x=>x.id===resId);
+  const required=cachedDocTemplates.filter(t=>t.required_for_onboarding);
+  if(!required.length){toast('No required templates. Add some first.',true);return;}
+  // Check which ones already sent
+  const alreadySent=new Set(cachedResidentDocs.filter(d=>d.resident_id===resId).map(d=>d.template_id));
+  const toSend=required.filter(t=>!alreadySent.has(t.id));
+  if(!toSend.length){toast('All required documents already sent to '+resName+'.');return;}
+  const records=toSend.map(t=>({id:'rd-'+Date.now()+'-'+t.id,template_id:t.id,resident_id:resId,resident_name:resName,house:r?r.house:(myHouse()||null),status:'pending',sent_at:new Date().toISOString(),created_at:new Date().toISOString()}));
+  if(!isDemoMode){const{error}=await sb.from('resident_documents').insert(records);if(error){toast('Could not send.',true);return;}}
+  cachedResidentDocs=[...cachedResidentDocs,...records];
+  toast(toSend.length+' document'+(toSend.length>1?'s':'')+' sent to '+resName+'.');
+}
+
+// Auto-send docs when new resident added — called from saveNewResident after success
+function autoSendDocsToNewResident(resId,resName,house){
+  const required=cachedDocTemplates.filter(t=>t.required_for_onboarding);
+  if(!required.length)return;
+  const records=required.map(t=>({id:'rd-'+Date.now()+'-'+t.id,template_id:t.id,resident_id:resId,resident_name:resName,house:house||null,status:'pending',sent_at:new Date().toISOString(),created_at:new Date().toISOString()}));
+  if(!isDemoMode){sb.from('resident_documents').insert(records).then(({error})=>{if(error)console.log('doc send err',error);});}
+  cachedResidentDocs=[...cachedResidentDocs,...records];
+}
+
 </script></body></html>
