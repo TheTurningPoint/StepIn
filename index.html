@@ -598,8 +598,34 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
   <div id="report-section-attendance">
     <div class="report-header">
-      <div class="report-title">Weekly Attendance</div>
+      <div class="report-title">Attendance Report</div>
       <div class="report-date" id="report-date-range"></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Date range</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" id="attr-week" onclick="setAttRange('week')" style="flex:1">This week</button>
+          <button class="btn btn-outline btn-sm" id="attr-month" onclick="setAttRange('month')" style="flex:1">Month</button>
+          <button class="btn btn-outline btn-sm" id="attr-90" onclick="setAttRange('90')" style="flex:1">90 days</button>
+          <button class="btn btn-outline btn-sm" id="attr-all" onclick="setAttRange('all')" style="flex:1">All time</button>
+          <button class="btn btn-outline btn-sm" id="attr-custom" onclick="setAttRange('custom')" style="flex:1">Custom</button>
+        </div>
+        <div id="att-custom-range" style="display:none;margin-top:10px;display:none">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="date" id="att-from-date" style="flex:1;font-size:14px" onchange="renderReport()">
+            <span style="font-size:13px;color:var(--mid);flex-shrink:0">to</span>
+            <input type="date" id="att-to-date" style="flex:1;font-size:14px" onchange="renderReport()">
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Filter by resident</label>
+        <select id="att-resident-filter" onchange="renderReport()" style="font-size:15px">
+          <option value="all">All residents</option>
+        </select>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="printAttendanceReport()">&#128424; Print / PDF</button>
     </div>
     <div id="report-rows"></div>
   </div>
@@ -623,6 +649,14 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
           <button class="btn btn-outline btn-sm" id="dtr-month" onclick="setDtRange('month')" style="flex:1">Month</button>
           <button class="btn btn-outline btn-sm" id="dtr-90" onclick="setDtRange('90')" style="flex:1">90 days</button>
           <button class="btn btn-outline btn-sm" id="dtr-all" onclick="setDtRange('all')" style="flex:1">All time</button>
+          <button class="btn btn-outline btn-sm" id="dtr-custom" onclick="setDtRange('custom')" style="flex:1">Custom</button>
+        </div>
+        <div id="dt-custom-range" style="display:none">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="date" id="dt-from-date" style="flex:1;font-size:14px" onchange="renderDtHistory()">
+            <span style="font-size:13px;color:var(--mid);flex-shrink:0">to</span>
+            <input type="date" id="dt-to-date" style="flex:1;font-size:14px" onchange="renderDtHistory()">
+          </div>
         </div>
       </div>
       <button class="btn btn-outline btn-sm" onclick="printDrugTestLog()" style="width:100%">&#128424; Print / PDF</button>
@@ -1180,8 +1214,8 @@ function mgrTab(tab,btn){
   document.querySelectorAll('.top-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
   ['dash','tools','report','settings'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
   if(tab==='dash'){renderManagerDashboard();renderMgrResidents();}
-  if(tab==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
-  if(tab==='report'){renderReport();switchReportTab('attendance');}
+  if(tab==='tools'){if(isOwner())selectedHouse=null;renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
+  if(tab==='report'){if(isOwner())selectedHouse=null;renderReport();switchReportTab('attendance');}
   if(tab==='settings'){
     // Close all accordion panels on entry so it's always collapsed/clean
     ['manage-panel','alumni-panel','excuse-panel','pin-panel','org-panel'].forEach(id=>{
@@ -1331,13 +1365,55 @@ function buildHouseDropdown(){if(typeof renderOwnerHouseList==='function')render
 function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;const req=cachedSettings.required||3;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=((r.sobriety_date||r.move_in_date)?'<div style="margin-bottom:12px">'+sobrietyBadge(r.sobriety_date||r.move_in_date)+(r.move_in_date?'<span style="font-size:11px;color:var(--mid);margin-left:8px">Moved in: '+r.move_in_date+'</span>':'')+'</div>':'')+'<button onclick="printFullHistory(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="width:100%;background:var(--black);color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px">&#128424; Print full record</button><p style="font-size:13px;color:var(--mid);margin-bottom:14px">'+(r.house||'')+' &bull; Phase '+(r.phase||1)+' &bull; Curfew: '+getCurfewLabel(r.phase||1,new Date())+'</p><div class="stats-grid" style="margin-bottom:14px"><div class="stat-box"><div class="stat-num">'+wc+'</div><div class="stat-label">This week</div></div><div class="stat-box"><div class="stat-num">'+ckins.length+'</div><div class="stat-label">Total</div></div></div><div class="card-title" style="margin-bottom:8px">Recent in/out</div>'+(function(){const logs=allCurfewLog.filter(l=>l.resident_id===id).slice(0,6);if(!logs.length)return'<p class="text-mid" style="margin-bottom:12px">No sign in/out activity yet.</p>';return logs.map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?'Left'+(l.destination?' \u2192 '+l.destination:''):(l.excused?'Excused':'Signed in');const late=l.late?' <span class="pill pill-red">Late</span>':'';const exc=l.excused?' <span class="pill pill-blue">Excused</span>':'';const map=l.lat?' <a href="https://maps.google.com/?q='+l.lat+','+l.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205;</a>':'';return'<div class="curfew-row"><div style="font-size:18px">'+icon+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+label+late+exc+'</div><div style="font-size:11px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+map+'</div></div></div>';}).join('');})()+'<div class="card-title" style="margin:12px 0 8px">Recent meetings</div>'+ckins.slice(0,5).map(c=>{const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:11px">&#128205; map</a>':'';return'<div class="log-item"><div class="log-icon">&#129309;</div><div><div class="log-title">'+c.meeting_type+'</div><div class="log-meta">'+c.meeting_name+'<br>'+fmtDate(d)+' at '+fmtTime(d)+'</div><div class="log-sig">&#9997;&#65039; '+c.signer_name+mapLink+'</div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" class="sig-img" alt="Signature">':'')+'</div></div>';}).join('')||'<p class="text-mid">No meetings recorded.</p>'+'<div style="margin-top:14px"><div class="card-title" style="margin-bottom:8px">Drug tests</div>'+(function(){const dts=cachedDrugTests.filter(t=>t.resident_id===id).slice(0,5);if(!dts.length)return'<p class="text-mid">No tests on record.</p>';const icons={pass:'<span style="color:var(--success);font-weight:700">&#10003; Pass</span>',fail:'<span style="color:var(--danger);font-weight:700">&#10005; Fail</span>',refused:'<span style="color:var(--warn);font-weight:700">&#9888; Refused</span>'};return dts.map(t=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sand)"><div><div style="font-size:13px;font-weight:600">'+t.test_types+'</div><div style="font-size:11px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; '+t.administered_by+'</div></div>'+(icons[t.result]||t.result)+'</div>').join('');})()+'</div>';document.getElementById('modal-resident-detail').classList.add('open');}
 
 // ── REPORT ──
+let currentAttRange='week';
+function setAttRange(range){
+  currentAttRange=range;
+  ['week','month','90','all','custom'].forEach(function(r){
+    const btn=document.getElementById('attr-'+r);
+    if(btn){btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}
+  });
+  const customEl=document.getElementById('att-custom-range');
+  if(customEl)customEl.style.display=range==='custom'?'block':'none';
+  if(range==='custom'){
+    const now=new Date();
+    const fd=document.getElementById('att-from-date');
+    const td=document.getElementById('att-to-date');
+    if(fd&&!fd.value)fd.value=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+    if(td&&!td.value)td.value=now.toISOString().split('T')[0];
+  }
+  renderReport();
+}
+function getAttFromDate(){
+  const now=new Date();
+  if(currentAttRange==='week')return getWeekStart();
+  if(currentAttRange==='month')return new Date(now.getFullYear(),now.getMonth(),1);
+  if(currentAttRange==='90')return new Date(now.getTime()-90*86400000);
+  if(currentAttRange==='custom'){const el=document.getElementById('att-from-date');return el&&el.value?new Date(el.value+'T00:00:00'):new Date(0);}
+  return new Date(0);
+}
+function getAttToDate(){
+  if(currentAttRange==='custom'){const el=document.getElementById('att-to-date');return el&&el.value?new Date(el.value+'T23:59:59'):new Date();}
+  return new Date();
+}
+function getAttRangeLabel(){
+  const now=new Date();
+  if(currentAttRange==='week'){const ws=getWeekStart();const we=new Date(ws);we.setDate(we.getDate()+6);return'Week of '+fmtDate(ws)+' – '+fmtDate(we);}
+  if(currentAttRange==='month')return now.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  if(currentAttRange==='90')return'Last 90 days';
+  if(currentAttRange==='custom'){const fd=document.getElementById('att-from-date');const td=document.getElementById('att-to-date');const f=fd&&fd.value?fmtDate(new Date(fd.value+'T12:00:00')):'?';const t=td&&td.value?fmtDate(new Date(td.value+'T12:00:00')):'?';return f+' – '+t;}
+  return'All time';
+}
 function renderReport(){
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
+  const req=cachedSettings.required||3;
+  const fromDate=getAttFromDate();
   const label=selectedHouse?selectedHouse:(isOwner()?'All houses':(currentUser.house||''));
-  document.getElementById('report-date-range').textContent='Week of '+fmtDate(weekStart)+' – '+fmtDate(weekEnd)+' · '+label;
-  const res=residents();
+  document.getElementById('report-date-range').textContent=getAttRangeLabel()+' · '+label;
+  const filterEl=document.getElementById('att-resident-filter');
+  if(filterEl){const prev=filterEl.value;filterEl.innerHTML='<option value="all">All residents</option>'+residents().map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');if(prev)filterEl.value=prev;}
+  const filterVal=filterEl?filterEl.value:'all';
+  const res=filterVal==='all'?residents():residents().filter(function(r){return r.id===filterVal;});
   document.getElementById('report-rows').innerHTML=res.length
-    ?res.map(function(r){return buildReportSummaryRow(r,weekStart,req);}).join('')
+    ?res.map(function(r){return buildReportSummaryRow(r,fromDate,req);}).join('')
     :'<div class="empty"><div class="empty-icon">&#128203;</div><h3>No residents</h3></div>';
 }
 
@@ -1397,7 +1473,7 @@ function buildReportDetail(r,meetings,req){
 }
 
 function printResidentAttendance(resId,resName){const req=cachedSettings.required||3;const weekStart=getWeekStart();const r=residents().find(x=>x.id===resId);if(!r)return;const meetings=checkins().filter(c=>c.resident_id===resId&&new Date(c.ts)>=weekStart);printAttendancePDF([{r,meetings}],resName,weekStart,req);}
-function printAttendanceReport(){const req=cachedSettings.required||3;const weekStart=getWeekStart();const filterVal=document.getElementById('att-resident-filter')?document.getElementById('att-resident-filter').value:'all';const res=filterVal==='all'?residents():residents().filter(r=>r.id===filterVal);const label=filterVal==='all'?'All Residents':(res[0]?res[0].name:'');const data=res.map(r=>({r,meetings:checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart)}));printAttendancePDF(data,label,weekStart,req);}
+function printAttendanceReport(){const req=cachedSettings.required||3;const fromDate=getAttFromDate();const filterVal=document.getElementById('att-resident-filter')?document.getElementById('att-resident-filter').value:'all';const res=filterVal==='all'?residents():residents().filter(r=>r.id===filterVal);const label=filterVal==='all'?'All Residents':(res[0]?res[0].name:'');const data=res.map(r=>({r,meetings:checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=fromDate&&new Date(c.ts)<=getAttToDate())}));printAttendancePDF(data,label,fromDate,req);}
 
 function printAttendancePDF(data,label,weekStart,req){
   const org=cachedSettings.house_name||'The Turning Point';const house=myHouse()||'';const now=new Date();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);const dateRange='Week of '+fmtDate(weekStart)+' \u2013 '+fmtDate(weekEnd);
@@ -1436,7 +1512,7 @@ async function openDrugTestHistory(){if(!isDemoMode)await loadDrugTests();popula
 function populateDtResidentFilter(){const els=['dt-history-resident-filter','dt-modal-resident-filter'];els.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All residents</option>'+residents().map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');});}
 
 let currentDtRange='week';
-function setDtRange(range){currentDtRange=range;['week','month','90','all'].forEach(r=>{const btn=document.getElementById('dtr-'+r);if(btn){btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}});renderDtHistory();}
+function setDtRange(range){currentDtRange=range;['week','month','90','all','custom'].forEach(r=>{const btn=document.getElementById('dtr-'+r);if(btn){btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}});const customEl=document.getElementById('dt-custom-range');if(customEl)customEl.style.display=range==='custom'?'block':'none';if(range==='custom'){const now=new Date();const fd=document.getElementById('dt-from-date');const td=document.getElementById('dt-to-date');if(fd&&!fd.value)fd.value=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];if(td&&!td.value)td.value=now.toISOString().split('T')[0];}renderDtHistory();}
 
 function renderDtHistory(){
   const el=document.getElementById('dt-history-content');const rangeEl=document.getElementById('dt-report-range');if(!el)return;
@@ -1444,11 +1520,13 @@ function renderDtHistory(){
   if(currentDtRange==='week'){fromDate=getWeekStart();rangeLabel='Week of '+fmtDate(fromDate)+' \u2013 '+fmtDate(new Date(fromDate.getTime()+6*86400000));}
   else if(currentDtRange==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1);rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});}
   else if(currentDtRange==='90'){fromDate=new Date(now.getTime()-90*86400000);rangeLabel='Last 90 days';}
+  else if(currentDtRange==='custom'){const cfd=document.getElementById('dt-from-date');const ctd=document.getElementById('dt-to-date');fromDate=cfd&&cfd.value?new Date(cfd.value+'T00:00:00'):new Date(0);const fl=cfd&&cfd.value?fmtDate(new Date(cfd.value+'T12:00:00')):'?';const tl=ctd&&ctd.value?fmtDate(new Date(ctd.value+'T12:00:00')):'?';rangeLabel=fl+' – '+tl;}
   if(rangeEl)rangeEl.textContent=rangeLabel;
   const filterEl=document.getElementById('dt-history-resident-filter')||document.getElementById('dt-modal-resident-filter');
   const filterVal=filterEl?filterEl.value:'all';
   const res=residents();const resIds=new Set(res.map(r=>r.id));
-  let tests=cachedDrugTests.filter(t=>resIds.has(t.resident_id)&&new Date(t.test_date)>=fromDate);
+  const dtToDate=currentDtRange==='custom'?(()=>{const ctd=document.getElementById('dt-to-date');return ctd&&ctd.value?new Date(ctd.value+'T23:59:59'):new Date();})():new Date();
+  let tests=cachedDrugTests.filter(t=>resIds.has(t.resident_id)&&new Date(t.test_date)>=fromDate&&new Date(t.test_date)<=dtToDate);
   if(filterVal!=='all')tests=tests.filter(t=>t.resident_id===filterVal);
   tests=tests.sort((a,b)=>new Date(b.test_date)-new Date(a.test_date));
   if(!tests.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128137;</div><h3>No tests in this period</h3></div>';return;}
@@ -1460,7 +1538,7 @@ function renderDtHistory(){
 
 function printResidentDrugTest(testId){const t=cachedDrugTests.find(x=>x.id===testId);if(!t)return;printDrugTestPDF([t],t.resident_name);}
 function printResidentAllTests(resId,resName){const tests=cachedDrugTests.filter(t=>t.resident_id===resId).sort((a,b)=>new Date(b.test_date)-new Date(a.test_date));printDrugTestPDF(tests,resName);}
-function printDrugTestLog(){const res=residents();const resIds=new Set(res.map(r=>r.id));const filterEl=document.getElementById('dt-history-resident-filter')||document.getElementById('dt-modal-resident-filter');const filterVal=filterEl?filterEl.value:'all';let tests=cachedDrugTests.filter(t=>resIds.has(t.resident_id));if(filterVal!=='all')tests=tests.filter(t=>t.resident_id===filterVal);const label=filterVal!=='all'?(cachedDrugTests.find(t=>t.resident_id===filterVal)||{}).resident_name||'Resident':'All Residents';printDrugTestPDF(tests,label);}
+function printDrugTestLog(){const res=residents();const resIds=new Set(res.map(r=>r.id));const filterEl=document.getElementById('dt-history-resident-filter')||document.getElementById('dt-modal-resident-filter');const filterVal=filterEl?filterEl.value:'all';const now=new Date();let fromDate=new Date(0);if(currentDtRange==='week')fromDate=getWeekStart();else if(currentDtRange==='month')fromDate=new Date(now.getFullYear(),now.getMonth(),1);else if(currentDtRange==='90')fromDate=new Date(now.getTime()-90*86400000);else if(currentDtRange==='custom'){const fd=document.getElementById('dt-from-date');if(fd&&fd.value)fromDate=new Date(fd.value+'T00:00:00');}const toDate=currentDtRange==='custom'?(()=>{const td=document.getElementById('dt-to-date');return td&&td.value?new Date(td.value+'T23:59:59'):now;})():now;let tests=cachedDrugTests.filter(t=>resIds.has(t.resident_id)&&new Date(t.test_date)>=fromDate&&new Date(t.test_date)<=toDate);if(filterVal!=='all')tests=tests.filter(t=>t.resident_id===filterVal);const label=filterVal!=='all'?(cachedDrugTests.find(t=>t.resident_id===filterVal)||{}).resident_name||'Resident':'All Residents';printDrugTestPDF(tests,label);}
 
 function printDrugTestPDF(tests,label){
   const org=cachedSettings.house_name||'The Turning Point';const house=myHouse()||'';const now=new Date();
