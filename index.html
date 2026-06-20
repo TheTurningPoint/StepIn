@@ -339,7 +339,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     </div>
     <div id="dash-curfew-list"></div>
   </div>
-  <div class="card">
+  <div class="card" style="display:none">
     <div class="card-title">Meetings this week</div>
     <div id="dash-attendance-list"></div>
   </div>
@@ -358,6 +358,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- TOOLS (frequent actions) -->
 <div class="body" id="mgr-pane-tools" style="display:none">
 
+  <!-- Drug tests — compact card, always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
       <span class="card-title" style="margin:0">&#128137; Drug tests</span>
@@ -369,16 +370,50 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <p class="text-mid" style="margin-bottom:0">Log urine and breathalyzer tests with dual signatures.</p>
   </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#129529; Chores this week</span><button class="btn btn-primary btn-sm" onclick="openAddChore()">+ Add</button></div><div id="mgr-chore-list"></div></div>
+  <!-- Chores — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <button onclick="toggleActionSection('chores-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#129529; Chores this week</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddChore()">+ Add</button>
+        <span id="chores-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </button>
+    <div id="chores-panel" style="display:none;padding:0 20px 20px">
+      <div id="mgr-chore-list"></div>
+    </div>
+  </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:14px"><span class="card-title" style="margin:0">&#128197; Events</span><button class="btn btn-primary btn-sm" onclick="openAddEvent()">+ Add</button></div><div id="mgr-event-list"></div></div>
+  <!-- Events — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <button onclick="toggleActionSection('events-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">&#128197; Events</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openAddEvent()">+ Add</button>
+        <span id="events-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </button>
+    <div id="events-panel" style="display:none;padding:0 20px 20px">
+      <div id="mgr-event-list"></div>
+    </div>
+  </div>
 
-  <div class="card"><div class="flex-between" style="margin-bottom:12px"><span class="card-title" style="margin:0">&#128204; Sticky note</span>
-<div style="display:flex;gap:8px">
-  <button class="btn btn-outline btn-sm" onclick="openAnnouncementHistory()">History</button>
-  <button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button>
-</div></div><div id="mgr-announcement-status"></div></div>
+  <!-- Sticky note — accordion -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <button onclick="toggleActionSection('note-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;gap:8px">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal);flex-shrink:0">&#128204; Sticky note</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openAnnouncementHistory()" style="font-size:12px;padding:8px 12px">History</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openPostAnnouncement()" style="font-size:12px;padding:8px 12px">Post</button>
+        <span id="note-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+      </div>
+    </button>
+    <div id="note-panel" style="display:none;padding:0 20px 20px">
+      <div id="mgr-announcement-status"></div>
+    </div>
+  </div>
 
+  <!-- Incident log — compact card, always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:12px">
       <span class="card-title" style="margin:0">&#9888;&#65039; Incident log</span>
@@ -390,6 +425,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <p class="text-mid" style="margin-bottom:0">Document incidents for NARR compliance and licensing records.</p>
   </div>
 
+  <!-- Add resident — compact card, always visible -->
   <div class="card">
     <div class="flex-between" style="margin-bottom:4px">
       <span class="card-title" style="margin:0">&#128101; Add resident</span>
@@ -400,8 +436,6 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 </div>
 
-
-<!-- SETTINGS (infrequent config) -->
 <div class="body" id="mgr-pane-settings" style="display:none">
 
   <!-- Manage a resident -->
@@ -546,17 +580,8 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
   <div id="report-section-attendance">
     <div class="report-header">
-      <div class="report-title">Weekly Attendance Report</div>
+      <div class="report-title">Weekly Attendance</div>
       <div class="report-date" id="report-date-range"></div>
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="field" style="margin-bottom:10px">
-        <label>Filter by resident</label>
-        <select id="att-resident-filter" onchange="renderReport()" style="font-size:15px">
-          <option value="all">All residents</option>
-        </select>
-      </div>
-      <button class="btn btn-outline btn-sm" onclick="printAttendanceReport()">&#128424; Print / PDF</button>
     </div>
     <div id="report-rows"></div>
   </div>
@@ -1056,7 +1081,14 @@ function mgrTab(tab,btn){
   document.querySelectorAll('.top-tab').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');
   ['dash','tools','report','settings'].forEach(p=>{const el=document.getElementById('mgr-pane-'+p);if(el)el.style.display=p===tab?'block':'none';});
   if(tab==='dash'){renderManagerDashboard();renderMgrResidents();}
-  if(tab==='tools'){renderMgrChores();renderMgrCalendar();renderMgrAnnouncementStatus();populateSelects();document.getElementById('excuse-date').value=new Date().toISOString().split('T')[0];}
+  if(tab==='tools'){
+    // Close all accordions on entry
+    ['chores-panel','events-panel','note-panel'].forEach(function(id){
+      const p=document.getElementById(id);if(p)p.style.display='none';
+      const a=document.getElementById(id+'-arrow');if(a)a.style.transform='';
+    });
+    populateSelects();
+  }
   if(tab==='report'){renderReport();switchReportTab('attendance');}
   if(tab==='settings'){
     // Close all accordion panels on entry so it's always collapsed/clean
@@ -1192,21 +1224,66 @@ function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;c
 function renderReport(){
   const req=cachedSettings.required||3;const weekStart=getWeekStart();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
   const label=selectedHouse?selectedHouse:(isOwner()?'All houses':(currentUser.house||''));
-  document.getElementById('report-date-range').textContent='Week of '+fmtDate(weekStart)+' \u2013 '+fmtDate(weekEnd)+' \u00b7 '+label;
-  const filterEl=document.getElementById('att-resident-filter');
-  if(filterEl){const prev=filterEl.value;filterEl.innerHTML='<option value="all">All residents</option>'+residents().map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');if(prev)filterEl.value=prev;}
-  const filterVal=filterEl?filterEl.value:'all';
-  const res=filterVal==='all'?residents():residents().filter(r=>r.id===filterVal);
-  document.getElementById('report-rows').innerHTML=res.length?res.map(r=>buildReportRow(r,weekStart,req)).join(''):'<div class="empty"><div class="empty-icon">&#128203;</div><h3>No residents</h3></div>';
+  document.getElementById('report-date-range').textContent='Week of '+fmtDate(weekStart)+' – '+fmtDate(weekEnd)+' · '+label;
+  const res=residents();
+  document.getElementById('report-rows').innerHTML=res.length
+    ?res.map(function(r){return buildReportSummaryRow(r,weekStart,req);}).join('')
+    :'<div class="empty"><div class="empty-icon">&#128203;</div><h3>No residents</h3></div>';
 }
 
-function buildReportRow(r,weekStart,req){
-  const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;
-  const status=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';
-  const label=wc>=req?'Complete':wc>0?'In progress':'None';
-  const meetings=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart);
-  const meetingRows=meetings.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:12px">&#128205; map</a>':'';const distBadge=c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined?' <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'var(--success)':parseFloat(c.distance_from_meeting)<=3?'var(--warn)':'var(--danger)')+'";font-size:12px>'+(parseFloat(c.distance_from_meeting)<=0.1?'At location':c.distance_from_meeting+' mi')+'</span>':'';return'<div style="border:1px solid var(--sand);border-radius:10px;margin-bottom:10px;overflow:hidden"><div style="padding:12px 14px;background:var(--cream)"><div style="font-size:14px;font-weight:700;margin-bottom:4px">'+c.meeting_type+'</div><div style="font-size:13px;color:var(--mid);margin-bottom:2px">'+c.meeting_name+'</div><div style="font-size:12px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+(c.address?' &bull; '+c.address:'')+'</div><div style="font-size:12px;color:var(--mid);margin-top:4px">'+mapLink+distBadge+'</div></div><div style="padding:12px 14px"><div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Meeting Signature</div>'+(c.sig_data_url?'<div style="font-size:12px;color:var(--mid);margin-bottom:4px">Signed by: <strong>'+(c.signer_name||'Unknown')+'</strong></div><img src="'+c.sig_data_url+'" style="width:100%;max-width:240px;border:1px solid var(--sand);border-radius:6px;background:white;display:block">':'<div style="font-size:12px;color:var(--mid)">Signed by: '+(c.signer_name||'Unknown')+'</div>')+'</div></div>';}).join('');
-  return'<div class="card" style="margin-bottom:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="width:36px;height:36px;font-size:15px">'+r.name[0]+'</div><div><div style="font-size:16px;font-weight:800">'+r.name+'</div><div style="font-size:13px;color:var(--mid)">'+wc+' of '+req+' required</div></div></div><span class="pill '+status+'">'+label+'</span></div>'+(meetingRows||'<div style="font-size:13px;color:var(--mid);padding:8px 0">No meetings recorded this week.</div>')+'<button onclick="printResidentAttendance(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="margin-top:8px;background:var(--black);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">&#128424; Print Report</button></div>';
+function buildReportSummaryRow(r,weekStart,req){
+  var meetings=checkins().filter(function(c){return c.resident_id===r.id&&new Date(c.ts)>=weekStart;});
+  var wc=meetings.length;
+  var statusClass=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';
+  var statusLabel=wc>=req?'✓ Complete':wc>0?wc+' of '+req:'None';
+  var detailId='att-detail-'+r.id;
+  var arrowId='att-arrow-'+r.id;
+  var detail=buildReportDetail(r,meetings,req);
+  return '<div style="border-bottom:1px solid var(--sand)">'
+    +'<div style="display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer" onclick="toggleAttDetail(this)">'
+      +'<div class="avatar" style="width:36px;height:36px;font-size:14px;flex-shrink:0">'+r.name[0]+'</div>'
+      +'<div style="flex:1"><div style="font-size:15px;font-weight:700">'+r.name+'</div>'
+      +'<div style="font-size:13px;color:var(--mid)">'+(r.house?r.house+' &bull; ':'')+'Phase '+(r.phase||1)+'</div></div>'
+      +'<span class="pill '+statusClass+'" style="flex-shrink:0">'+statusLabel+'</span>'
+      +'<span class="att-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s;flex-shrink:0">&#8250;</span>'
+    +'</div>'
+    +'<div class="att-detail" style="display:none;padding-bottom:16px">'+detail+'</div>'
+  +'</div>';
+}
+
+function toggleAttDetail(row){
+  var detail=row.nextElementSibling;
+  var arrow=row.querySelector('.att-arrow');
+  var isOpen=detail.style.display==='block';
+  detail.style.display=isOpen?'none':'block';
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
+}
+
+function buildReportDetail(r,meetings,req){
+  var printBtn='<button onclick="printResidentAttendance(\'' +r.id+ '\',\'' +r.name.replace(/'/g,"\\'")+'\')" style="background:var(--black);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px">&#128424; Print report</button>';
+  if(!meetings.length)return'<div style="font-size:13px;color:var(--mid);padding:4px 0 8px">No meetings recorded this week.</div>'+printBtn;
+  var rows=meetings.map(function(c){
+    var d=new Date(c.ts);
+    var mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:12px">&#128205; map</a>':'';
+    var dist='';
+    if(c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined){
+      var dm=parseFloat(c.distance_from_meeting);
+      var dc=dm<=1?'var(--success)':dm<=3?'var(--warn)':'var(--danger)';
+      var dl=dm<=0.1?'At location':c.distance_from_meeting+' mi';
+      dist=' <span style="color:'+dc+';font-size:12px">'+dl+'</span>';
+    }
+    return '<div style="background:var(--cream);border-radius:10px;padding:12px;margin-bottom:10px">'
+      +'<div style="font-size:14px;font-weight:700;margin-bottom:2px">'+c.meeting_type+'</div>'
+      +'<div style="font-size:13px;color:var(--mid);margin-bottom:4px">'+c.meeting_name+'</div>'
+      +'<div style="font-size:12px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+(c.address?' &bull; '+c.address:'')+'</div>'
+      +'<div style="font-size:12px;margin-top:4px">'+mapLink+dist+'</div>'
+      +(c.sig_data_url
+        ?'<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px">Signed by '+( c.signer_name||'Unknown')+'</div>'
+         +'<img src="'+c.sig_data_url+'" style="max-width:180px;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;display:block">'
+        :'<div style="font-size:12px;color:var(--mid);margin-top:6px">Signed by: '+(c.signer_name||'Unknown')+'</div>'
+      )+'</div>';
+  }).join('');
+  return rows+printBtn;
 }
 
 function printResidentAttendance(resId,resName){const req=cachedSettings.required||3;const weekStart=getWeekStart();const r=residents().find(x=>x.id===resId);if(!r)return;const meetings=checkins().filter(c=>c.resident_id===resId&&new Date(c.ts)>=weekStart);printAttendancePDF([{r,meetings}],resName,weekStart,req);}
@@ -1360,6 +1437,20 @@ async function openAnnouncementHistory(){const el=document.getElementById('annou
 function printHTML(html){try{const frame=document.getElementById('print-frame');if(frame){frame.style.display='block';frame.style.width='100%';frame.style.height='100%';frame.style.position='fixed';frame.style.top='0';frame.style.left='0';frame.style.zIndex='9999';frame.style.background='white';const doc=frame.contentDocument||frame.contentWindow.document;doc.open();doc.write(html.replace('<script>window.onload=function(){window.print();}<\/script>',''));doc.close();setTimeout(()=>{frame.contentWindow.focus();frame.contentWindow.print();setTimeout(()=>{frame.style.display='none';frame.style.position='fixed';frame.style.width='0';frame.style.height='0';},500);},400);return;}}catch(e){}const w=window.open('','_blank','width=800,height=900');if(w){w.document.write(html);w.document.close();}else{toast('To print: tap the share button \u2197 then select Print.',true);}}
 
 // ── UTILS ──
+function toggleActionSection(panelId){
+  const panel=document.getElementById(panelId);
+  const arrow=document.getElementById(panelId+'-arrow');
+  const isOpen=panel.style.display==='block';
+  panel.style.display=isOpen?'none':'block';
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
+  // Load content when opening
+  if(!isOpen){
+    if(panelId==='chores-panel')renderMgrChores();
+    if(panelId==='events-panel')renderMgrCalendar();
+    if(panelId==='note-panel')renderMgrAnnouncementStatus();
+  }
+}
+
 function toggleSettingsSection(panelId){
   const panel=document.getElementById(panelId);
   const arrow=document.getElementById(panelId+'-arrow');
@@ -1383,6 +1474,18 @@ function loadDischargedInline(){
   el.innerHTML=discharged.map(r=>'<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--sand);cursor:pointer" onclick="viewDischargedResident(this.dataset.id)" data-id="'+r.id+'"><div class="avatar" style="width:36px;height:36px;font-size:14px;opacity:0.5;flex-shrink:0">'+r.name[0]+'</div><div style="flex:1"><div style="font-size:15px;font-weight:700;color:var(--mid)">'+r.name+'</div><div style="font-size:12px;color:var(--soft);margin-top:2px">Discharged'+(r.discharge_date?' &bull; '+r.discharge_date:'')+(r.discharge_reason?'<br>'+r.discharge_reason:'')+'</div></div><div style="color:var(--mid);font-size:18px">&#8250;</div></div>').join('');
 }
 
+function toggleActionSection(panelId){
+  const panel=document.getElementById(panelId);
+  const arrow=document.getElementById(panelId+'-arrow');
+  const isOpen=panel.style.display==='block';
+  panel.style.display=isOpen?'none':'block';
+  if(arrow)arrow.style.transform=isOpen?'':'rotate(90deg)';
+  if(!isOpen){
+    if(panelId==='chores-panel')renderMgrChores();
+    if(panelId==='events-panel')renderMgrCalendar();
+    if(panelId==='note-panel')renderMgrAnnouncementStatus();
+  }
+}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function toast(msg,isError){const el=document.getElementById('toast');el.textContent=msg;el.classList.remove('error');if(isError)el.classList.add('error');el.classList.add('show');setTimeout(()=>{el.classList.remove('show');el.classList.remove('error');},4500);}
