@@ -455,6 +455,16 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <div class="report-title">Weekly Attendance Report</div>
       <div class="report-date" id="report-date-range"></div>
     </div>
+    <!-- Resident filter + print -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="field" style="margin-bottom:10px">
+        <label>Filter by resident</label>
+        <select id="att-resident-filter" onchange="renderReport()" style="font-size:15px">
+          <option value="all">All residents</option>
+        </select>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="printAttendanceReport()">&#128424; Print / PDF</button>
+    </div>
     <div id="report-rows"></div>
   </div>
 
@@ -464,22 +474,25 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <div class="report-title">Drug Test Log</div>
       <div class="report-date" id="dt-report-range"></div>
     </div>
-    <!-- Resident filter -->
     <div class="card" style="margin-bottom:12px">
-      <div class="card-title">Filter by resident</div>
-      <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:14px;margin-bottom:12px">
-        <option value="all">All residents</option>
-      </select>
-      <div class="card-title" style="margin-bottom:8px">Date range</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" id="dtr-week" onclick="setDtRange('week')">This week</button>
-        <button class="btn btn-outline btn-sm" id="dtr-month" onclick="setDtRange('month')">This month</button>
-        <button class="btn btn-outline btn-sm" id="dtr-90" onclick="setDtRange('90')">Last 90 days</button>
-        <button class="btn btn-outline btn-sm" id="dtr-all" onclick="setDtRange('all')">All time</button>
+      <div class="field" style="margin-bottom:10px">
+        <label>Filter by resident</label>
+        <select id="dt-history-resident-filter" onchange="renderDtHistory()" style="font-size:15px">
+          <option value="all">All residents</option>
+        </select>
       </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Date range</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" id="dtr-week" onclick="setDtRange('week')" style="flex:1">This week</button>
+          <button class="btn btn-outline btn-sm" id="dtr-month" onclick="setDtRange('month')" style="flex:1">Month</button>
+          <button class="btn btn-outline btn-sm" id="dtr-90" onclick="setDtRange('90')" style="flex:1">90 days</button>
+          <button class="btn btn-outline btn-sm" id="dtr-all" onclick="setDtRange('all')" style="flex:1">All time</button>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="printDrugTestLog()" style="width:100%">&#128424; Print / PDF</button>
     </div>
     <div id="dt-history-content"></div>
-    <div id="dt-report-rows"></div>
   </div>
 
   <button class="btn btn-outline mt16" onclick="window.print()">&#128424; Print / Save as PDF</button>
@@ -1362,13 +1375,183 @@ async function saveNewEvent(){const title=document.getElementById('event-title')
 async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allEvents=allEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
 
 function renderReport(){
-  const req=cachedSettings.required||3;const weekStart=getWeekStart();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
+  const req=cachedSettings.required||3;
+  const weekStart=getWeekStart();
+  const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
   const label=selectedHouse?selectedHouse:(isOwner()?'All houses':(currentUser.house||''));
-  document.getElementById('report-date-range').textContent=`Week of ${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)} \u00b7 ${label}`;
-  document.getElementById('report-rows').innerHTML=residents().map(r=>buildReportRow(r,weekStart,req)).join('')||'<div class="empty"><div class="empty-icon">\ud83d\udccb</div><h3>No residents</h3></div>';
+  document.getElementById('report-date-range').textContent='Week of '+fmtDate(weekStart)+' – '+fmtDate(weekEnd)+' · '+label;
+
+  // Populate resident filter
+  const filterEl=document.getElementById('att-resident-filter');
+  if(filterEl){
+    const res=residents();
+    const prev=filterEl.value;
+    filterEl.innerHTML='<option value="all">All residents</option>'+
+      res.map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
+    if(prev)filterEl.value=prev;
+  }
+
+  // Filter residents
+  const filterVal=filterEl?filterEl.value:'all';
+  const res=filterVal==='all'?residents():residents().filter(function(r){return r.id===filterVal;});
+
+  document.getElementById('report-rows').innerHTML=res.length
+    ?res.map(function(r){return buildReportRow(r,weekStart,req);}).join('')
+    :'<div class="empty"><div class="empty-icon">&#128203;</div><h3>No residents</h3></div>';
 }
 
-function buildReportRow(r,weekStart,req){const wc=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart).length;const status=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';const label=wc>=req?'Complete':wc>0?'In progress':'None';const meetings=checkins().filter(c=>c.resident_id===r.id&&new Date(c.ts)>=weekStart);const meetingRows=meetings.map(c=>{const d=new Date(c.ts);const mapLink=c.lat?` <a href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank" style="color:var(--pink-light);font-size:11px">\ud83d\udccd map</a>`:'';return`<div style="font-size:12px;color:var(--mid);padding:6px 0;border-bottom:1px solid var(--sand)">${c.meeting_type} \u2014 ${c.meeting_name} \u00b7 ${fmtDate(d)} at ${fmtTime(d)}<br>\u270d\ufe0f ${c.signer_name}${mapLink}${c.sig_data_url?`<br><img src="${c.sig_data_url}" style="max-width:180px;border:1px solid var(--sand);border-radius:6px;margin-top:4px" alt="sig">`:''}</div>`;}).join('');return`<div class="card" style="margin-bottom:12px"><div class="report-row"><div><div class="report-name">${r.name}</div><div class="report-count">${wc} of ${req} required</div></div><span class="pill ${status}">${label}</span></div>${meetingRows}</div>`;}
+function buildReportRow(r,weekStart,req){
+  const wc=checkins().filter(function(c){return c.resident_id===r.id&&new Date(c.ts)>=weekStart;}).length;
+  const status=wc>=req?'pill-green':wc>0?'pill-yellow':'pill-red';
+  const label=wc>=req?'Complete':wc>0?'In progress':'None';
+  const meetings=checkins().filter(function(c){return c.resident_id===r.id&&new Date(c.ts)>=weekStart;});
+
+  const meetingRows=meetings.map(function(c){
+    const d=new Date(c.ts);
+    const mapLink=c.lat?' <a href="https://maps.google.com/?q='+c.lat+','+c.lng+'" target="_blank" style="color:var(--pink);font-size:12px">&#128205; map</a>':'';
+    const distBadge=c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined
+      ?' <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'var(--success)':parseFloat(c.distance_from_meeting)<=3?'var(--warn)':'var(--danger)')+'";font-size:12px>'+(parseFloat(c.distance_from_meeting)<=0.1?'At location':c.distance_from_meeting+' mi')+'</span>'
+      :'';
+    return '<div style="border:1px solid var(--sand);border-radius:10px;margin-bottom:10px;overflow:hidden">'+
+      '<div style="padding:12px 14px;background:var(--cream)">'+
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">'+c.meeting_type+'</div>'+
+        '<div style="font-size:13px;color:var(--mid);margin-bottom:2px">'+c.meeting_name+'</div>'+
+        '<div style="font-size:12px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+(c.address?' &bull; '+c.address:'')+'</div>'+
+        '<div style="font-size:12px;color:var(--mid);margin-top:4px">'+
+          mapLink+distBadge+
+        '</div>'+
+      '</div>'+
+      '<div style="padding:12px 14px">'+
+        '<div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Meeting Signature</div>'+
+        (c.sig_data_url
+          ?'<div style="font-size:12px;color:var(--mid);margin-bottom:4px">Signed by: <strong>'+(c.signer_name||'Unknown')+'</strong></div>'+
+            '<img src="'+c.sig_data_url+'" style="width:100%;max-width:240px;border:1px solid var(--sand);border-radius:6px;background:white;display:block">'
+          :'<div style="font-size:12px;color:var(--mid)">Signed by: '+(c.signer_name||'Unknown')+'</div><div style="height:50px;border:1px dashed var(--sand);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mid)">No signature image on file</div>'
+        )+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  return '<div class="card" style="margin-bottom:16px">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+        '<div class="avatar" style="width:36px;height:36px;font-size:15px">'+r.name[0]+'</div>'+
+        '<div>'+
+          '<div style="font-size:16px;font-weight:800">'+r.name+'</div>'+
+          '<div style="font-size:13px;color:var(--mid)">'+wc+' of '+req+' required</div>'+
+        '</div>'+
+      '</div>'+
+      '<span class="pill '+status+'">'+label+'</span>'+
+    '</div>'+
+    (meetingRows||'<div style="font-size:13px;color:var(--mid);padding:8px 0">No meetings recorded this week.</div>')+
+    '<button onclick="printResidentAttendance(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="margin-top:8px;background:var(--black);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">&#128424; Print Report</button>'+
+  '</div>';
+}
+
+function printResidentAttendance(resId,resName){
+  const req=cachedSettings.required||3;
+  const weekStart=getWeekStart();
+  const r=residents().find(function(x){return x.id===resId;});
+  if(!r)return;
+  const meetings=checkins().filter(function(c){return c.resident_id===resId&&new Date(c.ts)>=weekStart;});
+  printAttendancePDF([{r:r,meetings:meetings}],resName,weekStart,req);
+}
+
+function printAttendanceReport(){
+  const req=cachedSettings.required||3;
+  const weekStart=getWeekStart();
+  const filterVal=document.getElementById('att-resident-filter')?document.getElementById('att-resident-filter').value:'all';
+  const res=filterVal==='all'?residents():residents().filter(function(r){return r.id===filterVal;});
+  const label=filterVal==='all'?'All Residents':(res[0]?res[0].name:'');
+  const data=res.map(function(r){
+    return{r:r,meetings:checkins().filter(function(c){return c.resident_id===r.id&&new Date(c.ts)>=weekStart;})};
+  });
+  printAttendancePDF(data,label,weekStart,req);
+}
+
+function printAttendancePDF(data,label,weekStart,req){
+  const org=cachedSettings.house_name||'The Turning Point';
+  const house=myHouse()||'';
+  const now=new Date();
+  const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);
+  const dateRange='Week of '+fmtDate(weekStart)+' – '+fmtDate(weekEnd);
+
+  const resRows=data.map(function(item){
+    const wc=item.meetings.length;
+    const met=wc>=req;
+    const statusColor=met?'#166534':wc>0?'#92400E':'#991B1B';
+    const statusBg=met?'#DCFCE7':wc>0?'#FEF3C7':'#FEE2E2';
+    const statusLabel=met?'✓ Complete':wc>0?'In progress':'No meetings';
+
+    const meetingRows=item.meetings.map(function(c){
+      const d=new Date(c.ts);
+      const dist=c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined
+        ?' &bull; <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'#166534':parseFloat(c.distance_from_meeting)<=3?'#92400E':'#991B1B')+'">'+
+          (parseFloat(c.distance_from_meeting)<=0.1?'At location':c.distance_from_meeting+' mi from meeting')+
+        '</span>':''
+      return '<div style="border:1px solid #eee;border-radius:8px;margin-bottom:12px;overflow:hidden;page-break-inside:avoid">'+
+        '<div style="padding:12px 14px;background:#f9f9f9;border-bottom:1px solid #eee">'+
+          '<div style="font-size:14px;font-weight:700">'+c.meeting_type+'</div>'+
+          '<div style="font-size:13px;color:#666;margin-top:2px">'+c.meeting_name+'</div>'+
+          '<div style="font-size:12px;color:#999;margin-top:2px">'+
+            d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' at '+
+            d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+
+            (c.address?' &bull; '+c.address:'')+dist+
+          '</div>'+
+        '</div>'+
+        '<div style="padding:12px 14px">'+
+          '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Meeting Signature</div>'+
+          '<div style="font-size:12px;color:#333;margin-bottom:6px">Signed by: <strong>'+(c.signer_name||'Unknown')+'</strong></div>'+
+          (c.sig_data_url
+            ?'<img src="'+c.sig_data_url+'" style="max-width:220px;max-height:80px;object-fit:contain;border:1px solid #eee;border-radius:4px;background:white;display:block">'
+            :'<div style="height:50px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature image on file</div>'
+          )+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    return '<div style="border:1.5px solid #ddd;border-radius:10px;margin-bottom:20px;overflow:hidden;page-break-inside:avoid">'+
+      '<div style="background:#0A0A0A;padding:14px 18px;display:flex;justify-content:space-between;align-items:center">'+
+        '<div style="color:white">'+
+          '<div style="font-size:16px;font-weight:800">'+item.r.name+'</div>'+
+          '<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px">Phase '+(item.r.phase||1)+' &bull; '+wc+' of '+req+' meetings</div>'+
+        '</div>'+
+        '<span style="background:'+statusBg+';color:'+statusColor+';font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px">'+statusLabel+'</span>'+
+      '</div>'+
+      '<div style="padding:14px">'+
+        (meetingRows||'<div style="font-size:13px;color:#999;padding:8px 0">No meetings recorded this week.</div>')+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<title>Attendance Report &mdash; '+label+'</title>'+
+    '<style>'+
+      'body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:24px;color:#000;background:white;}'+
+      '@media print{body{padding:0;}.no-print{display:none;}}'+
+      'h1{font-size:22px;font-weight:800;margin:0 0 4px;}'+
+      '.header{border-bottom:2px solid #000;padding-bottom:16px;margin-bottom:24px;}'+
+    '</style>'+
+    '</head><body>'+
+    '<div class="header">'+
+      '<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Confidential Attendance Record</div>'+
+      '<h1>'+org+(house?' &mdash; '+house:'')+'</h1>'+
+      '<div style="font-size:13px;color:#666;">'+label+' &bull; '+dateRange+'</div>'+
+      '<div style="font-size:13px;color:#666;">Generated: '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div>'+
+      '<div style="font-size:12px;color:#C0392B;font-weight:600;margin-top:4px">&#9888; All records are GPS-verified and tamper-evident. Meeting signatures collected on-site.</div>'+
+    '</div>'+
+    resRows+
+    '<div style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999">'+
+      'Generated by StepIn &bull; theturningpoint.github.io/StepIn &bull; Records cannot be altered after submission.'+
+    '</div>'+
+    '<script>window.onload=function(){window.print();}<\/script>'+
+    '</body></html>';
+
+  const w=window.open('','_blank','width=800,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{toast('Please allow popups to print.',true);}
+}
+
 
 function viewResident(id){const r=allResidents.find(x=>x.id===id);if(!r)return;const ckins=allCheckins.filter(c=>c.resident_id===id);const wc=ckins.filter(c=>new Date(c.ts)>=getWeekStart()).length;document.getElementById('detail-name').textContent=r.name;document.getElementById('detail-content').innerHTML=`<p style="font-size:13px;color:var(--mid);margin-bottom:14px">${r.house||''} &bull; Phase ${r.phase||1} &bull; Curfew: ${getCurfewLabel(r.phase||1,new Date())}</p>
 <div class="stats-grid" style="margin-bottom:14px">
@@ -1682,22 +1865,40 @@ function populateDtResidentFilter(){
 
 function renderDtHistory(){
   const el=document.getElementById('dt-history-content');
+  const rangeEl=document.getElementById('dt-report-range');
   if(!el)return;
+
+  // Apply date range filter
+  const now=new Date();
+  let fromDate=new Date(0);
+  let rangeLabel='All time';
+  if(currentDtRange==='week'){fromDate=getWeekStart();rangeLabel='Week of '+fmtDate(fromDate)+' – '+fmtDate(new Date(fromDate.getTime()+6*86400000));}
+  else if(currentDtRange==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1);rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});}
+  else if(currentDtRange==='90'){fromDate=new Date(now.getTime()-90*86400000);rangeLabel='Last 90 days';}
+  if(rangeEl)rangeEl.textContent=rangeLabel;
+
   const filterVal=document.getElementById('dt-history-resident-filter')?document.getElementById('dt-history-resident-filter').value:'all';
   const res=residents();
   const resIds=new Set(res.map(function(r){return r.id;}));
-  let tests=cachedDrugTests.filter(function(t){return resIds.has(t.resident_id);});
+  let tests=cachedDrugTests.filter(function(t){
+    return resIds.has(t.resident_id)&&new Date(t.test_date)>=fromDate;
+  });
   if(filterVal!=='all')tests=tests.filter(function(t){return t.resident_id===filterVal;});
   tests=tests.sort(function(a,b){return new Date(b.test_date)-new Date(a.test_date);});
 
   if(!tests.length){
-    el.innerHTML='<div class="empty"><div class="empty-icon">&#128137;</div><h3>No tests recorded</h3></div>';
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128137;</div><h3>No tests in this period</h3></div>';
     return;
   }
 
   const resultBg={pass:'#DCFCE7',fail:'#FEE2E2',refused:'#FEF3C7'};
   const resultColor={pass:'#166534',fail:'#991B1B',refused:'#92400E'};
   const resultIcon={pass:'&#10003; PASS',fail:'&#10005; FAIL',refused:'&#9888; REFUSED'};
+
+  // Summary counts
+  const totalPass=tests.filter(function(t){return t.result==='pass';}).length;
+  const totalFail=tests.filter(function(t){return t.result==='fail';}).length;
+  const totalRefused=tests.filter(function(t){return t.result==='refused';}).length;
 
   // Group by resident
   const byResident={};
@@ -1706,31 +1907,36 @@ function renderDtHistory(){
     byResident[t.resident_id].tests.push(t);
   });
 
-  el.innerHTML=Object.values(byResident).map(function(r){
+  // Summary bar
+  const summaryBar='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">'+
+    '<div style="background:#DCFCE7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#166534">'+totalPass+'</div><div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase">Pass</div></div>'+
+    '<div style="background:#FEE2E2;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#991B1B">'+totalFail+'</div><div style="font-size:11px;font-weight:700;color:#991B1B;text-transform:uppercase">Fail</div></div>'+
+    '<div style="background:#FEF3C7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#92400E">'+totalRefused+'</div><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase">Refused</div></div>'+
+  '</div>';
+
+  el.innerHTML=summaryBar+Object.values(byResident).map(function(r){
     const rPass=r.tests.filter(function(t){return t.result==='pass';}).length;
     const rFail=r.tests.filter(function(t){return t.result==='fail';}).length;
     const rRef=r.tests.filter(function(t){return t.result==='refused';}).length;
+
     const testRows=r.tests.map(function(t){
       const notes=t.notes||'';
       const observed=(notes||'').includes('Observed: Yes')?'Yes':(notes||'').includes('Observed: No')?'No':'Not recorded';
       const cleanNotes=notes.replace(/Urine:\s*\w+\s*\|?\s*/g,'').replace(/Breath:\s*\w+\s*\|?\s*/g,'').replace(/Observed:\s*\w+\s*\|?\s*/g,'').replace(/^\|?\s*/,'').trim();
       return '<div style="border:1px solid var(--sand);border-radius:10px;margin-bottom:10px;overflow:hidden">'+
-        // Test header row
         '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:'+(resultBg[t.result]||'var(--cream)')+'">'+
           '<div style="background:'+(resultColor[t.result]||'var(--mid)')+';color:white;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;flex-shrink:0">'+
             (resultIcon[t.result]||t.result.toUpperCase())+
           '</div>'+
           '<div style="flex:1">'+
             '<div style="font-size:14px;font-weight:700">'+t.test_types+'</div>'+
-            '<div style="font-size:12px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; Observed: '+observed+'</div>'+
+            '<div style="font-size:12px;color:var(--mid)">'+t.test_date+' at '+(t.test_time||'')+' &bull; Observed: '+observed+(t.server_ts?' <span style="color:var(--success);font-size:11px">✓ Verified</span>':'')+'</div>'+
           '</div>'+
           '<button onclick="printResidentDrugTest(this.dataset.id)" data-id="'+t.id+'" style="background:var(--black);color:white;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0">&#128424; PDF</button>'+
         '</div>'+
-        // Details
         '<div style="padding:12px 14px">'+
           '<div style="font-size:13px;color:var(--mid);margin-bottom:8px">Administered by: <strong style="color:var(--charcoal)">'+(t.administered_by||'Unknown')+'</strong></div>'+
           (cleanNotes?'<div style="font-size:12px;color:var(--mid);background:var(--cream);border-radius:6px;padding:8px;margin-bottom:10px">'+cleanNotes+'</div>':'')+
-          // Signatures
           (t.admin_sig||t.resident_sig?
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
               '<div>'+
@@ -1738,7 +1944,7 @@ function renderDtHistory(){
                 (t.admin_sig?'<img src="'+t.admin_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white">':'<div style="border:1px dashed var(--sand);border-radius:6px;height:50px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mid)">No signature</div>')+
               '</div>'+
               '<div>'+
-                '<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resident acknowledgment</div>'+
+                '<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resident</div>'+
                 (t.resident_sig?'<img src="'+t.resident_sig+'" style="width:100%;border:1px solid var(--sand);border-radius:6px;background:white">':'<div style="border:1px dashed var(--sand);border-radius:6px;height:50px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mid)">No signature</div>')+
               '</div>'+
             '</div>':
@@ -1761,12 +1967,13 @@ function renderDtHistory(){
             '</div>'+
           '</div>'+
         '</div>'+
-        '<button onclick="printResidentAllTests(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="background:var(--pink);color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer">&#128424; All PDFs</button>'+
+        '<button onclick="printResidentAllTests(this.dataset.id,this.dataset.name)" data-id="'+r.id+'" data-name="'+r.name+'" style="background:var(--pink);color:white;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer">&#128424; All</button>'+
       '</div>'+
       testRows+
     '</div>';
   }).join('<div class="divider"></div>');
 }
+
 
 function printResidentDrugTest(testId){
   const t=cachedDrugTests.find(function(x){return x.id===testId;});
@@ -2011,11 +2218,12 @@ function setDtRangeInline(range){
 
 function setDtRange(range){
   currentDtRange=range;
-  ['week','month','90','all'].forEach(r=>{
+  ['week','month','90','all'].forEach(function(r){
     const btn=document.getElementById('dtr-'+r);
     if(btn)btn.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';
+    if(btn)btn.style.flex='1';
   });
-  renderDtReport(range);
+  renderDtHistory();
 }
 
 function renderDtReport(range){
