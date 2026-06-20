@@ -230,6 +230,16 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 .text-mid{color:var(--mid);font-size:13px;line-height:1.6;}
 .flex-between{display:flex;justify-content:space-between;align-items:center;}
 h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px;}
+
+/* DESKTOP / WIDE SCREEN */
+@media (min-width: 600px) {
+  body{display:flex;justify-content:center;background:#1A1A1A;}
+  .screen{max-width:480px;width:100%;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,0.5);}
+  #loading{max-width:480px;width:100%;left:50%;transform:translateX(-50%);}
+  #toast{max-width:420px;}
+  .modal{max-width:480px;}
+  .login-wrap{min-height:100vh;}
+}
 </style>
 </head><body>
 <div id="loading"><div class="spin"></div><p>Connecting&#8230;</p></div>
