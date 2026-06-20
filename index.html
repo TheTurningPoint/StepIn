@@ -698,20 +698,39 @@ async function loadAllDataInner(){
 function hideLoading(){document.getElementById('loading').style.display='none';}
 
 async function doLogin(){
-  const name=document.getElementById('login-name').value.trim();const pin=document.getElementById('login-pin').value.trim();
-  const err=document.getElementById('login-error');const btn=document.getElementById('login-btn');
-  err.style.display='none';if(!name||!pin){showErr(err,'Please enter your ID and PIN.');return;}
-  btn.textContent='Signing in\u2026';btn.classList.add('btn-disabled');
+  const name=document.getElementById('login-name').value.trim();
+  const pin=document.getElementById('login-pin').value.trim();
+  const err=document.getElementById('login-error');
+  const btn=document.getElementById('login-btn');
+  err.style.display='none';
+  if(!name||!pin){showErr(err,'Please enter your name and PIN.');return;}
+  // Brute force protection
+  loginAttempts++;
+  if(loginAttempts>MAX_LOGIN_ATTEMPTS){
+    showErr(err,'Too many attempts. Please wait 30 seconds.');
+    setTimeout(function(){loginAttempts=0;},30000);
+    return;
+  }
+  btn.textContent='Signing in…';btn.classList.add('btn-disabled');
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/residents?name=ilike.${encodeURIComponent(name)}&pin=eq.${pin}&select=*`,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/residents?name=ilike.${encodeURIComponent(name)}&pin=eq.${pin}&select=*`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
     const data=await res.json();
-    if(!data||!data.length){showErr(err,'Name or PIN not found. Make sure your name is spelled exactly as your manager entered it, then try again.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
-    // Pick best match — owner first, then manager, then resident
-    const match=data.find(r=>r.role==='owner')||data.find(r=>r.role==='manager')||data.find(r=>r.role==='resident');
-    if(!match){showErr(err,'Account not found.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
-    currentUser=match;localStorage.setItem('si_user',JSON.stringify(match));
-    await loadAllData();btn.textContent='Sign in';btn.classList.remove('btn-disabled');enterApp();
-  }catch(e){showErr(err,'Connection error: '+e.message);btn.textContent='Sign in';btn.classList.remove('btn-disabled');}
+    if(!data||!data.length){
+      showErr(err,'Name or PIN not found. Make sure your name is spelled exactly as your manager entered it, then try again.');
+      btn.textContent='Sign in';btn.classList.remove('btn-disabled');
+      return;
+    }
+    currentUser=data[0];
+    loginAttempts=0;
+    localStorage.setItem('si_user',JSON.stringify(currentUser));
+    btn.textContent='Sign in';btn.classList.remove('btn-disabled');
+    enterApp();
+  }catch(e){
+    showErr(err,'Connection error. Please check your internet and try again.');
+    btn.textContent='Sign in';btn.classList.remove('btn-disabled');
+  }
 }
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
