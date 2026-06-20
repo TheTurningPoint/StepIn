@@ -368,6 +368,18 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <button class="btn btn-outline btn-sm" onclick="openAnnouncementHistory()">History</button>
   <button class="btn btn-primary btn-sm" onclick="openPostAnnouncement()">Post</button>
 </div></div><div id="mgr-announcement-status"></div></div>
+  <!-- Incident log -->
+  <div class="card">
+    <div class="flex-between" style="margin-bottom:12px">
+      <span class="card-title" style="margin:0">&#9888;&#65039; Incident log</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="openIncidentHistory()">History</button>
+        <button class="btn btn-primary btn-sm" onclick="openIncidentLog()">+ Log</button>
+      </div>
+    </div>
+    <p class="text-mid" style="margin-bottom:0">Document incidents for NARR compliance and licensing records.</p>
+  </div>
+
   <div class="card" id="excuse-card"><div class="card-title">&#128338; Excuse a resident</div><div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div><div class="field"><label>Date</label><input type="date" id="excuse-date"></div><div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. Work, medical, family..."></div><button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button></div>
 </div>
 
@@ -519,6 +531,71 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="field"><label>Message</label><textarea id="announcement-text" placeholder="e.g. House meeting tonight at 7pm." style="height:100px;resize:none"></textarea></div>
 <button class="btn btn-primary" id="announcement-btn" onclick="postAnnouncement()">Post note</button>
 <button class="btn btn-outline mt8" onclick="closeModal('modal-post-announcement')">Cancel</button>
+</div></div>
+
+<!-- INCIDENT LOG MODAL -->
+<div class="modal-bg" id="modal-incident-log" onclick="if(event.target===this)closeModal('modal-incident-log')">
+<div class="modal"><div class="modal-handle"></div>
+  <h2>&#9888;&#65039; Log incident</h2>
+  <p class="text-mid" style="margin-bottom:16px">Document any incident requiring a record. All entries are permanent and timestamped.</p>
+  <div class="field">
+    <label>Resident involved</label>
+    <select id="incident-resident">
+      <option value="">Select resident (or leave blank for house-wide)</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Incident type</label>
+    <select id="incident-type">
+      <option value="">Select type...</option>
+      <option>Policy violation</option>
+      <option>Altercation</option>
+      <option>Medical emergency</option>
+      <option>Police contact</option>
+      <option>Positive drug test follow-up</option>
+      <option>Curfew violation</option>
+      <option>Property damage</option>
+      <option>Welfare check</option>
+      <option>Other</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Date &amp; time</label>
+    <div style="display:flex;gap:10px">
+      <input type="date" id="incident-date" style="flex:1">
+      <input type="time" id="incident-time" style="flex:1">
+    </div>
+  </div>
+  <div class="field">
+    <label>Description</label>
+    <textarea id="incident-description" placeholder="Describe what happened in detail..." style="height:100px;resize:none"></textarea>
+  </div>
+  <div class="field">
+    <label>Action taken</label>
+    <textarea id="incident-action" placeholder="What was done in response?" style="height:70px;resize:none"></textarea>
+  </div>
+  <div class="field">
+    <label>Authorities notified?</label>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-sm" id="incident-auth-yes" onclick="setIncidentAuth(true)" style="flex:1;background:var(--cream);border:2px solid var(--sand);color:var(--charcoal)">&#10003; Yes</button>
+      <button class="btn btn-sm" id="incident-auth-no" onclick="setIncidentAuth(false)" style="flex:1;background:var(--cream);border:2px solid var(--sand);color:var(--charcoal)">&#10005; No</button>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="incident-btn" onclick="saveIncident()">Save incident record</button>
+  <button class="btn btn-outline mt8" onclick="closeModal('modal-incident-log')">Cancel</button>
+</div></div>
+
+<!-- INCIDENT HISTORY MODAL -->
+<div class="modal-bg" id="modal-incident-history" onclick="if(event.target===this)closeModal('modal-incident-history')">
+<div class="modal"><div class="modal-handle"></div>
+  <h2>&#128203; Incident log</h2>
+  <div class="field" style="margin-bottom:12px">
+    <select id="incident-history-filter" onchange="renderIncidentHistory()" style="font-size:14px">
+      <option value="all">All residents</option>
+    </select>
+  </div>
+  <div id="incident-history-content"></div>
+  <button class="btn btn-outline mt16" onclick="closeModal('modal-incident-history')">Close</button>
 </div></div>
 
 <!-- Announcement history modal -->
@@ -2612,6 +2689,139 @@ async function openAnnouncementHistory(){
   }catch(e){
     el.innerHTML='<p class="text-mid">Could not load history.</p>';
   }
+}
+
+// ── INCIDENT LOG ──
+let cachedIncidents=[];
+let incidentAuthNotified=null;
+
+function setIncidentAuth(val){
+  incidentAuthNotified=val;
+  const yBtn=document.getElementById('incident-auth-yes');
+  const nBtn=document.getElementById('incident-auth-no');
+  if(yBtn){yBtn.style.background=val===true?'var(--success)':'var(--cream)';yBtn.style.color=val===true?'white':'var(--charcoal)';yBtn.style.borderColor=val===true?'var(--success)':'var(--sand)';}
+  if(nBtn){nBtn.style.background=val===false?'var(--danger)':'var(--cream)';nBtn.style.color=val===false?'white':'var(--charcoal)';nBtn.style.borderColor=val===false?'var(--danger)':'var(--sand)';}
+}
+
+function openIncidentLog(){
+  const now=new Date();
+  document.getElementById('incident-date').value=now.toISOString().split('T')[0];
+  document.getElementById('incident-time').value=now.toTimeString().slice(0,5);
+  document.getElementById('incident-description').value='';
+  document.getElementById('incident-action').value='';
+  document.getElementById('incident-type').value='';
+  incidentAuthNotified=null;
+  // Reset auth buttons
+  ['yes','no'].forEach(function(v){
+    const btn=document.getElementById('incident-auth-'+v);
+    if(btn){btn.style.background='var(--cream)';btn.style.color='var(--charcoal)';btn.style.borderColor='var(--sand)';}
+  });
+  // Populate resident select
+  const sel=document.getElementById('incident-resident');
+  if(sel)sel.innerHTML='<option value="">House-wide (no specific resident)</option>'+
+    residents().map(function(r){return'<option value="'+r.id+'|'+r.name+'">'+r.name+'</option>';}).join('');
+  document.getElementById('modal-incident-log').classList.add('open');
+}
+
+async function saveIncident(){
+  const type=document.getElementById('incident-type').value;
+  const date=document.getElementById('incident-date').value;
+  const time=document.getElementById('incident-time').value;
+  const desc=document.getElementById('incident-description').value.trim();
+  const action=document.getElementById('incident-action').value.trim();
+  const resVal=document.getElementById('incident-resident').value;
+  if(!type){toast('Please select an incident type.',true);return;}
+  if(!desc){toast('Please describe what happened.',true);return;}
+  if(!action){toast('Please describe the action taken.',true);return;}
+  if(incidentAuthNotified===null){toast('Please indicate if authorities were notified.',true);return;}
+  const btn=document.getElementById('incident-btn');
+  if(btn.dataset.saving)return;
+  btn.dataset.saving='1';btn.textContent='Saving...';btn.classList.add('btn-disabled');
+  const resId=resVal?resVal.split('|')[0]:null;
+  const resName=resVal?resVal.split('|')[1]:null;
+  const r=resId?allResidents.find(function(x){return x.id===resId;}):null;
+  const record={
+    id:'inc-'+Date.now(),
+    incident_type:type,
+    incident_date:date,
+    incident_time:time,
+    description:desc,
+    action_taken:action,
+    authorities_notified:incidentAuthNotified,
+    resident_id:resId||null,
+    resident_name:resName||null,
+    reported_by:currentUser.name,
+    house:r?r.house:(myHouse()||null),
+    created_at:new Date().toISOString()
+  };
+  if(!isDemoMode){
+    try{
+      const{error}=await sb.from('incidents').insert(record);
+      if(error){toast('Could not save: '+error.message,true);btn.textContent='Save incident record';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}
+    }catch(e){toast('Could not save. Check your connection.',true);btn.textContent='Save incident record';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}
+  }
+  cachedIncidents.unshift(record);
+  btn.textContent='Save incident record';btn.classList.remove('btn-disabled');delete btn.dataset.saving;
+  closeModal('modal-incident-log');
+  toast('Incident recorded.');
+}
+
+async function openIncidentHistory(){
+  const filterEl=document.getElementById('incident-history-filter');
+  if(filterEl)filterEl.innerHTML='<option value="all">All residents</option>'+
+    residents().map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>';}).join('');
+  if(!isDemoMode){
+    try{
+      let q=sb.from('incidents').select('*').order('created_at',{ascending:false});
+      if(!isOwner()&&myHouse())q=q.eq('house',myHouse());
+      const{data}=await q;
+      cachedIncidents=data||[];
+    }catch(e){cachedIncidents=[];}
+  }
+  renderIncidentHistory();
+  document.getElementById('modal-incident-history').classList.add('open');
+}
+
+function renderIncidentHistory(){
+  const el=document.getElementById('incident-history-content');
+  if(!el)return;
+  const filterVal=document.getElementById('incident-history-filter')?document.getElementById('incident-history-filter').value:'all';
+  let incidents=cachedIncidents;
+  if(filterVal!=='all')incidents=incidents.filter(function(i){return i.resident_id===filterVal;});
+  if(!incidents.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128203;</div><h3>No incidents logged</h3><p>Incidents will appear here once recorded.</p></div>';
+    return;
+  }
+  const typeColors={
+    'Policy violation':'#FEE2E2','Altercation':'#FEE2E2','Medical emergency':'#FEE2E2',
+    'Police contact':'#FEF3C7','Positive drug test follow-up':'#FEF3C7',
+    'Curfew violation':'#FEF3C7','Property damage':'#FEE2E2',
+    'Welfare check':'#DBEAFE','Other':'#F5F5F5'
+  };
+  el.innerHTML=incidents.map(function(inc){
+    const d=new Date(inc.incident_date+'T'+(inc.incident_time||'00:00'));
+    const bg=typeColors[inc.incident_type]||'#F5F5F5';
+    return '<div style="border:1.5px solid var(--sand);border-radius:12px;margin-bottom:12px;overflow:hidden">'+
+      '<div style="background:'+bg+';padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start">'+
+        '<div>'+
+          '<div style="font-size:14px;font-weight:800">'+inc.incident_type+'</div>'+
+          '<div style="font-size:12px;color:var(--mid);margin-top:2px">'+
+            d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' at '+
+            (inc.incident_time||'')+
+            (inc.resident_name?' &bull; '+inc.resident_name:' &bull; House-wide')+
+          '</div>'+
+        '</div>'+
+        (inc.authorities_notified?'<span style="background:#FEE2E2;color:#991B1B;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0">Authorities notified</span>':'<span style="background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0">No authorities</span>')+
+      '</div>'+
+      '<div style="padding:12px 14px">'+
+        '<div style="font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">What happened</div>'+
+        '<div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:10px">'+inc.description+'</div>'+
+        '<div style="font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Action taken</div>'+
+        '<div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:8px">'+inc.action_taken+'</div>'+
+        '<div style="font-size:12px;color:var(--soft)">Reported by: '+(inc.reported_by||'Unknown')+(inc.house?' &bull; '+inc.house:'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
