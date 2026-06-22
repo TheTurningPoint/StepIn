@@ -1034,14 +1034,19 @@ async function doLogin(){
   const btn=document.getElementById('login-btn');
   err.style.display='none';
   if(!name||!pin){showErr(err,'Please enter your name and PIN.');return;}
-  loginAttempts++;
-  if(loginAttempts>MAX_LOGIN_ATTEMPTS){showErr(err,'Too many attempts. Please wait 30 seconds.');setTimeout(()=>{loginAttempts=0;},30000);return;}
-  btn.textContent='Signing in\u2026';btn.classList.add('btn-disabled');
+  btn.textContent='Signing in…';btn.classList.add('btn-disabled');
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/residents?name=ilike.${encodeURIComponent(name)}&pin=eq.${pin}&select=*`,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+    const res=await fetch('https://vhxswxilkuwsxwpsdjxl.supabase.co/functions/v1/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+      body:JSON.stringify({name,pin})
+    });
     const data=await res.json();
-    if(!data||!data.length){showErr(err,'Name or PIN not found. Check spelling and try again.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;}
-    currentUser=data[0];loginAttempts=0;localStorage.setItem('si_user',JSON.stringify(currentUser));btn.textContent='Sign in';btn.classList.remove('btn-disabled');enterApp();
+    if(!res.ok){
+      const msg=res.status===429?'Too many attempts. Please wait 30 seconds.':(data.message||data.error||'Name or PIN not found. Check spelling and try again.');
+      showErr(err,msg);btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;
+    }
+    currentUser=data;loginAttempts=0;localStorage.setItem('si_user',JSON.stringify(currentUser));btn.textContent='Sign in';btn.classList.remove('btn-disabled');enterApp();
   }catch(e){showErr(err,'Connection error. Check your internet and try again.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');}
 }
 
