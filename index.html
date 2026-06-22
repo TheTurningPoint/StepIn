@@ -978,6 +978,35 @@ function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h==
 function isPastCurfew(phase){const now=new Date();return now.getHours()>=getCurfewTime(phase,now);}
 function getMyStatus(){const today=new Date().toDateString();const logs=allCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!logs.length)return{status:'unknown',last:null};const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
 
+async function detectAndApplyOrg(){
+  try{
+    const host=window.location.hostname;
+    const parts=host.split('.');
+    // e.g. theturningpoint.instepapp.com → parts[0] = 'theturningpoint'
+    const subdomain=parts.length>=3&&parts[1]==='instepapp'?parts[0]:null;
+    if(!subdomain||subdomain==='www'||subdomain==='app')return;
+    const{data,error}=await sb.from('orgs').select('*').eq('subdomain',subdomain).single();
+    if(error||!data)return;
+    // Apply org name to topbar and login
+    const orgName=data.name;
+    // Update topbar house names
+    document.querySelectorAll('.topbar-house-name').forEach(el=>el.textContent=orgName);
+    // Update login tagline first line
+    const tagline=document.querySelector('.login-tagline');
+    if(tagline){
+      const lines=tagline.innerHTML.split('<br>');
+      lines[0]=orgName;
+      tagline.innerHTML=lines.join('<br>');
+    }
+    // Apply accent color if set
+    if(data.accent_color){
+      document.documentElement.style.setProperty('--topbar',data.accent_color);
+    }
+    // Store for use elsewhere
+    window.currentOrg=data;
+  }catch(e){console.log('org detect err',e);}
+}
+
 window.onload=async()=>{
   if(!navigator.onLine){document.getElementById('loading').innerHTML='<div style="color:white;text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:16px">&#128267;</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">No Internet Connection</div><div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:24px">Please connect to WiFi or cellular data.</div><button onclick="location.reload()" style="background:var(--pink);color:white;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer">Try Again</button></div>';return;}
   try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
