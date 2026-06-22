@@ -1038,7 +1038,7 @@ async function doLogin(){
   try{
     const res=await fetch('https://vhxswxilkuwsxwpsdjxl.supabase.co/functions/v1/login',{
       method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},
       body:JSON.stringify({name,pin})
     });
     const data=await res.json();
