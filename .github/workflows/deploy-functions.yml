@@ -60,3 +60,17 @@ jobs:
           echo "authenticated request HTTP $code"
           if [ "$code" = "200" ]; then echo "OK: database ACCEPTS the login token — signature valid."; \
           else echo "FAIL: token rejected ($code) — JWT_SECRET is wrong."; exit 1; fi
+
+      # Finish line: an anonymous stranger (anon key only, no login) must get
+      # NOTHING from the sensitive tables. Empty result = hole closed.
+      - name: Lockdown check (stranger gets nothing)
+        run: |
+          ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M"
+          fail=0
+          for t in drug_tests incidents residents curfew_log resident_documents checkins; do
+            body=$(curl -s "https://$PROJECT_ID.supabase.co/rest/v1/$t?select=id&limit=1" -H "apikey: $ANON" -H "Authorization: Bearer $ANON")
+            echo "$t -> $body"
+            if [ "$body" = "[]" ]; then echo "  OK locked"; else echo "  !! STILL READABLE"; fail=1; fi
+          done
+          if [ "$fail" = "1" ]; then echo "FAIL: some tables still readable by a stranger."; exit 1; fi
+          echo "ALL LOCKED — strangers get nothing."
