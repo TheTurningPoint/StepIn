@@ -27,8 +27,9 @@ The entire app lives in a single file.
 | File | Description |
 | --- | --- |
 | `index.html` | The complete single-page application (CSS + HTML + JS inline). |
-| `Demo.html` | Static marketing/landing page (no backend). |
-| `CNAME` | GitHub Pages custom domain (`instepapp.com`). |
+| `demo.html` | Static marketing/landing page (no backend). |
+| `wrangler.toml` / `.assetsignore` | Cloudflare Workers static-asset hosting config. |
+| `supabase/` | Edge function (`login2`) + RLS/security SQL migrations. |
 | `CLAUDE.md` | Architecture & conventions guide for AI assistants. |
 | `SCHEMA.md` | Reverse-engineered Supabase table reference. |
 
@@ -44,10 +45,11 @@ There is nothing to install or build — open `index.html` in a browser.
 
 ## Deployment
 
-Hosted on **GitHub Pages** with the `CNAME` custom domain; org tenants are served via
-subdomains (e.g. `theturningpoint.instepapp.com`). There is no build step — **pushing
-to the published branch deploys the site.** Treat changes to `index.html` as
-production changes.
+Hosted on **Cloudflare Workers (static assets)** at `instepapp.com`; org tenants are
+served via subdomains (e.g. `theturningpoint.instepapp.com`), each added as a Worker
+custom domain. There is no build step — **pushing to `main` auto-deploys the site.**
+Treat changes to `index.html` as production changes. The `login2` Edge Function deploys
+separately via the GitHub Action in `.github/workflows/`.
 
 ## Contributing notes
 

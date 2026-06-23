@@ -24,18 +24,23 @@ colors, and logo loaded from the backend.
 
 ## Repository layout
 
-This repo **is** the entire codebase. There is no `src/`, no build output, and no
-hidden tooling. Everything below lives at the repo root.
+This repo **is** the entire codebase. There is no `src/` and no build step (a static
+site served as-is). Everything below lives at the repo root.
 
 | File | What it is |
 | --- | --- |
 | `index.html` | **The whole application.** ~308KB / ~2,275 lines. Single-page app with embedded CSS + JS. This is where ~all work happens. |
-| `Demo.html` | Static marketing/landing page (~29KB). Phone-frame mockup, feature list, pricing. Tiny JS only (`setRole`, `launchDemo`). No backend. |
+| `demo.html` | Static marketing/landing page (~29KB). Phone-frame mockup, feature list, pricing. Tiny JS only (`setRole`, `launchDemo`). No backend. The app redirects the root domain here, so the lowercase filename matters (Cloudflare is case-sensitive). |
 | `README.md` | Project overview and quick start for humans. |
 | `SCHEMA.md` | Reverse-engineered Supabase table reference. |
-| `CNAME` | `instepapp.com` — GitHub Pages custom domain. |
+| `wrangler.toml` | Cloudflare Workers static-assets config (serves the repo as the website). |
+| `.assetsignore` | Files Cloudflare must **not** serve publicly (SQL, docs, function source). |
+| `supabase/` | Edge function source (`functions/login2`) and RLS/security SQL migrations (`security/*.sql`). Not served publicly. |
+| `.github/workflows/` | `deploy-functions.yml` — deploys the `login2` Edge Function via CI. |
+| `CNAME` | Legacy GitHub-Pages artifact (`instepapp.com`); ignored by Cloudflare, kept harmlessly. |
 
-There is **no** `.github/` workflow, `package.json`, lockfile, or build configuration.
+There is **no** `package.json`, lockfile, or front-end build configuration — the site
+is plain static files.
 
 ## Tech stack
 
@@ -124,21 +129,30 @@ do **not** add any new secrets to the file.
 
 ## Development workflow
 
-- **No build / test / lint steps exist.** Don't look for `npm`, a test runner, or CI.
+- **No front-end build / test / lint steps exist.** Don't look for `npm` or a test
+  runner. (The only CI is `deploy-functions.yml`, which deploys the Edge Function —
+  it does not build the site.)
 - **Preview:** open `index.html` in a browser. Supabase calls need network access and
   valid credentials; otherwise the fallback stub no-ops and data-driven screens stay
   empty.
 - **Exercise the UI without a backend:** append `?demo=resident`, `?demo=manager`, or
   `?demo=owner` to the URL.
 - **Make changes by editing `index.html` directly** (CSS, HTML, and JS are all in
-  that one file). Keep `Demo.html` in sync only for branding/marketing — it has no
+  that one file). Keep `demo.html` in sync only for branding/marketing — it has no
   backend logic.
 
 ## Deployment
 
-GitHub Pages serves the repo at `instepapp.com` via the `CNAME` file; org tenants are
-reached through subdomains. There is no build step — **pushing to the published branch
-publishes the site.** Treat changes to `index.html` as production changes.
+Hosted on **Cloudflare Workers (static assets)** at `instepapp.com`; org tenants are
+reached through subdomains, each added as a Worker custom domain. `wrangler.toml`
+declares the repo root as the asset directory and `.assetsignore` keeps non-site
+files (SQL, docs, function source) from being served. There is no build step —
+**pushing to `main` auto-deploys the site** (Cloudflare rebuilds on push, same as the
+old Netlify flow). Treat changes to `index.html` as production changes.
+
+The **`login2` Edge Function** (`supabase/functions/login2`) is deployed separately
+via the `.github/workflows/deploy-functions.yml` GitHub Action (Supabase CLI). DNS +
+email (MX/SPF/DKIM/DMARC) for the domain live in Cloudflare; the registrar is IONOS.
 
 ## Gotchas for AI assistants
 
@@ -150,4 +164,9 @@ publishes the site.** Treat changes to `index.html` as production changes.
   diffs and risks breaking string literals/templates.
 - **The Supabase anon key is public by design** (see Data model). Don't remove it,
   don't treat it as a leaked secret, and don't introduce any new secrets.
-- **Keep `Demo.html` purely presentational** — it intentionally has no backend.
+- **Keep `demo.html` purely presentational** — it intentionally has no backend. Keep
+  the filename **lowercase** (the root-domain redirect targets `/demo.html`, and the
+  host is case-sensitive).
+- **RLS is the security boundary.** Data tables are locked to logged-in (token-bearing)
+  users via Supabase RLS; `login2` issues the token (claims `urole`/`house`). Don't
+  loosen policies back to anonymous. See `supabase/security/*.sql`.
