@@ -1,0 +1,462 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>InStep — Sober Living Management</title>
+<style>
+:root{
+  --ink:#0D1017;
+  --ink-mid:#161B26;
+  --ink-card:#1C2235;
+  --teal:#2BD4D4;
+  --teal-dim:rgba(43,212,212,0.15);
+  --purple:#9B6FD4;
+  --grad:linear-gradient(135deg,#2BD4D4,#9B6FD4);
+  --white:#FFFFFF;
+  --soft:rgba(255,255,255,0.55);
+  --softer:rgba(255,255,255,0.28);
+  --softest:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.09);
+  --pink:#C0397A;
+  --success:#2A7A50;
+  --warn:#C47A1A;
+  --danger:#B83232;
+  --gold:#C8860A;
+  --radius:14px;
+  --radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;overscroll-behavior:none;}
+
+/* ── HERO ── */
+.hero{padding:64px 24px 48px;text-align:center;background:radial-gradient(ellipse at top,rgba(43,212,212,0.09) 0%,transparent 65%),var(--ink);}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:36px;}
+.wordmark{font-size:26px;font-weight:800;letter-spacing:-0.4px;}
+.wordmark span{color:var(--teal);}
+h1{font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:14px;}
+h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:15px;color:var(--soft);line-height:1.75;max-width:320px;margin:0 auto 40px;}
+
+/* ── ROLE PICKER ── */
+.role-picker{display:flex;gap:8px;max-width:440px;margin:0 auto 24px;padding:0 4px;}
+.role-btn{flex:1;padding:12px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--softest);color:var(--softer);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.18s;text-align:center;line-height:1.4;}
+.role-btn .role-icon{font-size:20px;display:block;margin-bottom:4px;}
+.role-btn.active{border-color:var(--teal);background:var(--teal-dim);color:var(--white);}
+.role-btn:active{transform:scale(0.96);}
+
+/* ── PHONE FRAME ── */
+.phone-wrap{max-width:340px;margin:0 auto;}
+.phone{background:var(--ink-card);border-radius:36px;border:1.5px solid var(--border);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);}
+.phone-notch{height:10px;background:#0a0a0a;border-radius:36px 36px 0 0;}
+.phone-screen{min-height:580px;position:relative;overflow:hidden;}
+
+/* ── DEMO SCREENS ── */
+.demo-screen{display:none;flex-direction:column;min-height:580px;}
+.demo-screen.active{display:flex;}
+
+/* shared topbar */
+.d-topbar{background:#1C0A12;padding:18px 16px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.d-logo{display:flex;align-items:center;gap:7px;font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px;}
+.d-logo span{color:#3DD6D6;}
+.d-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:0.4px;}
+.d-badge-res{background:#8B2458;color:#fff;}
+.d-badge-mgr{background:#8B2458;color:#fff;}
+.d-badge-own{background:#C8860A;color:#fff;}
+.d-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:11px;font-weight:600;padding:5px 10px;border-radius:16px;}
+
+/* shared body */
+.d-body{flex:1;overflow-y:auto;padding:14px;background:#F0E8ED;}
+.d-card{background:#fff;border-radius:12px;padding:16px;margin-bottom:10px;border:1px solid rgba(0,0,0,0.07);box-shadow:0 1px 4px rgba(0,0,0,0.07);}
+.d-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#7A5566;margin-bottom:10px;}
+.d-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.3px;}
+.d-pill-green{background:#DDF3E8;color:#166534;border:1px solid #A8DEC0;}
+.d-pill-yellow{background:#FDF0D8;color:#92400E;border:1px solid #F0C880;}
+.d-pill-red{background:#FDE8E8;color:#991B1B;border:1px solid #F0A0A0;}
+.d-pill-blue{background:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE;}
+.d-btn{width:100%;padding:13px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer;color:#fff;}
+.d-btn-pink{background:#C0397A;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15);}
+.d-btn-dark{background:#0A0A0A;}
+.d-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.d-stat{background:#fff;border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(192,57,122,0.06);}
+.d-stat-num{font-size:24px;font-weight:700;color:#C0397A;}
+.d-stat-label{font-size:10px;color:#7A5566;margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+
+/* RESIDENT SCREEN */
+.d-recovery{background:#0A0A0A;border-radius:12px;padding:16px;text-align:center;margin-bottom:10px;}
+.d-days{font-size:44px;font-weight:800;color:#fff;line-height:1;}
+.d-days-label{font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.d-curfew{border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #BBF7D0;background:#F0FBF4;}
+.d-curfew-status{font-size:12px;color:#2A7A50;font-weight:600;margin-bottom:8px;}
+.d-input{width:100%;padding:10px 12px;border:1.5px solid #EDD5E3;border-radius:8px;font-size:14px;color:#1A1A1A;background:#fff;margin-bottom:8px;font-family:inherit;}
+
+/* BOTTOM NAV */
+.d-bottom-nav{display:flex;background:#1C0A12;border-top:1px solid rgba(255,255,255,0.06);padding:8px 0 16px;flex-shrink:0;}
+.d-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+.d-nav-btn.active{color:#E05A9A;}
+.d-nav-icon{font-size:18px;line-height:1;}
+
+/* MANAGER TOP TABS */
+.d-top-tabs{display:flex;background:#1C0A12;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
+.d-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 2px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:2px solid transparent;}
+.d-tab.active{color:#E05A9A;border-bottom-color:#E05A9A;}
+.d-tab-icon{font-size:18px;line-height:1;}
+
+/* RESIDENT ROWS */
+.d-res-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EDD5E3;}
+.d-res-row:last-child{border-bottom:none;}
+.d-avatar{width:36px;height:36px;border-radius:50%;background:#C0397A;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.d-res-name{font-size:13px;font-weight:700;}
+.d-res-sub{font-size:11px;color:#7A5566;margin-top:1px;}
+
+/* CURFEW CARDS */
+.d-curfew-card{border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;border:1.5px solid transparent;}
+.d-curfew-card.home{background:#F0FBF4;border-color:#BBF7D0;}
+.d-curfew-card.out{background:#FFFBEB;border-color:#FDE68A;}
+.d-curfew-card.late{background:#FEF2F2;border-color:#FECACA;}
+.d-curfew-icon{font-size:20px;flex-shrink:0;}
+.d-curfew-name{font-size:13px;font-weight:700;}
+.d-curfew-detail{font-size:11px;color:#7A5566;margin-top:1px;}
+
+/* OWNER STATS */
+.d-owner-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px;}
+.d-owner-stat{background:#fff;border-radius:8px;padding:10px 4px;text-align:center;}
+.d-owner-num{font-size:18px;font-weight:800;color:#C0397A;}
+.d-owner-label{font-size:9px;color:#7A5566;text-transform:uppercase;font-weight:700;margin-top:1px;letter-spacing:0.3px;}
+.d-house-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;border:1px solid rgba(0,0,0,0.07);}
+.d-house-name{font-size:15px;font-weight:800;margin-bottom:4px;}
+.d-house-sub{font-size:11px;color:#7A5566;margin-bottom:10px;}
+.d-house-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.d-house-cell{background:#FAF0F5;border-radius:6px;padding:8px 4px;text-align:center;}
+.d-house-cell-num{font-size:16px;font-weight:800;color:#C0397A;}
+.d-house-cell-label{font-size:9px;color:#7A5566;font-weight:600;text-transform:uppercase;}
+
+/* ── BELOW PHONE ── */
+.demo-caption{text-align:center;margin:16px auto 0;font-size:12px;color:var(--softer);max-width:340px;line-height:1.6;padding:0 24px;}
+.tap-hint{text-align:center;font-size:11px;color:var(--softer);margin-top:8px;margin-bottom:48px;letter-spacing:0.3px;}
+
+/* ── FEATURES ── */
+.features{padding:56px 24px;background:var(--ink-mid);}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:28px;text-align:center;}
+.feature-list{display:flex;flex-direction:column;gap:14px;max-width:420px;margin:0 auto;}
+.feature{display:flex;gap:14px;align-items:flex-start;padding:14px;background:var(--softest);border-radius:var(--radius);border:1px solid var(--border);}
+.fi{font-size:20px;flex-shrink:0;margin-top:1px;}
+.fn{font-size:14px;font-weight:700;margin-bottom:3px;}
+.fd{font-size:12px;color:var(--soft);line-height:1.6;}
+
+/* ── PRICING ── */
+.pricing{padding:56px 24px;text-align:center;}
+.price-card{background:var(--ink-mid);border:1.5px solid rgba(43,212,212,0.2);border-radius:20px;padding:32px 24px;max-width:420px;margin:0 auto;}
+.price-num{font-size:56px;font-weight:800;letter-spacing:-2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.price-per{font-size:14px;color:var(--softer);margin-bottom:24px;}
+.price-list{list-style:none;text-align:left;margin-bottom:24px;}
+.price-list li{font-size:13px;color:var(--soft);padding:9px 0;border-bottom:1px solid var(--softest);display:flex;align-items:center;gap:10px;}
+.price-list li:last-child{border:none;}
+.ck{color:var(--teal);font-size:14px;flex-shrink:0;}
+.price-note{font-size:12px;color:var(--softer);}
+
+/* ── CTA ── */
+.cta{padding:56px 24px;text-align:center;}
+.cta h2{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
+.cta p{font-size:14px;color:var(--soft);margin-bottom:28px;line-height:1.7;max-width:320px;margin-left:auto;margin-right:auto;}
+.btn-cta{display:inline-block;background:var(--grad);color:#fff;font-size:16px;font-weight:700;padding:18px 40px;border-radius:50px;text-decoration:none;box-shadow:0 4px 24px rgba(43,212,212,0.2);}
+.cta-note{font-size:12px;color:var(--softer);margin-top:14px;}
+
+/* ── FOOTER ── */
+footer{padding:28px 24px;text-align:center;border-top:1px solid var(--softest);}
+.foot-logo{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:8px;}
+.foot-wm{font-size:17px;font-weight:800;}
+.foot-wm span{color:var(--teal);}
+footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
+.foot-copy{font-size:11px;color:var(--softer);margin-top:8px;}
+
+@media(min-width:480px){
+  h1{font-size:42px;}
+  .phone-wrap{max-width:360px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="logo-row">
+    <svg width="30" height="23" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+      <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.3)"/>
+      <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg)"/>
+      <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg)"/>
+    </svg>
+    <span class="wordmark">In<span>Step</span></span>
+  </div>
+  <h1>Run your house.<br><em>Not paperwork.</em></h1>
+  <p class="hero-sub">Meeting check-ins, curfew tracking, screenings, and compliance — built for sober living operators.</p>
+
+  <!-- ROLE PICKER -->
+  <div class="role-picker">
+    <button class="role-btn active" onclick="setRole('resident',this)">
+      <span class="role-icon">&#127968;</span>Resident
+    </button>
+    <button class="role-btn" onclick="setRole('manager',this)">
+      <span class="role-icon">&#9881;&#65038;</span>Manager
+    </button>
+    <button class="role-btn" onclick="setRole('owner',this)">
+      <span class="role-icon">&#11088;</span>Owner
+    </button>
+  </div>
+
+  <!-- PHONE -->
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+
+        <!-- RESIDENT SCREEN -->
+        <div class="demo-screen active" id="screen-resident">
+          <div class="d-topbar">
+            <div>
+              <div class="d-logo"><svg width="22" height="17" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.5)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg2)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg2)"/></svg>In<span>Step</span></div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px">Good evening, Marcus</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="d-badge d-badge-res">Resident</span>
+            </div>
+          </div>
+          <div class="d-body">
+            <div class="d-recovery">
+              <div class="d-days">187</div>
+              <div class="d-days-label">days in recovery</div>
+            </div>
+            <div class="d-curfew">
+              <div class="d-curfew-status">&#127968; You're home — Phase 2 curfew is at 10:00 PM</div>
+              <div class="d-input" style="color:#aaa">Where are you going? (required)</div>
+              <button class="d-btn" style="background:#C47A1A;padding:11px">&#128682; I'm leaving</button>
+            </div>
+            <div class="d-card">
+              <div style="margin-bottom:10px"><span class="d-pill d-pill-yellow">2/3 — 1 more needed</span></div>
+              <button class="d-btn d-btn-pink">Check in to a meeting</button>
+            </div>
+            <div class="d-card">
+              <div class="d-card-title">This week's chores</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #EDD5E3">
+                <div style="width:22px;height:22px;border-radius:6px;background:#2A7A50;border:2px solid #2A7A50;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0">✓</div>
+                <span style="font-size:13px;font-weight:700;text-decoration:line-through;color:#7A5566">Clean bathroom</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 0">
+                <div style="width:22px;height:22px;border-radius:6px;border:2px solid #EDD5E3;flex-shrink:0"></div>
+                <span style="font-size:13px;font-weight:700">Vacuum common area</span>
+              </div>
+            </div>
+          </div>
+          <div class="d-bottom-nav">
+            <button class="d-nav-btn active"><span class="d-nav-icon">&#127968;</span>Home</button>
+            <button class="d-nav-btn"><span class="d-nav-icon">&#129529;</span>Chores</button>
+            <button class="d-nav-btn"><span class="d-nav-icon">&#128205;</span>Meetings</button>
+            <button class="d-nav-btn"><span class="d-nav-icon">&#128197;</span>Events</button>
+            <button class="d-nav-btn"><span class="d-nav-icon">&#128273;</span>PIN</button>
+          </div>
+        </div>
+
+        <!-- MANAGER SCREEN -->
+        <div class="demo-screen" id="screen-manager">
+          <div class="d-topbar">
+            <div>
+              <div class="d-logo"><svg width="22" height="17" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.5)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg3)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg3)"/></svg>In<span>Step</span></div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px">Unity House</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="d-badge d-badge-mgr">Manager</span>
+            </div>
+          </div>
+          <div class="d-top-tabs">
+            <button class="d-tab active"><span class="d-tab-icon">&#127968;</span>Home</button>
+            <button class="d-tab"><span class="d-tab-icon">&#9881;</span>Actions</button>
+            <button class="d-tab"><span class="d-tab-icon">&#128202;</span>Report</button>
+            <button class="d-tab"><span class="d-tab-icon">&#128273;</span>Settings</button>
+          </div>
+          <div class="d-body">
+            <div class="d-card">
+              <div class="d-card-title">In / Out</div>
+              <div class="d-curfew-card home">
+                <div class="d-curfew-icon">&#127968;</div>
+                <div><div class="d-curfew-name">Maria S.</div><div class="d-curfew-detail">Home at 8:42 PM · Phase 2</div></div>
+                <span class="d-pill d-pill-green" style="margin-left:auto">Home</span>
+              </div>
+              <div class="d-curfew-card out">
+                <div class="d-curfew-icon">&#128682;</div>
+                <div><div class="d-curfew-name">Kevin T.</div><div class="d-curfew-detail">AA Meeting on Colfax · Phase 1</div></div>
+                <span class="d-pill d-pill-yellow" style="margin-left:auto">Out</span>
+              </div>
+              <div class="d-curfew-card late">
+                <div class="d-curfew-icon">&#9888;&#65039;</div>
+                <div><div class="d-curfew-name">Sandra K.</div><div class="d-curfew-detail">Late in at 9:47 PM · Phase 1</div></div>
+                <span class="d-pill d-pill-red" style="margin-left:auto">Late</span>
+              </div>
+              <div class="d-curfew-card" style="background:#EFF6FF;border-color:#BFDBFE">
+                <div class="d-curfew-icon">&#128338;</div>
+                <div><div class="d-curfew-name">Robert C.</div><div class="d-curfew-detail">Work night shift</div></div>
+                <span class="d-pill d-pill-blue" style="margin-left:auto">Excused</span>
+              </div>
+            </div>
+            <div class="d-card">
+              <div class="d-card-title">Residents this week</div>
+              <div class="d-res-row">
+                <div class="d-avatar">M</div>
+                <div style="flex:1"><div class="d-res-name">Maria S.</div><div class="d-res-sub">Phase 2 · 187 days</div></div>
+                <span class="d-pill d-pill-green">3/3 ✓</span>
+              </div>
+              <div class="d-res-row">
+                <div class="d-avatar">K</div>
+                <div style="flex:1"><div class="d-res-name">Kevin T.</div><div class="d-res-sub">Phase 1 · 23 days</div></div>
+                <span class="d-pill d-pill-yellow">1/3</span>
+              </div>
+              <div class="d-res-row">
+                <div class="d-avatar">S</div>
+                <div style="flex:1"><div class="d-res-name">Sandra K.</div><div class="d-res-sub">Phase 1 · 44 days</div></div>
+                <span class="d-pill d-pill-red">0/3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OWNER SCREEN -->
+        <div class="demo-screen" id="screen-owner">
+          <div class="d-topbar">
+            <div>
+              <div class="d-logo"><svg width="22" height="17" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.5)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg4)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg4)"/></svg>In<span>Step</span></div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px">Hey, welcome back</div>
+            </div>
+            <span class="d-badge d-badge-own">Owner</span>
+          </div>
+          <div class="d-top-tabs">
+            <button class="d-tab active"><span class="d-tab-icon">&#127968;</span>Home</button>
+            <button class="d-tab"><span class="d-tab-icon">&#9881;</span>Actions</button>
+            <button class="d-tab"><span class="d-tab-icon">&#128202;</span>Report</button>
+            <button class="d-tab"><span class="d-tab-icon">&#128273;</span>Settings</button>
+          </div>
+          <div class="d-body">
+            <div class="d-card">
+              <div class="d-owner-grid">
+                <div class="d-owner-stat"><div class="d-owner-num">8</div><div class="d-owner-label">Residents</div></div>
+                <div class="d-owner-stat"><div class="d-owner-num" style="color:#2A7A50">14</div><div class="d-owner-label">Meetings</div></div>
+                <div class="d-owner-stat"><div class="d-owner-num">6</div><div class="d-owner-label">Screenings</div></div>
+                <div class="d-owner-stat"><div class="d-owner-num" style="color:#B83232">2</div><div class="d-owner-label">Late</div></div>
+              </div>
+              <div style="font-size:11px;color:#7A5566;margin-bottom:10px">Tap a house to view details.</div>
+              <div class="d-house-card">
+                <div class="d-house-name">&#127968; Unity House</div>
+                <div class="d-house-sub">Manager: Sarah M.</div>
+                <div class="d-house-grid">
+                  <div class="d-house-cell"><div class="d-house-cell-num">4</div><div class="d-house-cell-label">Residents</div></div>
+                  <div class="d-house-cell"><div class="d-house-cell-num" style="color:#2A7A50">3</div><div class="d-house-cell-label">On track</div></div>
+                  <div class="d-house-cell"><div class="d-house-cell-num">3/4</div><div class="d-house-cell-label">Home</div></div>
+                </div>
+              </div>
+              <div class="d-house-card">
+                <div class="d-house-name">&#127968; Anchor House</div>
+                <div class="d-house-sub">Manager: James R.</div>
+                <div class="d-house-grid">
+                  <div class="d-house-cell"><div class="d-house-cell-num">4</div><div class="d-house-cell-label">Residents</div></div>
+                  <div class="d-house-cell"><div class="d-house-cell-num" style="color:#2A7A50">4</div><div class="d-house-cell-label">On track</div></div>
+                  <div class="d-house-cell"><div class="d-house-cell-num">4/4</div><div class="d-house-cell-label">Home</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /phone-screen -->
+    </div><!-- /phone -->
+  </div><!-- /phone-wrap -->
+
+  <div style="text-align:center;margin:20px auto 0;max-width:340px;padding:0 24px;display:flex;flex-direction:column;gap:10px">
+  <button onclick="launchDemo('resident')" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px">
+    <span>&#127968; Try as Resident</span><span style="color:rgba(255,255,255,0.4)">&#8250;</span>
+  </button>
+  <button onclick="launchDemo('manager')" style="width:100%;padding:14px;border-radius:12px;background:rgba(43,212,212,0.10);border:1.5px solid rgba(43,212,212,0.2);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px">
+    <span>&#9881;&#65038; Try as Manager</span><span style="color:rgba(255,255,255,0.4)">&#8250;</span>
+  </button>
+  <button onclick="launchDemo('owner')" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#2BD4D4,#9B6FD4);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;box-shadow:0 4px 20px rgba(43,212,212,0.2)">
+    <span>&#11088; Try as Owner</span><span>&#8250;</span>
+  </button>
+  <p style="font-size:11px;color:rgba(255,255,255,0.28);margin-top:2px">Fully interactive &mdash; nothing is saved</p>
+</div>
+<p class="demo-caption" id="demo-caption">Residents track recovery, sign in and out, check in to meetings, and complete chores — all on their phone.</p>
+  <p class="tap-hint">&#8593; Interactive demo &mdash; tap the role buttons to switch views</p>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-eyebrow">What InStep does</div>
+  <div class="feature-list">
+    <div class="feature"><div class="fi">&#129309;</div><div><div class="fn">Meeting check-ins</div><div class="fd">GPS-verified, witness-signed after every meeting. Permanent timestamped records.</div></div></div>
+    <div class="feature"><div class="fi">&#127968;</div><div><div class="fn">Curfew tracking</div><div class="fd">Residents sign in and out. See real-time status across every house at a glance.</div></div></div>
+    <div class="feature"><div class="fi">&#128137;</div><div><div class="fn">Screenings</div><div class="fd">Log urine and breathalyzer results with dual signatures. Print-ready PDF every time.</div></div></div>
+    <div class="feature"><div class="fi">&#128196;</div><div><div class="fn">Document signing</div><div class="fd">House rules, intake forms — residents sign on their phone, you countersign. No paper.</div></div></div>
+    <div class="feature"><div class="fi">&#128202;</div><div><div class="fn">Compliance reports</div><div class="fd">Attendance, screening, and incident reports ready to print. Built for NARR standards.</div></div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing">
+  <div class="price-card">
+    <div class="price-num">$99</div>
+    <div class="price-per">per house / month</div>
+    <ul class="price-list">
+      <li><span class="ck">&#10003;</span>Unlimited residents</li>
+      <li><span class="ck">&#10003;</span>All features included</li>
+      <li><span class="ck">&#10003;</span>Your own URL — yourhouse.instepapp.com</li>
+      <li><span class="ck">&#10003;</span>First month free</li>
+      <li><span class="ck">&#10003;</span>No contract, cancel anytime</li>
+    </ul>
+    <p class="price-note">Multiple houses? Each additional house is $99/month.</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Ready to get started?</h2>
+  <p>We'll have your house set up and running the same day. First month on us.</p>
+  <a href="mailto:hello@instepapp.com" class="btn-cta">Get in touch</a>
+  <p class="cta-note">hello@instepapp.com &mdash; we respond same day</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">
+    <svg width="20" height="16" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="lg5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+      <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.35)"/>
+      <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg5)"/>
+      <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg5)"/>
+    </svg>
+    <span class="foot-wm">In<span>Step</span></span>
+  </div>
+  <a href="mailto:hello@instepapp.com">hello@instepapp.com</a>
+  <p class="foot-copy">&copy; 2026 InStep Solutions &mdash; Denver, CO</p>
+</footer>
+
+<script>
+const captions = {
+  resident: 'Residents track recovery, sign in and out, check in to meetings, and complete chores — all on their phone.',
+  manager: 'Managers see real-time curfew status for every resident, track weekly meetings, and take action instantly.',
+  owner: 'Owners see every house at a glance — residents, meetings, screenings, and late arrivals across the whole operation.'
+};
+
+function setRole(role, btn) {
+  // Update buttons visually
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update static preview screens
+  document.querySelectorAll('.demo-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + role).classList.add('active');
+  // Update caption
+  document.getElementById('demo-caption').textContent = captions[role];
+}
+
+function launchDemo(role) {
+  window.location.href = 'https://demo.instepapp.com?demo=' + role;
+}
+</script>
+
+</body></html>
