@@ -13,7 +13,7 @@
 //   JWT_SECRET = your project's JWT secret (Settings -> API -> JWT Settings).
 // Auto-provided by Supabase: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 
-// deploy trigger: v1
+// deploy trigger: v2
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 
