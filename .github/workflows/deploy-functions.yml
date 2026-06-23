@@ -39,3 +39,24 @@ jobs:
           if [ "$code" = "401" ]; then echo "OK: function alive, DB + rate-limit table working."; \
           elif [ "$code" = "500" ]; then echo "FAIL: 500 — missing table or JWT_SECRET."; exit 1; \
           else echo "Unexpected $code (not a hard failure)"; fi
+
+      # Proves a REAL login mints a token the database accepts (catches a wrong
+      # JWT_SECRET). Needs repo secrets TEST_NAME/TEST_PIN (any real login).
+      # Skips quietly if they're not set.
+      - name: Token validity test
+        env:
+          TEST_NAME: ${{ secrets.TEST_NAME }}
+          TEST_PIN: ${{ secrets.TEST_PIN }}
+        run: |
+          if [ -z "$TEST_NAME" ]; then echo "skipped (TEST_NAME/TEST_PIN not set)"; exit 0; fi
+          ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M"
+          tok=$(curl -s -X POST "https://$PROJECT_ID.supabase.co/functions/v1/login2" \
+            -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "Content-Type: application/json" \
+            -d "{\"name\":\"$TEST_NAME\",\"pin\":\"$TEST_PIN\"}" | jq -r '.token // empty')
+          if [ -z "$tok" ]; then echo "FAIL: no token (bad creds or JWT_SECRET missing)"; exit 1; fi
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://$PROJECT_ID.supabase.co/rest/v1/orgs?select=name&limit=1" \
+            -H "apikey: $ANON" -H "Authorization: Bearer $tok")
+          echo "authenticated request HTTP $code"
+          if [ "$code" = "200" ]; then echo "OK: database ACCEPTS the login token — signature valid."; \
+          else echo "FAIL: token rejected ($code) — JWT_SECRET is wrong."; exit 1; fi

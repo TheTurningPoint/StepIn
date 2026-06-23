@@ -13,7 +13,7 @@
 //   JWT_SECRET = your project's JWT secret (Settings -> API -> JWT Settings).
 // Auto-provided by Supabase: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 
-// deploy trigger: v2
+// deploy trigger: v3
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 
@@ -80,7 +80,7 @@ async function signToken(user: Record<string, unknown>): Promise<string> {
       sub: String(user.id),
       house: user.house ?? null,
       urole: user.role ?? "resident",
-      exp: getNumericDate(60 * 60 * 12), // 12 hours
+      exp: getNumericDate(60 * 60 * 24 * 30), // 30 days, matches the app's persistent session
     },
     key,
   );
@@ -124,6 +124,7 @@ Deno.serve(async (req) => {
   // Success: clear the attempt counter and hand back the user + token.
   await admin.from("login_attempts").delete().eq("name", name.toLowerCase());
   const token = await signToken(user);
-  const { pin: _omit, ...safeUser } = user;
-  return json({ user: safeUser, token });
+  // Return the full user (including pin) to match the old login — the app's
+  // "change PIN" screen verifies the current PIN against this client-side.
+  return json({ user, token });
 });
