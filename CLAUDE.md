@@ -31,7 +31,8 @@ hidden tooling. Everything below lives at the repo root.
 | --- | --- |
 | `index.html` | **The whole application.** ~308KB / ~2,275 lines. Single-page app with embedded CSS + JS. This is where ~all work happens. |
 | `Demo.html` | Static marketing/landing page (~29KB). Phone-frame mockup, feature list, pricing. Tiny JS only (`setRole`, `launchDemo`). No backend. |
-| `README.md` | One line (`# StepIn`). |
+| `README.md` | Project overview and quick start for humans. |
+| `SCHEMA.md` | Reverse-engineered Supabase table reference. |
 | `CNAME` | `instepapp.com` — GitHub Pages custom domain. |
 
 There is **no** `.github/` workflow, `package.json`, lockfile, or build configuration.
@@ -70,7 +71,8 @@ Key anchors:
 - **Global mutable state** (no reactive store): `currentUser`, `isDemoMode`,
   `allResidents`, `allCheckins`, `allManagers`, `selectedHouse`, plus `cached*`
   arrays. Data is loaded into these globals, filtered in-memory, and re-rendered
-  manually after mutations.
+  manually after mutations. Note: `allManagers` is populated from the **`residents`**
+  table filtered by `role` — managers/owners are residents, not a separate table.
 - **Role helpers:** `isOwner()`, `isStaff()`, `myHouse()`, `residents()`,
   `checkins()` — predicates/derived views used throughout for access control and
   house scoping.
@@ -82,14 +84,17 @@ Key anchors:
   **blocks DB writes** (`isDemoMode = true`). Use this to exercise the UI without a
   backend.
 
-## Data model (Supabase, inferred)
+## Data model (Supabase)
 
-The following tables are **inferred from queries in `index.html`** — verify against
-the live Supabase schema before relying on exact columns:
+Full per-column details are in **[SCHEMA.md](SCHEMA.md)** (reverse-engineered from the
+`sb.from(...)` calls; verify against the live schema before relying on exact columns).
 
-`residents`, `managers`, `orgs` (subdomain/branding/required-meetings settings),
-`checkins`, `curfew_log`, `chores`, `events`, `drug_tests`, `incidents`,
-`announcements`, `announcement_acks`, `documents`.
+Tables: `residents` (also holds managers/owners via `role`), `orgs` (subdomain
+branding), `settings` (singleton, `id=1`), `checkins`, `curfew_log`, `chores`,
+`events`, `drug_tests`, `incidents`, `announcements`, `announcement_acks`,
+`document_templates`, `resident_documents`. There is **no `managers` table** — staff
+are rows in `residents`. `house` is the primary scoping field on operational tables;
+signatures are stored inline as JPEG data URLs.
 
 The Supabase **anon key is client-side and public by design** — security is enforced
 by Supabase Row Level Security (RLS), not by hiding the key. Do **not** "fix" this and
