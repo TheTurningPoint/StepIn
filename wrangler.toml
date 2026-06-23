@@ -1,0 +1,7 @@
+name = "stepin"
+compatibility_date = "2024-11-01"
+
+# Static-site (assets-only) Worker: serve the files in the repo root as the
+# website. No server code — index.html / Demo.html are served directly.
+[assets]
+directory = "."

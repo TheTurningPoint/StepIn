@@ -1,0 +1,9 @@
+# Files in the repo that should NOT be served publicly on the website.
+# (Only index.html and Demo.html need to be public.)
+supabase/
+.github/
+*.md
+*.sql
+wrangler.toml
+.assetsignore
+CNAME
