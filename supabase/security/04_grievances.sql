@@ -3,6 +3,7 @@
 create table if not exists public.grievances (
   id text primary key,
   filed_by text,
+  resident_id text,                    -- the filer's resident id (null = staff-filed or anonymous)
   category text,
   description text,
   status text default 'open',          -- 'open' | 'resolved'
