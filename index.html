@@ -326,7 +326,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <!-- CHECK-IN SCREEN -->
 <div id="screen-checkin" class="screen">
-<div class="topbar"><div><div class="topbar-house"><div class="topbar-house-name">The Turning Point</div><div class="powered-by"><span class="powered-label">Powered by</span><div class="instep-mark"><svg width="14" height="11" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#pbg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#pbg)"/></svg><span class="instep-mark-text">In<span>Step</span></span></div></div></div><div class="sub">Check-in</div></div><button class="btn-ghost" onclick="cancelCheckin()">&#10005; Cancel</button></div>
+<div class="topbar"><div><div class="topbar-house"><div class="topbar-house-name" id="topbar-house-name-mgr">InStep</div><div class="powered-by"><span class="powered-label">Powered by</span><div class="instep-mark"><svg width="14" height="11" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#pbg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#pbg)"/></svg><span class="instep-mark-text">In<span>Step</span></span></div></div></div><div class="sub">Check-in</div></div><button class="btn-ghost" onclick="cancelCheckin()">&#10005; Cancel</button></div>
 <div class="body" style="max-width:480px;margin:0 auto">
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
@@ -339,7 +339,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <!-- MANAGER / OWNER SCREEN -->
 <div id="screen-manager" class="screen">
 <div class="topbar">
-  <div><div class="topbar-house"><div class="topbar-house-name">The Turning Point</div><div class="powered-by"><span class="powered-label">Powered by</span><div class="instep-mark"><svg width="14" height="11" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#pbg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#pbg)"/></svg><span class="instep-mark-text">In<span>Step</span></span></div></div></div><div class="sub" id="mgr-greeting"></div></div>
+  <div><div class="topbar-house"><div class="topbar-house-name" id="topbar-house-name-own">InStep</div><div class="powered-by"><span class="powered-label">Powered by</span><div class="instep-mark"><svg width="14" height="11" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#pbg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#pbg)"/></svg><span class="instep-mark-text">In<span>Step</span></span></div></div></div><div class="sub" id="mgr-greeting"></div></div>
   <div class="topbar-right"><button class="refresh-btn" onclick="refreshDashboard()" style="background:var(--cream);border:1.5px solid var(--sand);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--charcoal);cursor:pointer">&#8635; Refresh</button><span class="badge-role" id="mgr-badge">Manager</span><button class="btn-ghost" onclick="logout()">Sign out</button></div>
 </div>
 <div class="top-tabs">
@@ -1028,12 +1028,21 @@ async function detectAndApplyOrg(){
 
 window.onload=async()=>{
   if(!navigator.onLine){document.getElementById('loading').innerHTML='<div style="color:white;text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:16px">&#128267;</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">No Internet Connection</div><div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:24px">Please connect to WiFi or cellular data.</div><button onclick="location.reload()" style="background:var(--pink);color:white;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer">Try Again</button></div>';return;}
+  // ── ROOT DOMAIN → LANDING PAGE ──
+  const _host=window.location.hostname;
+  const _parts=_host.split('.');
+  const _sub=_parts.length>=3&&_parts[1]==='instepapp'?_parts[0]:null;
+  const _params=new URLSearchParams(window.location.search);
+  const _demoRole=_params.get('demo');
+  // If on bare root domain (instepapp.com or www) with no demo param, show landing page
+  if((!_sub||_sub==='www')&&!_demoRole){
+    window.location.replace('/demo.html');
+    return;
+  }
   // ── ORG DETECTION ──
   await detectAndApplyOrg();
   // ── DEMO URL PARAM ──
-  const urlParams=new URLSearchParams(window.location.search);
-  const demoRole=urlParams.get('demo');
-  if(demoRole&&['resident','manager','owner'].includes(demoRole)){hideLoading();enterDemo(demoRole);return;}
+  if(_demoRole&&['resident','manager','owner'].includes(_demoRole)){hideLoading();enterDemo(_demoRole);return;}
   try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
 };
 
@@ -1387,7 +1396,7 @@ function enterManager(){
   if(isDemoMode){const banner=document.createElement('div');banner.id='demo-banner';banner.style.cssText='background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;text-align:center;padding:10px;font-size:13px;font-weight:700;letter-spacing:0.5px;flex-shrink:0;';banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Exit demo</button>';const screen=document.getElementById('screen-manager');const topbar=screen.querySelector('.topbar');topbar.after(banner);}
   if(!isDemoMode)loadDrugTests();show('screen-manager');
   const badge=document.getElementById('mgr-badge');
-  if(isOwner()){badge.textContent='Tanya';badge.classList.add('badge-owner');const attEl=document.getElementById('dash-attendance-list');if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';document.getElementById('mgr-greeting').textContent='Hey Tanya!';document.getElementById('owner-tools').style.display='block';if(!isDemoMode)loadSettings();}
+  if(isOwner()){badge.textContent=(currentUser&&currentUser.name)?currentUser.name:'Owner';badge.classList.add('badge-owner');const attEl=document.getElementById('dash-attendance-list');if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';document.getElementById('mgr-greeting').textContent='Hey '+((currentUser&&currentUser.name)?currentUser.name:'there')+'!';document.getElementById('owner-tools').style.display='block';if(!isDemoMode)loadSettings();}
   else{badge.textContent=currentUser.house||'Manager';badge.classList.remove('badge-owner');document.getElementById('mgr-greeting').textContent=currentUser.house||'Manager view';document.getElementById('owner-tools').style.display='none';}
   mgrTab('dash',document.getElementById('mgr-tab-dash'));
 }
@@ -1968,7 +1977,7 @@ function makeDemoDrugTests(){const now=new Date();const daysAgo=n=>{const d=new 
 
 const DEMO_DATA={
   manager:{id:'demo-mgr',name:'Demo Manager',role:'manager',house:'Unity House',pin:'0000'},
-  owner:{id:'demo-owner',name:'Tanya',role:'owner',house:null,pin:'9999'},
+  owner:{id:'demo-owner',name:'Alex Rivera',role:'owner',house:null,pin:'9999'},
   resident:{id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111',move_in_date:(()=>{const d=new Date();d.setDate(d.getDate()-31);return d.toISOString().split('T')[0];})(),sobriety_date:(()=>{const d=new Date();d.setDate(d.getDate()-31);return d.toISOString().split('T')[0];})(),status:'active'},
   managers:[{id:'demo-mgr',name:'Unity House Manager',role:'manager',house:'Unity House'},{id:'demo-mgr2',name:'Anchor House Manager',role:'manager',house:'Anchor House'}],
   settings:{required:3,house_name:'The Turning Point'},
