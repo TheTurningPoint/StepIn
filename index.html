@@ -1056,7 +1056,7 @@ window.onload=async()=>{
   await detectAndApplyOrg();
   // ── DEMO URL PARAM ──
   if(_demoRole&&['resident','manager','owner'].includes(_demoRole)){hideLoading();enterDemo(_demoRole);return;}
-  try{const s=localStorage.getItem('si_user');if(s){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
+  try{const s=localStorage.getItem('si_user');if(s&&SI_TOKEN){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{if(s&&!SI_TOKEN)localStorage.removeItem('si_user');hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
 };
 
 async function loadAllData(){const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),15000));try{await Promise.race([loadAllDataInner(),timeout]);}catch(e){console.log('load err',e.message);}}
