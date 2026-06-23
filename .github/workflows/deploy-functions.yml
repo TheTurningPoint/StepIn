@@ -23,3 +23,19 @@ jobs:
       # login2 is the new token-issuing login; --no-verify-jwt lets the app
       # call it with just the public key (same as a normal login endpoint).
       - run: supabase functions deploy login2 --project-ref "$PROJECT_ID" --no-verify-jwt
+
+      # Health check: a deliberately-wrong login. Expect HTTP 401 ("not found"),
+      # which proves the function runs, reaches the DB, and the rate-limit table
+      # exists. A 500 means something's missing (table or secret).
+      - name: Smoke test login2
+        run: |
+          ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M"
+          code=$(curl -s -o /tmp/body -w "%{http_code}" \
+            -X POST "https://$PROJECT_ID.supabase.co/functions/v1/login2" \
+            -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"__smoke_test_no_such_user__","pin":"000000"}')
+          echo "HTTP $code"; cat /tmp/body; echo
+          if [ "$code" = "401" ]; then echo "OK: function alive, DB + rate-limit table working."; \
+          elif [ "$code" = "500" ]; then echo "FAIL: 500 — missing table or JWT_SECRET."; exit 1; \
+          else echo "Unexpected $code (not a hard failure)"; fi
