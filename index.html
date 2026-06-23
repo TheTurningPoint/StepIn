@@ -1026,6 +1026,9 @@ async function detectAndApplyOrg(){
   }catch(e){console.log('org detect err',e);}
 }
 
+// Force clean reload when restored from back-forward cache (prevents stale demo branding)
+window.addEventListener('pageshow',function(e){if(e.persisted){window.location.reload();}});
+
 window.onload=async()=>{
   if(!navigator.onLine){document.getElementById('loading').innerHTML='<div style="color:white;text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:16px">&#128267;</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">No Internet Connection</div><div style="font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:24px">Please connect to WiFi or cellular data.</div><button onclick="location.reload()" style="background:var(--pink);color:white;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer">Try Again</button></div>';return;}
   // ── ROOT DOMAIN → LANDING PAGE ──
@@ -1039,6 +1042,8 @@ window.onload=async()=>{
     window.location.replace('/demo.html');
     return;
   }
+  // On demo subdomain with no param: show demo login picker with generic InStep branding
+  window._isDemoSubdomain=(_sub==='demo');
   // ── ORG DETECTION ──
   await detectAndApplyOrg();
   // ── DEMO URL PARAM ──
@@ -1980,7 +1985,7 @@ const DEMO_DATA={
   owner:{id:'demo-owner',name:'Alex Rivera',role:'owner',house:null,pin:'9999'},
   resident:{id:'d9',name:'Johnny Test',role:'resident',phase:1,house:'Unity House',pin:'1111',move_in_date:(()=>{const d=new Date();d.setDate(d.getDate()-31);return d.toISOString().split('T')[0];})(),sobriety_date:(()=>{const d=new Date();d.setDate(d.getDate()-31);return d.toISOString().split('T')[0];})(),status:'active'},
   managers:[{id:'demo-mgr',name:'Unity House Manager',role:'manager',house:'Unity House'},{id:'demo-mgr2',name:'Anchor House Manager',role:'manager',house:'Anchor House'}],
-  settings:{required:3,house_name:'The Turning Point'},
+  settings:{required:3,house_name:'Unity House'},
   announcement:{id:'ann-demo',message:'House meeting this Thursday at 7pm. Attendance is mandatory for all residents.',created_by:'Demo Manager'},
   events:[{id:'ev-d1',title:'House meeting',event_date:new Date(Date.now()+2*86400000).toISOString().split('T')[0],event_time:'19:00',notes:'Mandatory for all residents',house:'Unity House'},{id:'ev-d2',title:'AA speaker night',event_date:new Date(Date.now()+5*86400000).toISOString().split('T')[0],event_time:'18:30',notes:'Open to residents and families',house:null},{id:'ev-d3',title:'Family day',event_date:new Date(Date.now()+12*86400000).toISOString().split('T')[0],event_time:'13:00',notes:'Bring your family and friends',house:null}],
   incidents:[{id:'inc-d1',incident_type:'Policy violation',incident_date:new Date(Date.now()-2*86400000).toISOString().split('T')[0],incident_time:'14:30',description:'Robert C. was found with an unopened beer in his room during routine inspection.',action_taken:'Verbal warning issued. Resident signed acknowledgment. Contraband disposed of.',authorities_notified:false,resident_id:'d5',resident_name:'Robert C.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-2*86400000).toISOString()},{id:'inc-d2',incident_type:'Curfew violation',incident_date:new Date(Date.now()-5*86400000).toISOString().split('T')[0],incident_time:'23:45',description:'Angela M. returned 45 minutes past her Phase 2 curfew without prior notice.',action_taken:'Written warning issued. Phase review scheduled for next week.',authorities_notified:false,resident_id:'d4',resident_name:'Angela M.',reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-5*86400000).toISOString()},{id:'inc-d3',incident_type:'Medical emergency',incident_date:new Date(Date.now()-10*86400000).toISOString().split('T')[0],incident_time:'09:15',description:'Sandra K. reported chest pains and difficulty breathing. EMS called immediately.',action_taken:'911 called. EMS responded within 8 minutes. Resident transported to St. Anthony Hospital. Discharged same day.',authorities_notified:true,resident_id:'d8',resident_name:'Sandra K.',reported_by:'Demo Manager',house:'Unity House',created_at:new Date(Date.now()-10*86400000).toISOString()},{id:'inc-d4',incident_type:'Welfare check',incident_date:new Date(Date.now()-14*86400000).toISOString().split('T')[0],incident_time:'11:00',description:'House-wide wellness check following reports of increased stress among residents.',action_taken:'Individual check-ins conducted with all residents. Additional group support session scheduled.',authorities_notified:false,resident_id:null,resident_name:null,reported_by:'Demo Manager',house:'Anchor House',created_at:new Date(Date.now()-14*86400000).toISOString()}],
