@@ -25,21 +25,29 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Install postgresql-client
+      - name: Install postgresql-client 17 (match Supabase server)
         run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
           sudo apt-get update
-          sudo apt-get install -y postgresql-client
+          sudo apt-get install -y postgresql-client-17
       - name: Dump, compress, encrypt
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
+          set -euo pipefail
           if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
             echo "Missing SUPABASE_DB_URL or BACKUP_PASSPHRASE secret."; exit 1; fi
-          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public | gzip > backup.sql.gz
-          echo "Uncompressed-ish size:"; ls -lh backup.sql.gz
+          PGDUMP=$(ls /usr/lib/postgresql/*/bin/pg_dump | sort -V | tail -1)
+          echo "Using: $("$PGDUMP" --version)"
+          "$PGDUMP" "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public > backup.sql
+          ls -lh backup.sql
+          grep -q "CREATE TABLE\|PostgreSQL database dump" backup.sql || { echo "Dump looks empty — aborting."; exit 1; }
+          gzip backup.sql
           gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c backup.sql.gz
-          test -s backup.sql.gz.gpg || { echo "Encrypted backup is empty"; exit 1; }
+          test -s backup.sql.gz.gpg
           echo "Backup created: $(ls -lh backup.sql.gz.gpg)"
       - name: Upload encrypted backup
         uses: actions/upload-artifact@v4
