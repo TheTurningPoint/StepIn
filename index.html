@@ -231,7 +231,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 /* PRINT STYLES */
 @media print {
   .top-tabs,.bottom-nav,.btn-outline,.refresh-btn,.badge-role,.btn-ghost,
-  #report-tab-attendance,#report-tab-drugtests,
+  #report-tab-attendance,#report-tab-drugtests,#report-tab-incidents,#report-tab-grievances,
   .card:has(#dtr-week),.report-header+.card{display:none!important;}
   .body{padding:0!important;}
   .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;}
@@ -321,7 +321,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 </div>
 <div class="body" id="res-tab-pin" style="display:none"><div class="card"><div class="card-title">Change my PIN</div>
-<p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm new PIN</label><input type="password" id="pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMyPin()">Update PIN</button></div></div>
+<p class="text-mid" style="margin-bottom:14px">Your PIN is like your password. Keep it private.</p><div class="field"><label>Current PIN</label><input type="password" id="pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>New PIN</label><input type="password" id="pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div><div class="field"><label>Confirm new PIN</label><input type="password" id="pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div><button class="btn btn-primary" onclick="changeMyPin()">Update PIN</button></div><div class="card"><div class="card-title">&#128488;&#65039; File a concern</div><p class="text-mid" style="margin-bottom:14px">Have a grievance or complaint? File it confidentially. Your house is required to log it and respond.</p><button class="btn btn-outline" onclick="openGrievanceLog()" style="width:100%">File a grievance</button></div></div>
 </div>
 
 <!-- CHECK-IN SCREEN -->
@@ -654,6 +654,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <button class="btn btn-primary btn-sm" id="report-tab-attendance" onclick="switchReportTab('attendance')" style="flex:1">&#128203; Attendance</button>
     <button class="btn btn-outline btn-sm" id="report-tab-drugtests" onclick="switchReportTab('drugtests')" style="flex:1">Screening</button>
     <button class="btn btn-outline btn-sm" id="report-tab-incidents" onclick="switchReportTab('incidents')" style="flex:1">&#9888;&#65039; Incidents</button>
+    <button class="btn btn-outline btn-sm" id="report-tab-grievances" onclick="switchReportTab('grievances')" style="flex:1">&#128488;&#65039; Grievances</button>
   </div>
 
   <div id="report-section-attendance">
@@ -749,6 +750,27 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     </div>
     <div id="incident-report-rows"></div>
   </div>
+
+  <div id="report-section-grievances" style="display:none">
+    <div class="report-header">
+      <div class="report-title">Grievance Log</div>
+      <div class="report-date" id="grievance-report-range"></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <button class="btn btn-primary btn-sm" onclick="openGrievanceLog()" style="width:100%;margin-bottom:12px">&#9999;&#65039; File / log a grievance</button>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Date range</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" id="grv-week" onclick="setGrievanceRange('week')" style="flex:1">This week</button>
+          <button class="btn btn-outline btn-sm" id="grv-month" onclick="setGrievanceRange('month')" style="flex:1">Month</button>
+          <button class="btn btn-outline btn-sm" id="grv-90" onclick="setGrievanceRange('90')" style="flex:1">90 days</button>
+          <button class="btn btn-primary btn-sm" id="grv-all" onclick="setGrievanceRange('all')" style="flex:1">All time</button>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="printGrievanceReport()" style="width:100%;margin-top:12px">&#128424; Print / PDF</button>
+    </div>
+    <div id="grievance-report-rows"></div>
+  </div>
 </div>
 </div>
 
@@ -786,6 +808,17 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div></div>
   <button class="btn btn-primary" id="incident-btn" onclick="saveIncident()">Save incident record</button>
   <button class="btn btn-outline mt8" onclick="closeModal('modal-incident-log')">Cancel</button>
+</div></div>
+
+<div class="modal-bg" id="modal-grievance-log" onclick="if(event.target===this)closeModal('modal-grievance-log')">
+<div class="modal"><div class="modal-handle"></div>
+  <h2>File a grievance</h2>
+  <p class="text-mid" style="margin-bottom:16px">Raise a concern or complaint. It's logged with a date and tracked until it's resolved. You may leave your name blank to file anonymously.</p>
+  <div class="field"><label>Filed by</label><input type="text" id="grievance-filer" placeholder="Your name (or leave blank to stay anonymous)"></div>
+  <div class="field"><label>Category</label><select id="grievance-category"><option value="">Select...</option><option>Living conditions</option><option>Staff conduct</option><option>Another resident</option><option>Safety concern</option><option>Discrimination</option><option>Financial / fees</option><option>Discharge decision</option><option>Other</option></select></div>
+  <div class="field"><label>Describe your concern</label><textarea id="grievance-description" placeholder="What happened, and what outcome are you hoping for?" style="height:110px;resize:none"></textarea></div>
+  <button class="btn btn-primary" id="grievance-btn" onclick="saveGrievance()">Submit grievance</button>
+  <button class="btn btn-outline mt8" onclick="closeModal('modal-grievance-log')">Cancel</button>
 </div></div>
 
 <div class="modal-bg" id="modal-incident-history" onclick="if(event.target===this)closeModal('modal-incident-history')">
@@ -1885,6 +1918,22 @@ function printIncidentPDF(incidents,label){
   printHTML(html);
 }
 
+// ── GRIEVANCE LOG ──
+let cachedGrievances=[];let currentGrievanceRange='all';
+function openGrievanceLog(){document.getElementById('grievance-category').value='';document.getElementById('grievance-description').value='';const filerEl=document.getElementById('grievance-filer');if(filerEl)filerEl.value=(currentUser&&currentUser.role==='resident')?(currentUser.name||''):'';document.getElementById('modal-grievance-log').classList.add('open');}
+
+async function saveGrievance(){const filer=document.getElementById('grievance-filer').value.trim();const category=document.getElementById('grievance-category').value;const desc=document.getElementById('grievance-description').value.trim();if(!category){toast('Please choose a category.',true);return;}if(!desc){toast('Please describe your concern.',true);return;}const btn=document.getElementById('grievance-btn');if(btn.dataset.saving)return;btn.dataset.saving='1';btn.textContent='Submitting...';btn.classList.add('btn-disabled');const house=(currentUser&&currentUser.house)?currentUser.house:(myHouse()||null);const record={id:'grv-'+Date.now(),filed_by:filer||'Anonymous',category:category,description:desc,status:'open',grievance_date:new Date().toISOString().split('T')[0],house:house,resolution:null,resolved_by:null,resolved_at:null,created_at:new Date().toISOString()};if(!isDemoMode){try{const{error}=await sb.from('grievances').insert(record);if(error){toast('Could not submit: '+error.message,true);btn.textContent='Submit grievance';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}}catch(e){toast('Could not submit. Check your connection.',true);btn.textContent='Submit grievance';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}}cachedGrievances.unshift(record);btn.textContent='Submit grievance';btn.classList.remove('btn-disabled');delete btn.dataset.saving;closeModal('modal-grievance-log');toast('Grievance filed. Thank you for speaking up.');}
+
+function setGrievanceRange(range){currentGrievanceRange=range;['week','month','90','all'].forEach(r=>{const b=document.getElementById('grv-'+r);if(b){b.className=r===range?'btn btn-primary btn-sm':'btn btn-outline btn-sm';b.style.flex='1';}});renderGrievanceReport();}
+
+async function renderGrievanceReport(){const el=document.getElementById('grievance-report-rows');const rangeEl=document.getElementById('grievance-report-range');if(!el)return;if(!isDemoMode){try{let q=sb.from('grievances').select('*').order('created_at',{ascending:false});if(!isOwner()&&myHouse())q=q.eq('house',myHouse());const{data}=await q;cachedGrievances=data||[];}catch(e){}}const now=new Date();let fromDate=new Date(0);let rangeLabel='All time';if(currentGrievanceRange==='week'){fromDate=getWeekStart();rangeLabel='Week of '+fmtDate(fromDate)+' – '+fmtDate(new Date(fromDate.getTime()+6*86400000));}else if(currentGrievanceRange==='month'){fromDate=new Date(now.getFullYear(),now.getMonth(),1);rangeLabel=now.toLocaleDateString('en-US',{month:'long',year:'numeric'});}else if(currentGrievanceRange==='90'){fromDate=new Date(now.getTime()-90*86400000);rangeLabel='Last 90 days';}if(rangeEl)rangeEl.textContent=rangeLabel;const grievances=cachedGrievances.filter(g=>new Date(g.grievance_date)>=fromDate);if(!grievances.length){el.innerHTML='<div class="empty"><div class="empty-icon">&#128488;&#65039;</div><h3>No grievances in this period</h3><p class="text-mid">A clean log is a good sign — and proof you have a process.</p></div>';return;}const total=grievances.length;const open=grievances.filter(g=>g.status!=='resolved').length;const resolved=total-open;const summaryBar='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px"><div style="background:var(--cream);border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--charcoal)">'+total+'</div><div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;margin-top:2px">Total</div></div><div style="background:#FEF3C7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#92400E">'+open+'</div><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;margin-top:2px">Open</div></div><div style="background:#DCFCE7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;color:#166534">'+resolved+'</div><div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;margin-top:2px">Resolved</div></div></div>';el.innerHTML=summaryBar+grievances.map(g=>{const d=new Date(g.grievance_date+'T00:00:00');const isResolved=g.status==='resolved';const bg=isResolved?'#DCFCE7':'#FEF3C7';const badge=isResolved?'<span style="background:#166534;color:white;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap">Resolved</span>':'<span style="background:#92400E;color:white;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap">Open</span>';let resBlock='';if(isResolved){resBlock='<div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resolution</div><div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:8px">'+(g.resolution||'')+'</div><div style="font-size:12px;color:var(--soft)">Resolved by '+(g.resolved_by||'Unknown')+(g.resolved_at?' on '+new Date(g.resolved_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'')+'</div>';}else{resBlock='<button onclick="resolveGrievance(this.dataset.id)" data-id="'+g.id+'" style="margin-top:6px;background:var(--success);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;width:100%">&#10003; Mark resolved</button>';}return'<div style="border:1.5px solid var(--sand);border-radius:12px;margin-bottom:12px;overflow:hidden"><div style="background:'+bg+';padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="flex:1"><div style="font-size:14px;font-weight:800">'+g.category+'</div><div style="font-size:12px;color:var(--mid);margin-top:2px">'+d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' &bull; Filed by '+(g.filed_by||'Anonymous')+(g.house?' &bull; '+g.house:'')+'</div></div>'+badge+'</div><div style="padding:12px 14px"><div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Concern</div><div style="font-size:14px;color:var(--charcoal);line-height:1.6;margin-bottom:10px">'+g.description+'</div>'+resBlock+'</div></div>';}).join('');}
+
+async function resolveGrievance(id){const g=cachedGrievances.find(x=>x.id===id);if(!g)return;const note=prompt('How was this grievance resolved? (Recorded in the log.)');if(note===null)return;const resolution=note.trim();if(!resolution){toast('Please enter how it was resolved.',true);return;}const resolved_at=new Date().toISOString();if(!isDemoMode){try{const{error}=await sb.from('grievances').update({status:'resolved',resolution:resolution,resolved_by:currentUser.name,resolved_at:resolved_at}).eq('id',id);if(error){toast('Could not save: '+error.message,true);return;}}catch(e){toast('Could not save. Check your connection.',true);return;}}g.status='resolved';g.resolution=resolution;g.resolved_by=currentUser.name;g.resolved_at=resolved_at;renderGrievanceReport();toast('Grievance marked resolved.');}
+
+function printGrievanceReport(){if(!cachedGrievances.length){toast('No grievances to print.',true);return;}const now=new Date();let fromDate=new Date(0);if(currentGrievanceRange==='week')fromDate=getWeekStart();else if(currentGrievanceRange==='month')fromDate=new Date(now.getFullYear(),now.getMonth(),1);else if(currentGrievanceRange==='90')fromDate=new Date(now.getTime()-90*86400000);const grievances=cachedGrievances.filter(g=>new Date(g.grievance_date)>=fromDate);if(!grievances.length){toast('No grievances in this period.',true);return;}printGrievancePDF(grievances);}
+
+function printGrievancePDF(grievances){const org=cachedSettings.house_name||'The Turning Point';const house=myHouse()||'';const now=new Date();const rangeEl=document.getElementById('grievance-report-range');const rangeLabel=rangeEl?rangeEl.textContent:'';const open=grievances.filter(g=>g.status!=='resolved').length;const resolved=grievances.length-open;const rows=grievances.map(g=>{const d=new Date(g.grievance_date+'T00:00:00');const isResolved=g.status==='resolved';const bg=isResolved?'#DCFCE7':'#FEF3C7';return'<div style="border:1.5px solid #ddd;border-radius:8px;margin-bottom:16px;overflow:hidden;page-break-inside:avoid"><div style="background:'+bg+';padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:15px;font-weight:800">'+g.category+'</div><div style="font-size:13px;color:#666;margin-top:2px">'+d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+' &bull; Filed by '+(g.filed_by||'Anonymous')+(g.house?' &bull; '+g.house:'')+'</div></div><div style="background:'+(isResolved?'#166534':'#92400E')+';color:white;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700">'+(isResolved?'Resolved':'Open')+'</div></div><div style="padding:14px 16px"><div style="font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Concern</div><div style="font-size:14px;color:#000;line-height:1.7;margin-bottom:12px">'+g.description+'</div>'+(isResolved?'<div style="font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Resolution</div><div style="font-size:14px;color:#000;line-height:1.7;margin-bottom:8px">'+(g.resolution||'')+'</div><div style="font-size:12px;color:#999;border-top:1px solid #eee;padding-top:8px;margin-top:4px">Resolved by '+(g.resolved_by||'Unknown')+(g.resolved_at?' on '+new Date(g.resolved_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'')+'</div>':'<div style="font-size:12px;color:#92400E;font-weight:600">Awaiting resolution</div>')+'</div></div>';}).join('');const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Grievance Log — '+org+'</title><style>body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:24px;color:#000;background:white;}@media print{body{padding:0;}}h1{font-size:22px;font-weight:800;margin:0 0 4px;}.header{border-bottom:2px solid #000;padding-bottom:16px;margin-bottom:24px;}</style></head><body><div class="header"><div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Confidential Grievance Log</div><h1>'+org+(house?' — '+house:'')+'</h1><div style="font-size:13px;color:#666;">'+rangeLabel+'</div><div style="font-size:13px;color:#666;">Generated: '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px"><div style="background:#f5f5f5;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800">'+grievances.length+'</div><div style="font-size:11px;color:#666;text-transform:uppercase;font-weight:700">Total</div></div><div style="background:#FEF3C7;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#92400E">'+open+'</div><div style="font-size:11px;color:#92400E;text-transform:uppercase;font-weight:700">Open</div></div><div style="background:#DCFCE7;border-radius:8px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#166534">'+resolved+'</div><div style="font-size:11px;color:#166534;text-transform:uppercase;font-weight:700">Resolved</div></div></div></div>'+rows+'<div style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999">Generated by InStep — instepapp.com</div><script>window.onload=function(){window.print();}<\/script></body></html>';printHTML(html);}
+
 // ── PRINT FULL HISTORY ──
 function printFullHistory(resId,resName){
   const r=allResidents.find(x=>x.id===resId);if(!r)return;
@@ -1903,7 +1952,7 @@ function printFullHistory(resId,resName){
 }
 
 // ── REPORT TABS ──
-function switchReportTab(tab){['attendance','drugtests','incidents'].forEach(s=>{const sec=document.getElementById('report-section-'+s);if(sec)sec.style.display=s===tab?'block':'none';const btn=document.getElementById('report-tab-'+s);if(btn){btn.className=s===tab?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}});if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(()=>{populateDtResidentFilter();renderDtHistory();});}else{populateDtResidentFilter();renderDtHistory();}}if(tab==='incidents'){renderIncidentReport().catch(e=>console.log('incident report err',e));}}
+function switchReportTab(tab){['attendance','drugtests','incidents','grievances'].forEach(s=>{const sec=document.getElementById('report-section-'+s);if(sec)sec.style.display=s===tab?'block':'none';const btn=document.getElementById('report-tab-'+s);if(btn){btn.className=s===tab?'btn btn-primary btn-sm':'btn btn-outline btn-sm';btn.style.flex='1';}});if(tab==='drugtests'){if(!isDemoMode){loadDrugTests().then(()=>{populateDtResidentFilter();renderDtHistory();});}else{populateDtResidentFilter();renderDtHistory();}}if(tab==='incidents'){renderIncidentReport().catch(e=>console.log('incident report err',e));}if(tab==='grievances'){renderGrievanceReport().catch(e=>console.log('grievance report err',e));}}
 
 // ── SOBRIETY / DATES ──
 function daysSince(dateStr){if(!dateStr)return null;const d=new Date(dateStr+'T00:00:00');const now=new Date();return Math.floor((now-d)/(1000*60*60*24));}
