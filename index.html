@@ -1012,16 +1012,16 @@ async function detectAndApplyOrg(){
     }
     // Store for use elsewhere
     window.currentOrg=data;
-    // Hide demo buttons on real org subdomains
-    const demoSection=document.querySelector('.login-card .divider:last-of-type');
-    // Hide everything after the second divider in login card (demo section)
-    let foundDividers=0;
-    let loginCard=document.querySelector('.login-card');
-    if(loginCard){
-      Array.from(loginCard.children).forEach(el=>{
-        if(el.classList&&el.classList.contains('divider'))foundDividers++;
-        if(foundDividers>=2)el.style.display='none';
-      });
+    // Hide demo buttons on real org subdomains ONLY (keep them on the demo org)
+    if(subdomain!=='demo'){
+      let foundDividers=0;
+      let loginCard=document.querySelector('.login-card');
+      if(loginCard){
+        Array.from(loginCard.children).forEach(el=>{
+          if(el.classList&&el.classList.contains('divider'))foundDividers++;
+          if(foundDividers>=2)el.style.display='none';
+        });
+      }
     }
   }catch(e){console.log('org detect err',e);}
 }
@@ -1108,7 +1108,7 @@ async function doLogin(){
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
 function exitDemo(){isDemoMode=false;currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];cachedDrugTests=[];selectedHouse=null;localStorage.removeItem('si_user');const b=document.getElementById('demo-banner');if(b)b.remove();show('screen-login');}
-function logout(){currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];selectedHouse=null;localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
+function logout(){if(isDemoMode){window.location.reload();return;}currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];selectedHouse=null;localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
 function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident();}
 // ── RESIDENT ──
 async function enterResident(){
