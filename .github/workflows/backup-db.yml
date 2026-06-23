@@ -1,0 +1,49 @@
+name: Database Backup
+
+# Encrypted daily backup of the Supabase database to a GitHub Actions artifact.
+#
+# Setup (one time) — add these in repo Settings -> Secrets and variables -> Actions:
+#   SUPABASE_DB_URL    Supabase -> Project Settings -> Database -> Connection string ->
+#                      "Session pooler" URI (includes the password). Use the pooler one;
+#                      GitHub runners are IPv4 and the direct host is often IPv6-only.
+#   BACKUP_PASSPHRASE  A passphrase you choose and KEEP SAFE. Without it the backups
+#                      cannot be decrypted.
+#
+# Restore a backup:
+#   1. Download the artifact from the workflow run and unzip it.
+#   2. gpg -d --batch --passphrase '<your passphrase>' backup.sql.gz.gpg | gunzip > backup.sql
+#   3. psql "$SUPABASE_DB_URL" < backup.sql
+#
+# Note: free-tier artifacts are retained ~90 days, then roll off.
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # daily at 07:00 UTC
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install postgresql-client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: Dump, compress, encrypt
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "Missing SUPABASE_DB_URL or BACKUP_PASSPHRASE secret."; exit 1; fi
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public | gzip > backup.sql.gz
+          echo "Uncompressed-ish size:"; ls -lh backup.sql.gz
+          gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c backup.sql.gz
+          test -s backup.sql.gz.gpg || { echo "Encrypted backup is empty"; exit 1; }
+          echo "Backup created: $(ls -lh backup.sql.gz.gpg)"
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup
+          path: backup.sql.gz.gpg
+          retention-days: 90

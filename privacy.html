@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — InStep</title>
+<style>
+:root{--ink:#0D1017;--ink-mid:#161B26;--teal:#2BD4D4;--white:#fff;--soft:rgba(255,255,255,0.62);--softer:rgba(255,255,255,0.3);--border:rgba(255,255,255,0.09);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--ink);color:var(--white);line-height:1.7;}
+.wrap{max-width:720px;margin:0 auto;padding:48px 22px 64px;}
+.brand{display:flex;align-items:center;gap:9px;font-size:20px;font-weight:800;margin-bottom:6px;}
+.brand span{color:var(--teal);}
+h1{font-size:30px;font-weight:800;letter-spacing:-0.5px;margin:18px 0 4px;}
+.updated{font-size:13px;color:var(--softer);margin-bottom:28px;}
+h2{font-size:17px;font-weight:800;margin:26px 0 8px;color:var(--white);}
+p,li{font-size:15px;color:var(--soft);margin-bottom:10px;}
+ul{padding-left:20px;}
+a{color:var(--teal);text-decoration:none;}
+.note{background:var(--ink-mid);border:1px solid var(--border);border-radius:12px;padding:16px;margin:24px 0;font-size:14px;color:var(--soft);}
+.back{display:inline-block;margin-top:32px;font-size:14px;font-weight:700;}
+footer{border-top:1px solid var(--border);margin-top:36px;padding-top:18px;font-size:12px;color:var(--softer);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">In<span>Step</span></div>
+  <h1>Privacy Policy</h1>
+  <div class="updated">Last updated: June 2026</div>
+
+  <p>InStep is a management tool for sober living and recovery residences. This policy
+  explains what information the app handles and how it's protected. Each recovery
+  residence (the "operator") decides what to collect about its residents; InStep
+  provides the software that stores and displays it.</p>
+
+  <div class="note"><strong>This is not legal or medical advice.</strong> Recovery-related
+  information can be sensitive and, depending on the operator and services involved, may be
+  subject to laws such as 42 CFR Part 2 or HIPAA. Operators are responsible for their own
+  legal compliance and for the consent of their residents.</div>
+
+  <h2>What we collect</h2>
+  <ul>
+    <li>Resident profile: name, login PIN, house, recovery phase, move-in and sobriety dates, status.</li>
+    <li>Recovery activity: meeting check-ins (including approximate GPS location and a witness signature), curfew sign in/out, chores, and event participation.</li>
+    <li>Compliance records: drug/alcohol screening results with signatures, incident reports, and grievances.</li>
+    <li>Signed documents (e.g. house agreements) captured as images.</li>
+  </ul>
+
+  <h2>How it's used</h2>
+  <p>Solely to operate the residence — tracking recovery progress, accountability, and
+  the records a residence needs for its own compliance. We do not sell personal
+  information or use it for advertising.</p>
+
+  <h2>Who can see it</h2>
+  <p>A resident's records are visible to the staff and owner of their residence. Residents
+  see their own information. Access is enforced by database security rules so that signed-in
+  users only reach the records they're permitted to.</p>
+
+  <h2>How it's protected</h2>
+  <ul>
+    <li>Encrypted in transit (HTTPS) and at rest by our database provider.</li>
+    <li>Access requires a login that issues a time-limited token; data tables are not open to the public.</li>
+    <li>Encrypted backups are kept to prevent data loss.</li>
+  </ul>
+
+  <h2>Service providers</h2>
+  <p>We rely on Supabase (database/authentication), Cloudflare (hosting/delivery), and
+  OpenStreetMap's Nominatim service (to turn a meeting address into map coordinates).
+  These providers process data only to deliver the service.</p>
+
+  <h2>Retention</h2>
+  <p>Records are kept while a residence uses InStep and for as long as needed for the
+  residence's compliance and recordkeeping. Discharged residents' records are retained
+  rather than deleted, to preserve the residence's history, unless an operator requests removal.</p>
+
+  <h2>Your choices</h2>
+  <p>Residents can ask their residence's staff to review, correct, or remove their
+  information. Operators control their data and can request export or deletion.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy: <a href="mailto:hello@instepapp.com">hello@instepapp.com</a>.</p>
+
+  <a class="back" href="/demo.html">&larr; Back to InStep</a>
+  <footer>InStep Solutions — Denver, CO</footer>
+</div>
+</body></html>
