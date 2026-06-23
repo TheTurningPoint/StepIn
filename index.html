@@ -1111,7 +1111,7 @@ async function doLogin(){
 
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
 function exitDemo(){isDemoMode=false;currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];cachedDrugTests=[];selectedHouse=null;localStorage.removeItem('si_user');const b=document.getElementById('demo-banner');if(b)b.remove();show('screen-login');}
-function logout(){if(isDemoMode){window.location.reload();return;}currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];selectedHouse=null;localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
+function logout(){if(isDemoMode){window.location.href=window.location.origin+window.location.pathname;return;}currentUser=null;allResidents=[];allCheckins=[];allManagers=[];allCurfewLog=[];selectedHouse=null;localStorage.removeItem('si_user');document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
 function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident();}
 // ── RESIDENT ──
 async function enterResident(){
