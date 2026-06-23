@@ -1109,6 +1109,10 @@ async function doLogin(){
     const data=await res.json();
     if(res.ok&&data&&data.user&&data.token){
       currentUser=data.user;siSetToken(data.token);
+      // Safety: confirm the database actually accepts the token. If not (e.g. a
+      // wrong JWT_SECRET), drop it and continue tokenless — works fully while
+      // policies are still open, so a bad token can never block sign-in.
+      try{const{error:tErr}=await sb.from('orgs').select('name').limit(1);if(tErr){siSetToken(null);}}catch(_e){siSetToken(null);}
     }else if(res.status===429){
       showErr(err,'Too many attempts. Please wait 30 seconds.');btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;
     }else{
