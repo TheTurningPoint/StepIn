@@ -1,0 +1,55 @@
+name: Monthly Backup (permanent)
+
+# Permanent monthly encrypted backup, committed to a PRIVATE repo so copies are kept
+# forever. (The daily backup-db.yml only retains ~90 days of artifacts.)
+#
+# ONE-TIME SETUP — add these repo secrets (Settings -> Secrets and variables -> Actions):
+#   BACKUP_REPO        a PRIVATE repo you create, e.g. TheTurningPoint/stepin-backups
+#   BACKUP_REPO_TOKEN  a fine-grained Personal Access Token with Contents: Read/Write
+#                      on that private repo
+#   (SUPABASE_DB_URL and BACKUP_PASSPHRASE are reused from the daily backup.)
+#
+# Each run commits backups/backup-YYYY-MM.sql.gz.gpg to the private repo.
+# Decrypt the same way as the daily backup (see backup-db.yml header).
+
+on:
+  schedule:
+    - cron: "0 8 1 * *"   # 1st of each month, 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  monthly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install postgresql-client 17
+        run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update && sudo apt-get install -y postgresql-client-17
+      - name: Dump, encrypt, push to private backup repo
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          BACKUP_REPO: ${{ secrets.BACKUP_REPO }}
+          BACKUP_REPO_TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          for v in SUPABASE_DB_URL BACKUP_PASSPHRASE BACKUP_REPO BACKUP_REPO_TOKEN; do
+            [ -n "${!v}" ] || { echo "Missing secret: $v"; exit 1; }; done
+          STAMP=$(date +%Y-%m)
+          PGDUMP=$(ls /usr/lib/postgresql/*/bin/pg_dump | sort -V | tail -1)
+          "$PGDUMP" "$SUPABASE_DB_URL" --no-owner --no-privileges --schema=public > backup.sql
+          grep -q "CREATE TABLE\|PostgreSQL database dump" backup.sql || { echo "Dump looks empty — aborting."; exit 1; }
+          gzip backup.sql
+          gpg --batch --yes --passphrase "$BACKUP_PASSPHRASE" -c backup.sql.gz
+          git clone --depth 1 "https://x-access-token:${BACKUP_REPO_TOKEN}@github.com/${BACKUP_REPO}.git" dest
+          mkdir -p dest/backups
+          cp backup.sql.gz.gpg "dest/backups/backup-${STAMP}.sql.gz.gpg"
+          cd dest
+          git config user.name "InStep Backup Bot"
+          git config user.email "backup@instepapp.com"
+          git add backups/
+          git commit -m "Monthly backup ${STAMP}" || { echo "No change this month"; exit 0; }
+          git push
+          echo "Pushed backup-${STAMP}.sql.gz.gpg to ${BACKUP_REPO}"
