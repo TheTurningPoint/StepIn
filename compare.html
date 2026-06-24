@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InStep vs. the others</title>
+<style>
+:root{--ink:#0D1017;--teal:#2BD4D4;--purple:#9B6FD4;--paper:#fff;--line:#E6E8EC;--soft:#5B6472;--mid:#363D49;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F4F5F7;color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+.sheet{max-width:760px;margin:0 auto;background:var(--paper);padding:40px 40px 48px;}
+.brand{display:flex;align-items:center;gap:9px;font-size:19px;font-weight:800;}
+.brand .wm span{color:var(--teal);}
+.tag{font-size:12.5px;color:var(--soft);margin-top:3px;}
+h1{font-size:27px;font-weight:800;letter-spacing:-0.5px;margin:22px 0 4px;}
+.lede{font-size:14.5px;color:var(--mid);margin-bottom:22px;}
+h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--teal);margin:24px 0 10px;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--soft);font-weight:700;}
+td.name{font-weight:700;width:34%;}
+td .note{display:block;font-size:12.5px;color:var(--soft);margin-top:2px;font-weight:400;}
+.us td{background:#F0FCFC;}
+.us td.name{color:#0E8E8E;}
+ul{list-style:none;}
+li{position:relative;padding:5px 0 5px 24px;font-size:14px;color:var(--mid);}
+li::before{content:"\2713";position:absolute;left:0;top:5px;color:var(--teal);font-weight:800;}
+.diff{background:#FAFAFB;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:8px;}
+.diff p{font-size:14px;color:var(--mid);margin-bottom:9px;}
+.diff p:last-child{margin-bottom:0;}
+.diff strong{color:var(--ink);}
+.cta{margin-top:26px;padding-top:20px;border-top:2px solid var(--ink);}
+.cta .big{font-size:16px;font-weight:800;}
+.cta a{color:#0E8E8E;text-decoration:none;font-weight:700;}
+.foot{margin-top:28px;font-size:11.5px;color:var(--soft);}
+.printbtn{display:block;max-width:760px;margin:18px auto 0;text-align:right;}
+.printbtn button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;}
+@media print{body{background:#fff;}.sheet{max-width:none;padding:0;}.printbtn{display:none;}.us td{background:#F0FCFC !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+</style>
+</head>
+<body>
+<div class="printbtn"><button onclick="window.print()">Print / Save as PDF</button></div>
+<div class="sheet">
+  <div class="brand">
+    <svg width="22" height="18" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+      <rect x="8" y="62" width="20" height="38" rx="5" fill="#CBD0D6"/>
+      <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg)"/>
+      <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg)"/>
+    </svg>
+    <span class="wm">In<span>Step</span></span>
+  </div>
+  <div class="tag">Management software for sober living &amp; recovery residences</div>
+
+  <h1>InStep vs. the others</h1>
+  <p class="lede">You've got options for recovery-housing software. Here's how InStep compares to the
+  two most common names &mdash; honestly, with nothing claimed that isn't true.</p>
+
+  <h2>What it costs</h2>
+  <table>
+    <tr><th>Software</th><th>Pricing</th></tr>
+    <tr class="us"><td class="name">InStep</td><td>$99 / month per house<span class="note">Unlimited residents, unlimited staff logins. No setup fee. No contract.</span></td></tr>
+    <tr><td class="name">Sobriety Hub</td><td>$75/mo per full user + $25/mo per manager + $250 one-time onboarding<span class="note">An owner plus one manager runs about $100/month &mdash; plus $250 to start.</span></td></tr>
+    <tr><td class="name">One Step</td><td>Quote only &mdash; no public pricing<span class="note">Pricing is given through their sales team.</span></td></tr>
+  </table>
+  <p class="lede" style="margin-top:10px;margin-bottom:0;">For most houses, InStep costs the same or less &mdash; and there's nothing to pay just to get in the door.</p>
+
+  <h2>What you get with InStep</h2>
+  <ul>
+    <li>Live house dashboard &mdash; who's in and who's out, right now</li>
+    <li>GPS-verified meeting check-ins with witness signatures &mdash; real accountability, not the honor system</li>
+    <li>Curfew sign in/out, chores, events, and announcements</li>
+    <li>Drug-test logs, incident reports, and a resident grievance loop (the resident-voice piece NARR looks for)</li>
+    <li>Signed documents and printable compliance reports</li>
+    <li>A resident app residents actually open every day</li>
+    <li>Your own branded web address &mdash; yourhouse.instepapp.com</li>
+  </ul>
+
+  <h2>Where the bigger platforms differ</h2>
+  <ul>
+    <li><strong>One Step</strong> is built for <strong>licensed treatment centers</strong> &mdash; medical records, e-prescribing, medical billing, scheduling. Powerful, but it's a clinical system; for a sober-living house most of it is weight you'll never use.</li>
+    <li><strong>Sobriety Hub</strong> is closer in scope and has built-in rent payments today. InStep handles rent through a simple payment link for now, with in-app billing on the roadmap.</li>
+  </ul>
+
+  <h2>The difference that matters</h2>
+  <div class="diff">
+    <p>InStep is built by someone with <strong>lived recovery experience</strong> &mdash; designed around the
+    NARR Standard, for the way a house really works. That's why the parts residents touch every day are
+    the strong parts: check-ins people actually complete, real meeting accountability, and a way for
+    residents to be <strong>heard</strong>.</p>
+    <p>It's simple enough that a busy manager can use it on a phone in seconds &mdash; and when you need
+    something, you reach a person, not a ticket queue.</p>
+  </div>
+
+  <div class="cta">
+    <p class="big">Want to see it?</p>
+    <p class="lede" style="margin:4px 0 0;">We'll set your house up and walk you through it personally.
+    &nbsp;<a href="mailto:hello@instepapp.com">hello@instepapp.com</a></p>
+  </div>
+
+  <p class="foot">&copy; 2026 InStep Solutions &mdash; Denver, CO. Comparison reflects publicly available
+  information at time of writing; competitors' pricing and features may change.</p>
+</div>
+</body></html>
