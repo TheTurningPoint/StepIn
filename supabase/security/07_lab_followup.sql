@@ -8,6 +8,8 @@
 --   lab_result_date  date the lab result came back
 --   lab_name         optional lab name (e.g. Quest)
 --   lab_notes        optional confirmation notes (panel, levels, etc.)
+--   lab_specimen_id  specimen/sample ID printed on the cup/label (matches lab report)
+--   lab_sealed       specimen sealed in the resident's presence (chain-of-custody attestation)
 --
 -- Safe to run more than once (IF NOT EXISTS). Existing rows get NULLs and render
 -- as "Send to lab" with no migration needed.
@@ -17,7 +19,9 @@ alter table public.drug_tests
   add column if not exists lab_result      text,
   add column if not exists lab_result_date date,
   add column if not exists lab_name        text,
-  add column if not exists lab_notes       text;
+  add column if not exists lab_notes       text,
+  add column if not exists lab_specimen_id text,
+  add column if not exists lab_sealed      boolean;
 
 -- Tell PostgREST to pick up the new columns immediately.
 notify pgrst, 'reload schema';
