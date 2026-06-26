@@ -634,6 +634,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         <p style="font-size:13px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px">Settings</p>
         <div class="field"><label>Weekly meetings required</label><select id="set-req"><option value="2">2 meetings</option><option value="3">3 meetings</option><option value="4">4 meetings</option><option value="5">5 meetings</option><option value="7">7 meetings (daily)</option></select></div>
         <div class="field"><label>Organization name</label><input type="text" id="set-house-name" placeholder="e.g. The Turning Point"></div>
+        <div class="field"><label>Send screenings to lab</label><select id="set-lab-policy"><option value="all">All tests</option><option value="positive">Positives only</option><option value="off">Don't track</option></select></div>
         <button class="btn btn-gold" onclick="saveSettings()" style="margin-bottom:20px">Save settings</button>
 
         <div class="divider"></div>
@@ -1690,8 +1691,8 @@ async function saveNewEvent(){const title=document.getElementById('event-title')
 async function deleteEvent(id){if(!confirm('Remove this event?'))return;const{error}=await sb.from('events').delete().eq('id',id);if(error){toast('Could not remove.',true);return;}allEvents=allEvents.filter(e=>e.id!==id);toast('Event removed.');renderMgrCalendar();}
 
 // ── RESIDENT MANAGEMENT ──
-function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';}
-async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim()};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.',true);return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');}
+function loadSettings(){document.getElementById('set-req').value=cachedSettings.required||3;document.getElementById('set-house-name').value=cachedSettings.house_name||'';const lp=document.getElementById('set-lab-policy');if(lp)lp.value=cachedSettings.lab_policy||'all';}
+async function saveSettings(){const s={required:parseInt(document.getElementById('set-req').value),house_name:document.getElementById('set-house-name').value.trim(),lab_policy:document.getElementById('set-lab-policy')?document.getElementById('set-lab-policy').value:'all'};const{error}=await sb.from('settings').update(s).eq('id',1);if(error){toast('Save failed.',true);return;}cachedSettings={...cachedSettings,...s};toast('Settings saved.');if(typeof renderDashAttention==='function')renderDashAttention();}
 async function changeMgrPin(){const cur=document.getElementById('mgr-pin-current').value.trim();const nw=document.getElementById('mgr-pin-new').value.trim();const cf=document.getElementById('mgr-pin-confirm').value.trim();if(cur!==currentUser.pin){toast('That\'s not your current PIN.');return;}if(nw.length!==4||isNaN(nw)){toast('New PIN must be 4 digits.');return;}if(nw!==cf){toast('The PINs don\'t match.');return;}const{error}=await sb.from('residents').update({pin:nw}).eq('id',currentUser.id);if(error){toast('Could not update PIN.',true);return;}currentUser.pin=nw;localStorage.setItem('si_user',JSON.stringify(currentUser));toast('PIN updated!');['mgr-pin-current','mgr-pin-new','mgr-pin-confirm'].forEach(id=>document.getElementById(id).value='');}
 async function resetResidentPin(){const id=document.getElementById('manage-resident-select').value;const pin=document.getElementById('reset-pin-value').value.trim();if(!id){toast('Select a resident first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!confirm('Reset PIN for '+r.name+'?'))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset PIN.',true);return;}toast(r.name+'\'s PIN updated.');document.getElementById('reset-pin-value').value='';}
 async function resetManagerPin(){const id=document.getElementById('reset-mgr-pin-select').value;const pin=document.getElementById('reset-mgr-pin-value').value.trim();if(!id){toast('Select a manager first.');return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}const m=allManagers.find(x=>x.id===id);if(!m)return;if(!confirm('Reset PIN for '+m.name+'?'))return;const{error}=await sb.from('residents').update({pin}).eq('id',id);if(error){toast('Could not reset.',true);return;}toast(m.name+'\'s PIN updated.');document.getElementById('reset-mgr-pin-value').value='';}
@@ -2203,11 +2204,16 @@ function renderDashAttention(){
   const el=document.getElementById('dash-attention');if(!el)return;
   const openGrv=isStaff()?(cachedGrievances||[]).filter(g=>g.status!=='resolved').length:0;
   const pending=(typeof cachedResidentDocs!=='undefined'?cachedResidentDocs:[]).filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
-  if(!openGrv&&!pending.length){el.innerHTML='';return;}
+  const labPolicy=cachedSettings.lab_policy||'all';
+  let unsentLab=0;
+  if(isStaff()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
+  if(!openGrv&&!pending.length&&!unsentLab){el.innerHTML='';return;}
   let rows='';
   if(openGrv){rows+='<div onclick="mgrTab(\'report\',null);switchReportTab(\'grievances\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer">'
     +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#128488;&#65039; '+openGrv+' open grievance'+(openGrv>1?'s':'')+'</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
-  pending.forEach((d,i)=>{rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0'+((i>0||openGrv)?';border-top:1px solid var(--sand)':'')+'">'
+  if(unsentLab){rows+='<div onclick="openDrugTestHistory()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer'+(openGrv?';border-top:1px solid var(--sand)':'')+'">'
+    +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#129514; '+unsentLab+' screening'+(unsentLab>1?'s':'')+' to send to lab</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
+  pending.forEach((d,i)=>{rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0'+((i>0||openGrv||unsentLab)?';border-top:1px solid var(--sand)':'')+'">'
     +'<div><div style="font-size:14px;font-weight:700">&#9997;&#65039; '+d.template_name+'</div>'
     +'<div style="font-size:12px;color:var(--warn)">'+d.resident_name+' signed &mdash; needs your countersignature</div></div>'
     +'<button class="btn btn-warn btn-sm" data-docid="'+d.id+'" onclick="openCountersignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0;font-size:12px">Sign</button></div>';});
