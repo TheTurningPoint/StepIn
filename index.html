@@ -8,7 +8,9 @@
   --pink:#C0397A;
   --pink-light:#E05A9A;
   --pink-dark:#8B2458;
-  --pink-glow:rgba(192,57,122,0.10);
+  --pink-rgb:192,57,122;
+  --pink-dark-rgb:139,36,88;
+  --pink-glow:rgba(var(--pink-rgb),0.10);
   --gold:#7B3F00;
   --gold-light:#C8860A;
   --cream:#FAF0F5;
@@ -61,7 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 /* BUTTONS */
 .btn{width:100%;padding:16px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.2px;}
 .btn:active{opacity:0.88;transform:scale(0.98);}
-.btn-primary{background:var(--pink);color:var(--white);box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(139,36,88,0.4),0 2px 8px rgba(192,57,122,0.2);}
+.btn-primary{background:var(--pink);color:var(--white);box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(var(--pink-dark-rgb),0.4),0 2px 8px rgba(var(--pink-rgb),0.2);}
 .btn-navy{background:var(--black);color:var(--white);box-shadow:inset 0 1px 0 rgba(255,255,255,0.10),0 1px 3px rgba(0,0,0,0.35);}
 .btn-outline{background:transparent;border:2px solid var(--pink);color:var(--pink);}
 .btn-danger{background:var(--danger);color:var(--white);}
@@ -82,8 +84,8 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* LOGIN */
 #screen-login{background:var(--black);}
-.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;background:radial-gradient(ellipse at top,rgba(192,57,122,0.25) 0%,transparent 55%),var(--topbar);}
-.login-logo-img{width:90px;height:90px;object-fit:contain;margin-bottom:16px;filter:drop-shadow(0 4px 24px rgba(192,57,122,0.4));}
+.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;background:radial-gradient(ellipse at top,rgba(var(--pink-rgb),0.25) 0%,transparent 55%),var(--topbar);}
+.login-logo-img{width:90px;height:90px;object-fit:contain;margin-bottom:16px;filter:drop-shadow(0 4px 24px rgba(var(--pink-rgb),0.4));}
 .login-logo{font-size:36px;font-weight:800;color:var(--white);margin-bottom:4px;letter-spacing:-1px;}
 .powered-login{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);}
 .powered-login-label{font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;}
@@ -122,7 +124,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 
 /* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.stat-box{background:var(--white);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-card);text-align:center;border:1px solid rgba(192,57,122,0.06);}
+.stat-box{background:var(--white);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow-card);text-align:center;border:1px solid rgba(var(--pink-rgb),0.06);}
 .stat-num{font-size:28px;font-weight:700;color:var(--pink);letter-spacing:-0.5px;}
 .stat-label{font-size:12px;color:var(--mid);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
 
@@ -140,7 +142,7 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--pink);cursor:poin
 #toast.show{transform:translateX(-50%) translateY(0);}
 
 /* LOADING */
-#loading{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background:radial-gradient(ellipse at center,rgba(192,57,122,0.15) 0%,var(--topbar) 70%);}
+#loading{position:fixed;inset:0;background:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;background:radial-gradient(ellipse at center,rgba(var(--pink-rgb),0.15) 0%,var(--topbar) 70%);}
 #loading .spin{width:44px;height:44px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--pink-light);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:20px;}
 #loading p{color:rgba(255,255,255,0.5);font-size:14px;font-weight:500;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -269,7 +271,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div id="loading"><div class="spin"></div><p>Connecting&#8230;</p></div>
 
 <div id="screen-login" class="screen"><div class="login-wrap">
-<svg id="login-org-logo" width="80" height="62" viewBox="0 0 92 100" style="margin-bottom:16px;filter:drop-shadow(0 4px 24px rgba(192,57,122,0.4))" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="llg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#llg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#llg)"/></svg>
+<svg id="login-org-logo" width="80" height="62" viewBox="0 0 92 100" style="margin-bottom:16px;filter:drop-shadow(0 4px 24px rgba(var(--pink-rgb),0.4))" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="llg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs><rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.4)"/><rect x="36" y="40" width="20" height="60" rx="5" fill="url(#llg)"/><rect x="64" y="14" width="20" height="86" rx="5" fill="url(#llg)"/></svg>
 
 <div class="login-tagline">InStep<br>Sober Living Management<br>One day at a time.</div>
 <div class="login-card"><h2>Sign in</h2>
@@ -392,7 +394,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:14px 2px 8px">Log</div>
 
   <!-- Screening — two-tone tool card -->
-  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(192,57,122,0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
     <div style="background:var(--pink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
       <div>
         <div style="font-size:14px;font-weight:700;color:white">Screening</div>
@@ -400,7 +402,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-sm" onclick="openDrugTestHistory()" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.2);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);font-size:12px;padding:7px 12px">History</button>
-        <button class="btn btn-sm" onclick="openDrugTest()" style="background:white;color:var(--pink);border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.8),0 1px 3px rgba(139,36,88,0.25);font-size:12px;padding:7px 12px">+ Log</button>
+        <button class="btn btn-sm" onclick="openDrugTest()" style="background:white;color:var(--pink);border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.8),0 1px 3px rgba(var(--pink-dark-rgb),0.25);font-size:12px;padding:7px 12px">+ Log</button>
       </div>
     </div>
     <div style="background:white;padding:10px 16px" id="dt-last-test-footer">
@@ -417,7 +419,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-sm" onclick="openIncidentHistory()" style="background:rgba(255,255,255,0.10);color:white;border:1px solid rgba(255,255,255,0.14);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);font-size:12px;padding:7px 12px">History</button>
-        <button class="btn btn-sm" onclick="openIncidentLog()" style="background:var(--pink);color:white;border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(139,36,88,0.3);font-size:12px;padding:7px 12px">+ Log</button>
+        <button class="btn btn-sm" onclick="openIncidentLog()" style="background:var(--pink);color:white;border:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 1px 3px rgba(var(--pink-dark-rgb),0.3);font-size:12px;padding:7px 12px">+ Log</button>
       </div>
     </div>
     <div style="background:white;padding:10px 16px">
@@ -429,7 +431,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:10px 2px 8px">This week</div>
 
   <!-- Chores — accordion with progress ring -->
-  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('chores-panel')">
       <div id="chores-progress-ring" style="width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--success) 0deg,var(--sand) 0deg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <div style="width:28px;height:28px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--success)" id="chores-ring-label">0/0</div>
@@ -447,7 +449,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <!-- Events — accordion with date badge -->
-  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('events-panel')">
       <div id="events-date-badge" style="width:38px;height:38px;border-radius:8px;background:var(--pink-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
         <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.5px" id="events-badge-day">—</div>
@@ -466,7 +468,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <!-- Sticky note — accordion with yellow pin -->
-  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(192,57,122,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('note-panel')">
       <div style="width:38px;height:38px;border-radius:8px;background:#FFF9C4;border:1.5px solid #F0D000;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📌</div>
       <div style="flex:1">
@@ -1082,7 +1084,7 @@ function getMyStatus(){const today=new Date().toDateString();const logs=allCurfe
 const ORG_THEMES={theturningpoint:{primary:'#D43C8E'}}; // her logo's magenta-pink; topbar stays default black. Add {subdomain:{primary,topbar}} for other houses.
 function _shade(hex,p){hex=(hex||'').replace('#','');if(hex.length!==6)return'#'+hex;const n=parseInt(hex,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;if(p>=0){const f=p/100;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);}else{const f=1+p/100;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function _hexRgb(hex){hex=(hex||'').replace('#','');const n=parseInt(hex,16);return((n>>16)&255)+','+((n>>8)&255)+','+(n&255);}
-function applyOrgTheme(primary,topbar){const s=document.documentElement.style;if(primary){s.setProperty('--pink',primary);s.setProperty('--pink-light',_shade(primary,28));s.setProperty('--pink-dark',_shade(primary,-32));s.setProperty('--pink-glow','rgba('+_hexRgb(primary)+',0.10)');}if(topbar)s.setProperty('--topbar',topbar);}
+function applyOrgTheme(primary,topbar){const s=document.documentElement.style;if(primary){s.setProperty('--pink',primary);s.setProperty('--pink-light',_shade(primary,28));s.setProperty('--pink-dark',_shade(primary,-32));s.setProperty('--pink-rgb',_hexRgb(primary));s.setProperty('--pink-dark-rgb',_hexRgb(_shade(primary,-32)));s.setProperty('--pink-glow','rgba('+_hexRgb(primary)+',0.10)');}if(topbar)s.setProperty('--topbar',topbar);}
 async function detectAndApplyOrg(){
   try{
     const host=window.location.hostname;
@@ -1109,7 +1111,7 @@ async function detectAndApplyOrg(){
       if(logoEl){
         const img=document.createElement('img');
         img.src=orgLogo;
-        img.style.cssText='width:90px;height:90px;object-fit:contain;margin-bottom:16px;border-radius:12px;filter:drop-shadow(0 4px 24px rgba(192,57,122,0.4))';
+        img.style.cssText='width:90px;height:90px;object-fit:contain;margin-bottom:16px;border-radius:12px;filter:drop-shadow(0 4px 24px rgba(var(--pink-rgb),0.4))';
         logoEl.parentNode.replaceChild(img,logoEl);
       }
     }
@@ -2230,7 +2232,7 @@ function renderResDocsCard(){
   if(needSign.length&&awaitingMgr.length)heading=needSign.length+' to sign &middot; '+awaitingMgr.length+' awaiting countersignature';
   else if(needSign.length)heading=needSign.length+' document'+(needSign.length!==1?'s':'')+' to sign';
   else heading=awaitingMgr.length+' signed &mdash; awaiting countersignature';
-  el.innerHTML='<div class="card" style="border:2px solid '+borderColor+';background:rgba(192,57,122,0.03);margin-bottom:0">'
+  el.innerHTML='<div class="card" style="border:2px solid '+borderColor+';background:rgba(var(--pink-rgb),0.03);margin-bottom:0">'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
     +'<div style="font-size:28px">📋</div>'
     +'<div><div style="font-size:15px;font-weight:800;color:'+headerColor+'">'+heading+'</div>'
