@@ -44,13 +44,13 @@ const esc = (s: unknown) =>
 function emailHtml(
   name: string,
   org: string,
-  docs: { template_name: string }[],
-  anns: { message: string }[],
+  docs: any[],
+  anns: any[],
 ) {
   let body = "";
   if (docs.length) {
     body += `<p>You have ${docs.length === 1 ? "a document" : docs.length + " documents"} waiting for your signature:</p>
-      <ul style="padding-left:18px">${docs.map((d) => `<li style="margin:4px 0">${esc(d.template_name)}</li>`).join("")}</ul>`;
+      <ul style="padding-left:18px">${docs.map((d) => `<li style="margin:4px 0">${esc(d.template_name ?? d.name ?? d.title ?? "A document")}</li>`).join("")}</ul>`;
   }
   if (anns.length) {
     body += `<p>${anns.length === 1 ? "There's a house announcement" : "There are house announcements"} to review:</p>
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
   // Pending documents.
   const { data: docs, error: dErr } = await admin
     .from("resident_documents")
-    .select("id,resident_id,template_name,status")
+    .select("*")
     .in("resident_id", ids)
     .eq("status", "pending");
   if (dErr) return json({ error: dErr.message }, 500);
