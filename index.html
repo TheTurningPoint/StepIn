@@ -1077,6 +1077,12 @@ function getCurfewLabel(phase,date){const h=getCurfewTime(phase,date);return h==
 function isPastCurfew(phase){const now=new Date();return now.getHours()>=getCurfewTime(phase,now);}
 function getMyStatus(){const today=new Date().toDateString();const logs=allCurfewLog.filter(l=>new Date(l.ts).toDateString()===today&&l.resident_id===currentUser.id);if(!logs.length)return{status:'unknown',last:null};const last=logs.sort((a,b)=>new Date(b.ts)-new Date(a.ts))[0];return{status:last.action,last};}
 
+// Per-org color themes (by subdomain). Used as a fallback when the orgs row has no
+// primary_color/accent_color, so known houses are branded without DB edits.
+const ORG_THEMES={theturningpoint:{primary:'#7A4FD0',topbar:'#1E1B3C'}};
+function _shade(hex,p){hex=(hex||'').replace('#','');if(hex.length!==6)return'#'+hex;const n=parseInt(hex,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;if(p>=0){const f=p/100;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);}else{const f=1+p/100;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+function _hexRgb(hex){hex=(hex||'').replace('#','');const n=parseInt(hex,16);return((n>>16)&255)+','+((n>>8)&255)+','+(n&255);}
+function applyOrgTheme(primary,topbar){const s=document.documentElement.style;if(primary){s.setProperty('--pink',primary);s.setProperty('--pink-light',_shade(primary,28));s.setProperty('--pink-dark',_shade(primary,-32));s.setProperty('--pink-glow','rgba('+_hexRgb(primary)+',0.10)');}if(topbar)s.setProperty('--topbar',topbar);}
 async function detectAndApplyOrg(){
   try{
     const host=window.location.hostname;
@@ -1107,10 +1113,9 @@ async function detectAndApplyOrg(){
         logoEl.parentNode.replaceChild(img,logoEl);
       }
     }
-    // Apply accent color if set
-    if(data.accent_color){
-      document.documentElement.style.setProperty('--topbar',data.accent_color);
-    }
+    // Apply per-org theme (primary + topbar colors); fall back to a known-org palette.
+    const theme=ORG_THEMES[subdomain]||{};
+    applyOrgTheme(data.primary_color||theme.primary,data.accent_color||theme.topbar);
     // Store for use elsewhere
     window.currentOrg=data;
     // Hide demo buttons on real org subdomains ONLY (keep them on the demo org)
