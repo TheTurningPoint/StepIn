@@ -24,6 +24,11 @@ jobs:
       # call it with just the public key (same as a normal login endpoint).
       - run: supabase functions deploy login2 --project-ref "$PROJECT_ID" --no-verify-jwt
 
+      # reminders: daily email nudges. Guards itself with the CRON_SECRET header,
+      # so it ships with --no-verify-jwt like login2. Needs Edge Function secrets
+      # CRON_SECRET (always) and RESEND_API_KEY (or it runs in dry-run mode).
+      - run: supabase functions deploy reminders --project-ref "$PROJECT_ID" --no-verify-jwt
+
       # Health check: a deliberately-wrong login. Expect HTTP 401 ("not found"),
       # which proves the function runs, reaches the DB, and the rate-limit table
       # exists. A 500 means something's missing (table or secret).
