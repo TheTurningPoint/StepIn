@@ -1,8 +1,9 @@
 # `reminders` Edge Function — email nudges
 
-Sends opted-in residents a daily email listing documents still waiting on their
-signature. De-duped via `reminders_log` (won't re-nag the same doc within 3 days).
-Cron-only; guarded by a shared `CRON_SECRET` header.
+Sends each opted-in resident a single daily email covering what's waiting on them:
+documents still pending their signature, and active announcements they haven't
+acknowledged. De-duped via `reminders_log` (won't re-nag the same document within 3 days,
+or the same announcement within 7). Cron-only; guarded by a shared `CRON_SECRET` header.
 
 ## One-time setup
 
