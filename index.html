@@ -2297,13 +2297,17 @@ function renderDashAttention(){
   const labPolicy=cachedSettings.lab_policy||'all';
   let unsentLab=0;
   if(isStaff()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
-  if(!openGrv&&!pending.length&&!unsentLab){el.innerHTML='';return;}
+  let awaySignins=0;
+  if(isStaff()){const cutoff=Date.now()-7*86400000;awaySignins=(curfewLog()||[]).filter(l=>l.action==='in'&&new Date(l.ts).getTime()>=cutoff&&signInAwayMi(l)).length;}
+  if(!openGrv&&!pending.length&&!unsentLab&&!awaySignins){el.innerHTML='';return;}
   let rows='';
   if(openGrv){rows+='<div onclick="mgrTab(\'report\',null);switchReportTab(\'grievances\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer">'
     +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#128488;&#65039; '+openGrv+' open grievance'+(openGrv>1?'s':'')+'</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
   if(unsentLab){rows+='<div onclick="openDrugTestHistory()" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer'+(openGrv?';border-top:1px solid var(--sand)':'')+'">'
     +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#129514; '+unsentLab+' screening'+(unsentLab>1?'s':'')+' to send to lab</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
-  pending.forEach((d,i)=>{rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0'+((i>0||openGrv||unsentLab)?';border-top:1px solid var(--sand)':'')+'">'
+  if(awaySignins){rows+='<div onclick="var e=document.getElementById(\'dash-curfew-list\');if(e)e.scrollIntoView({behavior:\'smooth\',block:\'center\'})" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer'+((openGrv||unsentLab)?';border-top:1px solid var(--sand)':'')+'">'
+    +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#9888;&#65039; '+awaySignins+' sign-in'+(awaySignins>1?'s':'')+' away from the house</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
+  pending.forEach((d,i)=>{rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0'+((i>0||openGrv||unsentLab||awaySignins)?';border-top:1px solid var(--sand)':'')+'">'
     +'<div><div style="font-size:14px;font-weight:700">&#9997;&#65039; '+d.template_name+'</div>'
     +'<div style="font-size:12px;color:var(--warn)">'+d.resident_name+' signed &mdash; needs your countersignature</div></div>'
     +'<button class="btn btn-warn btn-sm" data-docid="'+d.id+'" onclick="openCountersignDoc(this.dataset.docid)" style="margin-left:10px;flex-shrink:0;font-size:12px">Sign</button></div>';});
