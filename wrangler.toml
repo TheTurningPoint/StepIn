@@ -1,4 +1,4 @@
-name = "stepin"
+name = "instep"
 compatibility_date = "2024-11-01"
 
 # Static-site (assets-only) Worker: serve the files in the repo root as the
