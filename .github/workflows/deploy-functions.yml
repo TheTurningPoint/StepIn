@@ -38,6 +38,10 @@ jobs:
       # but gated by the ADMIN_SECRET Edge Function secret. Used by admin.html.
       - run: supabase functions deploy provisionorg --project-ref "$PROJECT_ID" --no-verify-jwt
 
+      # weeklyreport: weekly summary email to owners/managers. Cron-only, guarded by the
+      # x-cron-secret header (CRON_SECRET); RESEND_API_KEY to send (else dry-run).
+      - run: supabase functions deploy weeklyreport --project-ref "$PROJECT_ID" --no-verify-jwt
+
       # Health check: a deliberately-wrong login. Expect HTTP 401 ("not found"),
       # which proves the function runs, reaches the DB, and the rate-limit table
       # exists. A 500 means something's missing (table or secret).
