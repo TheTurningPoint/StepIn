@@ -29,6 +29,11 @@ jobs:
       # CRON_SECRET (always) and RESEND_API_KEY (or it runs in dry-run mode).
       - run: supabase functions deploy reminders --project-ref "$PROJECT_ID" --no-verify-jwt
 
+      # pinreset: owner/manager self-serve PIN reset via emailed code. Public
+      # (--no-verify-jwt); guards itself with generic responses, expiring single-
+      # use codes, and a try cap. Needs RESEND_API_KEY (or dry-run logs the code).
+      - run: supabase functions deploy pinreset --project-ref "$PROJECT_ID" --no-verify-jwt
+
       # Health check: a deliberately-wrong login. Expect HTTP 401 ("not found"),
       # which proves the function runs, reaches the DB, and the rate-limit table
       # exists. A 500 means something's missing (table or secret).
