@@ -1316,6 +1316,7 @@ function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident
 // ── RESIDENT ──
 async function enterResident(){
   show('screen-resident');
+  showDemoBanner('screen-resident');
   const h=new Date().getHours();
   const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   document.getElementById('res-greeting').textContent=g+', '+currentUser.name.split(' ')[0];
@@ -1597,9 +1598,18 @@ function initSigCanvas(){sigCanvas=document.getElementById('sig-canvas');sigCtx=
 function clearSig(){if(sigCtx){sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);sigCtx.fillStyle='#FFFFFF';sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);}sigHasMark=false;document.getElementById('sig-hint').style.opacity='1';}
 
 // ── MANAGER / OWNER ──
+// Inject the gold "DEMO MODE" banner just under a screen's topbar (no-op outside demo). One banner total.
+function showDemoBanner(screenId){
+  const existing=document.getElementById('demo-banner');if(existing)existing.remove();
+  if(!isDemoMode)return;
+  const screen=document.getElementById(screenId);if(!screen)return;
+  const topbar=screen.querySelector('.topbar');if(!topbar)return;
+  const banner=document.createElement('div');banner.id='demo-banner';banner.style.cssText='background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;text-align:center;padding:10px;font-size:13px;font-weight:700;letter-spacing:0.5px;flex-shrink:0;';
+  banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Exit demo</button>';
+  topbar.after(banner);
+}
 function enterManager(){
-  const existingBanner=document.getElementById('demo-banner');if(existingBanner)existingBanner.remove();
-  if(isDemoMode){const banner=document.createElement('div');banner.id='demo-banner';banner.style.cssText='background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;text-align:center;padding:10px;font-size:13px;font-weight:700;letter-spacing:0.5px;flex-shrink:0;';banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Exit demo</button>';const screen=document.getElementById('screen-manager');const topbar=screen.querySelector('.topbar');topbar.after(banner);}
+  showDemoBanner('screen-manager');
   if(!isDemoMode)loadDrugTests();show('screen-manager');
   const badge=document.getElementById('mgr-badge');
   if(isOwner()){badge.textContent=(currentUser&&currentUser.name)?currentUser.name:'Owner';badge.classList.add('badge-owner');const attEl=document.getElementById('dash-attendance-list');if(attEl&&attEl.closest('.card'))attEl.closest('.card').style.display='none';document.getElementById('mgr-greeting').textContent='Hey '+((currentUser&&currentUser.name)?currentUser.name:'there')+'!';document.getElementById('owner-tools').style.display='block';if(!isDemoMode)loadSettings();}
