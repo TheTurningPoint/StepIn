@@ -85,16 +85,17 @@ Deno.serve(async (req) => {
 
   const dryRun = !RESEND_API_KEY;
 
-  // Org name for the email greeting/footer.
-  let org = "your recovery residence";
-  const { data: settings } = await admin
-    .from("settings").select("house_name").eq("id", 1).maybeSingle();
-  if (settings?.house_name) org = settings.house_name;
+  // Org display name per tenant (org -> house_name), for the email greeting/footer.
+  const { data: settingsRows } = await admin.from("settings").select("org,house_name");
+  const orgNames: Record<string, string> = {};
+  for (const s of settingsRows ?? []) {
+    if (s.org && s.house_name) orgNames[s.org as string] = s.house_name as string;
+  }
 
   // Opted-in, active residents with an email on file.
   const { data: residents, error: rErr } = await admin
     .from("residents")
-    .select("id,name,email,house,notify_opt_in,status,role")
+    .select("id,name,email,house,notify_opt_in,status,role,org")
     .eq("role", "resident")
     .eq("status", "active")
     .eq("notify_opt_in", true);
@@ -118,7 +119,7 @@ Deno.serve(async (req) => {
   const annSince = new Date(Date.now() - ANN_MAX_AGE_DAYS * 86400000).toISOString();
   const { data: anns, error: aErr } = await admin
     .from("announcements")
-    .select("id,message,house,is_global,created_at,archived")
+    .select("id,message,house,is_global,created_at,archived,org")
     .eq("archived", false)
     .gte("created_at", annSince);
   if (aErr) return json({ error: aErr.message }, 500);
@@ -153,7 +154,7 @@ Deno.serve(async (req) => {
       (d) => d.resident_id === r.id && !remindedDoc.has(`${r.id}|${d.id}`),
     );
     const myAnns = (anns ?? []).filter(
-      (a) => (a.is_global || a.house === r.house) && !acked.has(`${r.id}|${a.id}`) && !remindedAnn.has(`${r.id}|${a.id}`),
+      (a) => a.org === r.org && (a.is_global || a.house === r.house) && !acked.has(`${r.id}|${a.id}`) && !remindedAnn.has(`${r.id}|${a.id}`),
     );
     if (!myDocs.length && !myAnns.length) continue;
 
@@ -161,14 +162,15 @@ Deno.serve(async (req) => {
     if (myDocs.length) parts.push(`${myDocs.length} document${myDocs.length === 1 ? "" : "s"} to sign`);
     if (myAnns.length) parts.push(`${myAnns.length} announcement${myAnns.length === 1 ? "" : "s"}`);
     const subject = `Reminder: ${parts.join(" + ")}`;
-    const html = emailHtml(r.name, org, myDocs, myAnns);
+    const orgLabel = orgNames[r.org as string] || "your recovery residence";
+    const html = emailHtml(r.name, orgLabel, myDocs, myAnns);
 
     if (!dryRun) {
       const ok = await sendEmail(r.email!, subject, html);
       if (!ok) { failures.push(r.id); continue; }
       const rows = [
-        ...myDocs.map((d) => ({ resident_id: r.id, kind: "doc", ref: d.id })),
-        ...myAnns.map((a) => ({ resident_id: r.id, kind: "ann", ref: a.id })),
+        ...myDocs.map((d) => ({ resident_id: r.id, kind: "doc", ref: d.id, org: r.org })),
+        ...myAnns.map((a) => ({ resident_id: r.id, kind: "ann", ref: a.id, org: r.org })),
       ];
       if (rows.length) await admin.from("reminders_log").insert(rows);
     }
