@@ -78,7 +78,7 @@ begin
   end if;
 
   update public.residents
-    set pin_hash = extensions.crypt(p_new_pin, extensions.gen_salt('bf')), pin = null
+    set pin_hash = extensions.crypt(p_new_pin, extensions.gen_salt('bf'))
     where id = p_id;
   return true;
 end;
