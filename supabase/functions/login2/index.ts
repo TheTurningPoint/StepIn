@@ -37,8 +37,10 @@ const json = (body: unknown, status = 200) =>
     headers: { ...cors, "Content-Type": "application/json" },
   });
 
-// Simple per-name rate limit: max 5 attempts per rolling 30s window.
+// Per-name lockout: max 8 attempts per rolling 15-minute window.
 // Uses a tiny table `login_attempts` (created via SQL before deploy).
+const LOCK_WINDOW_MS = 15 * 60 * 1000;
+const LOCK_MAX_ATTEMPTS = 8;
 async function rateLimited(name: string): Promise<boolean> {
   const now = Date.now();
   const { data } = await admin
@@ -49,8 +51,8 @@ async function rateLimited(name: string): Promise<boolean> {
 
   if (data) {
     const started = new Date(data.window_start).getTime();
-    if (now - started < 30_000) {
-      if (data.attempts >= 5) return true;
+    if (now - started < LOCK_WINDOW_MS) {
+      if (data.attempts >= LOCK_MAX_ATTEMPTS) return true;
       await admin
         .from("login_attempts")
         .update({ attempts: data.attempts + 1 })
@@ -103,22 +105,18 @@ Deno.serve(async (req) => {
   if (!name || !pin) return json({ error: "Name and PIN required" }, 400);
 
   if (await rateLimited(name.toLowerCase())) {
-    return json({ message: "Too many attempts. Please wait 30 seconds." }, 429);
+    return json({ message: "Too many attempts. Please wait 15 minutes, or ask your manager to reset your PIN." }, 429);
   }
 
-  // Verify name + PIN. PINs are currently stored in plain text.
-  const { data: rows, error } = await admin
-    .from("residents")
-    .select("*")
-    .eq("pin", pin);
+  // Verify name + PIN against the bcrypt hash, server-side (pgcrypto via verify_login).
+  // Scoped by org when the app sends it, so a name+PIN can't cross into another org.
+  const { data: rows, error } = await admin.rpc("verify_login", {
+    p_name: name,
+    p_pin: pin,
+    p_org: org,
+  });
   if (error) return json({ error: "Server error" }, 500);
-
-  // Match on name (+ org when the app sends it, so a name+PIN can't cross into another org).
-  const user = (rows ?? []).find(
-    (r) =>
-      String(r.name).trim().toLowerCase() === name.toLowerCase() &&
-      (!org || String(r.org ?? "") === org),
-  );
+  const user = (rows ?? [])[0];
   if (!user) {
     return json(
       { message: "Name or PIN not found. Check spelling and try again." },
@@ -129,7 +127,8 @@ Deno.serve(async (req) => {
   // Success: clear the attempt counter and hand back the user + token.
   await admin.from("login_attempts").delete().eq("name", name.toLowerCase());
   const token = await signToken(user);
-  // Return the full user (including pin) to match the old login — the app's
-  // "change PIN" screen verifies the current PIN against this client-side.
+  // Never return secrets to the client.
+  delete (user as Record<string, unknown>).pin;
+  delete (user as Record<string, unknown>).pin_hash;
   return json({ user, token });
 });
