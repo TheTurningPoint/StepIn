@@ -1,13 +1,13 @@
-// pinreset — self-serve PIN reset for owners/managers via an emailed code.
+// pinreset — self-serve PIN reset for any user with an email on file, via an emailed code.
 //
-// POST { action: "request", name, org }            -> emails a 6-digit code (if a staff account
-//                                                      with an email matches). Always replies OK
+// POST { action: "request", name, org }            -> emails a 6-digit code (if a matching account
+//                                                      with an email exists). Always replies OK
 //                                                      (never reveals whether an account exists).
 // POST { action: "reset", name, org, code, new_pin } -> verifies the code and sets the new PIN.
 //
 // Protections: codes are stored hashed (SHA-256), expire after 15 min, are single-use, and each
 // code allows at most 5 verify attempts before it's burned (stops brute-forcing the 6 digits).
-// Only role = owner/manager with an email on file can use it; residents are told to ask a manager.
+// Works for any role with an email on file; users without an email are told to ask their manager.
 //
 // Deployed with --no-verify-jwt (public). Required secrets: RESEND_API_KEY (to send; dry-run logs if
 // unset). Auto-provided: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
@@ -38,12 +38,12 @@ async function sha256(s: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function findStaff(name: string, org: string) {
-  // owner OR manager, name + org match, email present.
+async function findUser(name: string, org: string) {
+  // Anyone (resident/manager/owner) with a name + org match and an email on file.
   const { data: rows } = await admin
     .from("residents")
-    .select("id,name,email,role,org")
-    .in("role", ["owner", "manager"]);
+    .select("id,name,email,org")
+    .not("email", "is", null);
   const u = (rows ?? []).find(
     (r) =>
       String(r.name).trim().toLowerCase() === name.toLowerCase() &&
@@ -89,10 +89,10 @@ Deno.serve(async (req) => {
   }
   if (!name) return json({ error: "Name required" }, 400);
 
-  const generic = { ok: true, message: "If an owner/manager account with an email exists, a code was sent." };
+  const generic = { ok: true, message: "If an account with an email on file exists, a code was sent." };
 
   if (action === "request") {
-    const user = await findStaff(name, org);
+    const user = await findUser(name, org);
     if (!user) return json(generic); // don't reveal non-existence
     // Throttle requests per user.
     const since = new Date(Date.now() - REQUEST_WINDOW_MS).toISOString();
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
 
   if (action === "reset") {
     if (!code || !/^[0-9]{4,}$/.test(newPin)) return json({ message: "Enter the code and a 4-digit PIN." }, 400);
-    const user = await findStaff(name, org);
+    const user = await findUser(name, org);
     if (!user) return json({ message: "Invalid or expired code." }, 400);
     const { data: row } = await admin
       .from("pin_resets")
