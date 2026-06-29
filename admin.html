@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InStep — Provision a customer</title>
+<style>
+:root{--ink:#0D1017;--ink-card:#1C2235;--teal:#2BD4D4;--white:#fff;--soft:rgba(255,255,255,0.6);--border:rgba(255,255,255,0.12);--pink:#C0397A;--danger:#E0556E;--success:#37C871;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--ink);color:var(--white);line-height:1.5;padding:28px 18px 60px;}
+.wrap{max-width:460px;margin:0 auto;}
+h1{font-size:24px;font-weight:800;letter-spacing:-0.4px;margin-bottom:4px;}
+.sub{color:var(--soft);font-size:13px;margin-bottom:24px;}
+label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--soft);margin:14px 0 5px;}
+input{width:100%;background:var(--ink-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--white);font-size:16px;}
+input:focus{outline:2px solid var(--teal);}
+.hint{font-size:12px;color:var(--soft);margin-top:4px;}
+button{width:100%;margin-top:22px;background:var(--teal);color:#04222a;border:none;border-radius:12px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;}
+button:disabled{opacity:0.5;}
+#out{margin-top:20px;font-size:14px;line-height:1.6;white-space:pre-wrap;border-radius:10px;padding:14px;display:none;}
+#out.ok{display:block;background:rgba(55,200,113,0.12);border:1px solid var(--success);}
+#out.err{display:block;background:rgba(224,85,110,0.12);border:1px solid var(--danger);}
+a{color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Provision a customer</h1>
+  <p class="sub">Vendor tool. Creates the org, its first owner, and settings. You still add the subdomain in Cloudflare afterward.</p>
+
+  <label>Admin secret</label>
+  <input type="password" id="secret" placeholder="ADMIN_SECRET" autocomplete="off">
+
+  <label>Subdomain</label>
+  <input type="text" id="subdomain" placeholder="theturningpoint" autocapitalize="off" autocorrect="off">
+  <div class="hint">Lowercase letters, numbers, dashes. Becomes <em>subdomain</em>.instepapp.com</div>
+
+  <label>Organization name</label>
+  <input type="text" id="org_name" placeholder="The Turning Point">
+
+  <label>Owner name (their login name)</label>
+  <input type="text" id="owner_name" placeholder="Tanya">
+
+  <label>Owner PIN (4 digits)</label>
+  <input type="text" id="owner_pin" inputmode="numeric" maxlength="4" placeholder="4729">
+
+  <label>Owner email (optional, for reminders / PIN reset)</label>
+  <input type="email" id="owner_email" placeholder="owner@example.com" autocapitalize="off">
+
+  <button id="go" onclick="provision()">Create customer</button>
+  <div id="out"></div>
+</div>
+<script>
+const FN='https://vhxswxilkuwsxwpsdjxl.supabase.co/functions/v1/provisionorg';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
+function val(id){return document.getElementById(id).value.trim();}
+async function provision(){
+  const out=document.getElementById('out');const btn=document.getElementById('go');
+  const body={secret:val('secret'),subdomain:val('subdomain'),org_name:val('org_name'),owner_name:val('owner_name'),owner_pin:val('owner_pin'),owner_email:val('owner_email')};
+  out.style.display='none';btn.disabled=true;btn.textContent='Creating…';
+  try{
+    const res=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON,'Authorization':'Bearer '+ANON},body:JSON.stringify(body)});
+    const d=await res.json().catch(()=>({}));
+    if(res.ok&&d.ok){
+      out.className='ok';
+      out.textContent='✓ Created '+d.subdomain+'\n\nLogin: '+d.login_url+'\nOwner signs in with the name + PIN you set.\n\nNext: add '+d.subdomain+'.instepapp.com as a Cloudflare Worker custom domain.';
+    }else{
+      out.className='err';out.textContent='✕ '+(d.error||'Could not create. Check the secret and fields.');
+    }
+  }catch(e){out.className='err';out.textContent='✕ Network error. Try again.';}
+  btn.disabled=false;btn.textContent='Create customer';
+}
+</script>
+</body></html>

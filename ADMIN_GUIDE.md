@@ -19,9 +19,24 @@ Login = name + 4-digit PIN → the `login2` Edge Function issues a token with th
 
 ---
 
-## Onboard a new house (today, single-org)
+## Onboard a new customer (the easy way)
 
-Run these in the Supabase SQL Editor.
+Use the provisioning page instead of SQL:
+
+1. Open **`instepapp.com/admin.html`** (vendor-only; useless without the secret).
+2. Enter your **ADMIN_SECRET**, the customer's **subdomain**, **org name**, **owner name**, a 4-digit
+   **owner PIN**, and (optional) **owner email**. Tap **Create customer**. This creates the org, the
+   first owner (PIN hashed), and the settings row.
+3. **Add the subdomain in Cloudflare** as a Worker custom domain (`<subdomain>.instepapp.com`) — the
+   one step that can't be automated.
+4. Send the owner their URL + name + temporary PIN; they sign in and can change the PIN / add residents.
+
+One-time setup: set **`ADMIN_SECRET`** (a long random string) in Supabase → Edge Functions → secrets.
+The `provisionorg` function (deployed by the Actions workflow) reads it.
+
+## Onboard a new house manually (fallback, SQL)
+
+If you'd rather not use the page, run these in the Supabase SQL Editor.
 
 **1. Branding row** (skip if the org already exists):
 ```sql
