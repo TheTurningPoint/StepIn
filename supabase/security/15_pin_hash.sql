@@ -7,12 +7,12 @@
 --
 -- Safe to run more than once.
 
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema extensions;
 
 -- Hash column + backfill existing plaintext PINs.
 alter table public.residents add column if not exists pin_hash text;
 update public.residents
-  set pin_hash = crypt(pin, gen_salt('bf'))
+  set pin_hash = extensions.crypt(pin, extensions.gen_salt('bf'))
   where pin_hash is null and pin is not null;
 
 -- verify_login: returns the matching resident row when name (+org) and PIN match the hash.
@@ -21,13 +21,13 @@ create or replace function public.verify_login(p_name text, p_pin text, p_org te
 returns setof public.residents
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select * from public.residents
   where lower(trim(name)) = lower(trim(p_name))
     and (p_org is null or p_org = '' or org = p_org)
     and pin_hash is not null
-    and pin_hash = crypt(p_pin, pin_hash);
+    and pin_hash = extensions.crypt(p_pin, pin_hash);
 $$;
 revoke all on function public.verify_login(text,text,text) from public, anon, authenticated;
 grant execute on function public.verify_login(text,text,text) to service_role;
@@ -40,7 +40,7 @@ create or replace function public.set_pin(p_id text, p_new_pin text, p_current_p
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   claims json;
@@ -65,7 +65,7 @@ begin
 
   if caller_sub = p_id then
     -- self change: verify current PIN
-    if target.pin_hash is null or target.pin_hash <> crypt(coalesce(p_current_pin,''), target.pin_hash) then
+    if target.pin_hash is null or target.pin_hash <> extensions.crypt(coalesce(p_current_pin,''), target.pin_hash) then
       raise exception 'current PIN incorrect';
     end if;
   else
@@ -78,7 +78,7 @@ begin
   end if;
 
   update public.residents
-    set pin_hash = crypt(p_new_pin, gen_salt('bf')), pin = null
+    set pin_hash = extensions.crypt(p_new_pin, extensions.gen_salt('bf')), pin = null
     where id = p_id;
   return true;
 end;
