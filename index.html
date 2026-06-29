@@ -1652,7 +1652,7 @@ function renderOwnerDashboard(){
   if(!selectedHouse){
     const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
     const req=cachedSettings.required||3;const weekStart=getWeekStart();
-    if(!houses.length){if(curfewEl)curfewEl.innerHTML='<p class="text-mid">No houses yet.</p>';if(attEl)attEl.innerHTML='';return;}
+    if(!houses.length){if(curfewEl)curfewEl.innerHTML='<div class="empty"><div class="empty-icon">&#127968;</div><h3>No houses yet</h3><p>Add your first house and manager to start tracking residents.</p><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add house</button></div>';if(attEl){attEl.innerHTML='';const c=attEl.closest('.card');if(c)c.style.display='none';}return;}
     const resCardAll=document.getElementById('residents-card');if(resCardAll)resCardAll.style.display='none';
     const totalRes=allResidents.filter(r=>r.role==='resident').length;
     const totalMtgs=allCheckins.filter(c=>new Date(c.ts)>=weekStart).length;
@@ -1680,7 +1680,7 @@ function renderOwnerDashboard(){
       else if(lastLog&&lastLog.action==='in'){curfewStatus=lastLog.late?'Late':'Home';sc=lastLog.late?'late':'home';}
       else if(lastLog&&lastLog.action==='out'){curfewStatus='Out'+(lastLog.destination?'→ '+lastLog.destination:'');sc='out';}
       return'<div class="resident-row" onclick="viewResident(\''+r.id+'\')" style="cursor:pointer"><div class="avatar">'+r.name[0]+'</div><div style="flex:1"><div class="resident-name">'+r.name+'</div><div class="resident-sub">Phase '+(r.phase||1)+' · <span style="color:'+attColor+';font-weight:700">'+wc+'/'+req+' meetings</span> · <span class="pill '+(pillClass[sc]||'pill-gray')+'" style="font-size:10px">'+curfewStatus+'</span></div></div></div>';
-    }).join(''):'<p class="text-mid">No residents in this house.</p>';
+    }).join(''):'<div class="empty"><div class="empty-icon">&#128101;</div><h3>No residents in this house</h3><p>Residents added to this house will appear here.</p></div>';
     if(curfewEl)curfewEl.innerHTML=backBtn+houseHeader+rows;
     if(attEl)attEl.innerHTML='';const attCard=attEl?attEl.closest('.card'):null;if(attCard)attCard.style.display='none';
   }
