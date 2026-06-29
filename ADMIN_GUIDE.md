@@ -80,6 +80,32 @@ That's it — a house can be live in a few minutes.
 
 ---
 
+## Monitoring & uptime (know when something breaks)
+
+Three layers, cheapest first:
+
+1. **In-app error log.** Run `supabase/security/19_app_errors.sql` once. After that, any uncaught
+   JavaScript error a real (signed-in, non-demo) user hits is best-effort written to the `app_errors`
+   table — message, trimmed stack, page URL, browser. It's de-duped and capped per session so it can't
+   spam. **Owners see it in the app:** Settings → **🔌 App errors** (newest first). Normally empty; if
+   the same error keeps appearing, that's your signal to look. No PII is stored there.
+
+2. **Deploy health checks (already running).** The `deploy-functions.yml` Action runs three smoke
+   tests on every function deploy: a deliberately-wrong `login2` (expects 401 → proves the function +
+   DB + rate-limit table are alive), a real-login token test (optional, needs repo secrets
+   `TEST_NAME`/`TEST_PIN`), and a "stranger gets nothing" lockdown check. A red Action = something is
+   wrong before users see it.
+
+3. **External uptime monitor (recommended, free).** The above only fire on deploys. To know if the
+   live site goes down, add a free monitor — e.g. [UptimeRobot](https://uptimerobot.com):
+   - Add an **HTTP(s)** monitor for `https://instepapp.com` (and each tenant subdomain, e.g.
+     `https://theturningpoint.instepapp.com`), 5-minute interval.
+   - Optionally add a **keyword** monitor for the `login2` function URL that alerts if it stops
+     returning a response.
+   - Point alerts at your email/phone. This tells you about an outage before a customer does.
+
+---
+
 ## ⚠️ Multi-tenancy status — read before independent customer #2
 
 The current backend is safe for **one organization** (one owner, any number of that owner's houses).
