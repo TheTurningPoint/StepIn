@@ -80,6 +80,7 @@ async function signToken(user: Record<string, unknown>): Promise<string> {
       sub: String(user.id),
       house: user.house ?? null,
       urole: user.role ?? "resident",
+      org: user.org ?? null,
       exp: getNumericDate(60 * 60 * 24 * 30), // 30 days, matches the app's persistent session
     },
     key,
@@ -90,11 +91,12 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  let name = "", pin = "";
+  let name = "", pin = "", org = "";
   try {
     const body = await req.json();
     name = (body.name ?? "").trim();
     pin = (body.pin ?? "").trim();
+    org = (body.org ?? "").trim();
   } catch {
     return json({ error: "Bad request" }, 400);
   }
@@ -111,8 +113,11 @@ Deno.serve(async (req) => {
     .eq("pin", pin);
   if (error) return json({ error: "Server error" }, 500);
 
+  // Match on name (+ org when the app sends it, so a name+PIN can't cross into another org).
   const user = (rows ?? []).find(
-    (r) => String(r.name).trim().toLowerCase() === name.toLowerCase(),
+    (r) =>
+      String(r.name).trim().toLowerCase() === name.toLowerCase() &&
+      (!org || String(r.org ?? "") === org),
   );
   if (!user) {
     return json(
