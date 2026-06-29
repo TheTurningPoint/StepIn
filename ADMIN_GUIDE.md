@@ -106,30 +106,39 @@ Three layers, cheapest first:
 
 ---
 
-## ⚠️ Multi-tenancy status — read before independent customer #2
+## Multi-tenancy status — read before independent customer #2
 
-The current backend is safe for **one organization** (one owner, any number of that owner's houses).
-It is **not yet safe to put two *independent* owners on the same backend**, for two reasons:
+Shared multi-tenancy is **built**. Independent owners can safely share this one backend, isolated by
+organization (not just by house name):
 
-1. **`settings` is a single shared row** (`id = 1`). A second org's manager would overwrite the first
-   org's name / meeting requirement / lab policy / house GPS.
-2. **Isolation keys on the house *name*** (`house = auth.jwt()->>'house'`). Two unrelated orgs that
-   both name a house "Main House" could see each other's residents and records. House names aren't
-   globally unique.
+- Every scoped table carries an **`org`** column (the subdomain, e.g. `theturningpoint`) —
+  `13_org_isolation.sql`.
+- **`login2`** puts the user's `org` in the login token (JWT `org` claim).
+- **RLS isolates by `org`** — house-scoped tables require `org = auth.jwt()->>'org'` AND (owner OR same
+  house); org-wide tables (`settings`, `document_templates`, `announcement_acks`) match on `org` only —
+  `14_org_rls.sql`. So two unrelated orgs that both name a house "Main House" can no longer see each
+  other's data.
+- **`settings` is keyed per-org** (no longer the shared `id = 1` row); a new org's settings row is
+  created automatically on its first in-app save.
 
-**Two ways to fix it (pick before onboarding an unrelated owner):**
+### Go-live checklist before onboarding an independent customer #2
 
-- **Simplest now — one backend per customer.** Give each independent customer their own Supabase
-  project (run the migrations, set their own `SUPABASE_URL`/anon key for that deployment). Complete
-  isolation; the singleton settings and house-name collisions stop mattering. Cost: a per-customer
-  setup and a way to point each subdomain's deployment at its own backend.
+The isolation is only *enforced* once these are applied in **this** Supabase project, in order:
 
-- **Proper shared multi-tenancy (bigger build).** Add an `org` (or `org_id`) column to every scoped
-  table (`residents`, `checkins`, `curfew_log`, `chores`, `drug_tests`, `incidents`,
-  `resident_documents`, `grievances`, `announcements`, `events`, `settings`); have `login2` put the
-  user's `org` in the JWT; rewrite the RLS policies to `org = auth.jwt()->>'org'` (keep `house` as a
-  secondary filter); and key `settings` reads/writes by `org` instead of `id=1`. This lets all
-  customers share one backend safely. It's a careful, well-tested change — recovery-resident PII is at
-  stake — so plan it as its own project, not a quick patch.
+1. `13_org_isolation.sql` has been run (adds `org` everywhere, backfills existing rows). ✅ done for TTP.
+2. The current `login2` (issues the `org` claim) is deployed. ✅ shipped.
+3. `14_org_rls.sql` has been run — **this is the enforcement step.** If you haven't run it yet, do it
+   before adding a second org. Re-runnable; revert by re-running `05_house_isolation.sql`.
+4. **Everyone signs in once more after step 3.** Tokens minted before `14` have no `org` claim and will
+   be denied — old saved sessions just get a one-time "please sign in again." Expected, not a bug.
 
-Until one of these is done: **one organization per backend.** The Turning Point is fine as-is.
+### Verify isolation before relying on it
+
+Provision a throwaway org via `admin.html` (e.g. `testorg`), give it a house with the **same name** as
+one of an existing org's houses, then confirm: the `testorg` owner/manager sees only `testorg` data and
+The Turning Point sees only its own — the house-name collision no longer leaks. Delete the test rows when
+done.
+
+> Fallback (only if you ever want hard physical separation): give a customer their own Supabase project
+> and point their subdomain's deployment at it. Rarely needed now that org isolation is in place.
+
