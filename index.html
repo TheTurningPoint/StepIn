@@ -2369,7 +2369,13 @@ function renderDashAttention(){
   if(isStaff()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
   let awaySignins=0;
   if(isStaff()){const cutoff=Date.now()-7*86400000;awaySignins=(curfewLog()||[]).filter(l=>l.action==='in'&&new Date(l.ts).getTime()>=cutoff&&signInAwayMi(l)).length;}
-  if(!openGrv&&!pending.length&&!unsentLab&&!awaySignins){el.innerHTML='';return;}
+  if(!openGrv&&!pending.length&&!unsentLab&&!awaySignins){
+    el.innerHTML='<div class="card" style="border:1.5px solid var(--success);background:#F0FBF4;margin-bottom:16px;display:flex;align-items:center;gap:10px">'
+      +'<span style="font-size:20px">&#9989;</span>'
+      +'<div><div style="font-size:14px;font-weight:800;color:var(--success)">All caught up</div>'
+      +'<div style="font-size:12px;color:var(--mid)">Nothing needs your attention right now.</div></div></div>';
+    return;
+  }
   let rows='';
   if(openGrv){rows+='<div onclick="mgrTab(\'report\',null);switchReportTab(\'grievances\')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer">'
     +'<div style="font-size:14px;font-weight:700;color:var(--charcoal)">&#128488;&#65039; '+openGrv+' open grievance'+(openGrv>1?'s':'')+'</div><span style="color:var(--mid);font-size:18px">&rsaquo;</span></div>';}
