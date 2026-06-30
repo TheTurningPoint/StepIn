@@ -1326,7 +1326,7 @@ async function enterResident(){
   showDemoBanner('screen-resident');
   const h=new Date().getHours();
   const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('res-greeting').textContent=g+', '+currentUser.name.split(' ')[0];
+  document.getElementById('res-greeting').textContent=g+', '+((currentUser.name||'there').split(' ')[0]);
   document.querySelectorAll('#screen-resident .nav-btn').forEach(b=>b.classList.remove('active'));
   const homeBtn=document.getElementById('res-nav-home');if(homeBtn)homeBtn.classList.add('active');
   ['home','chores','calendar','meetings','pin'].forEach(t=>{const el=document.getElementById('res-tab-'+t);if(el)el.style.display=t==='home'?'block':'none';});
@@ -1358,7 +1358,8 @@ function renderStickyNote(){
   if(!cachedAnnouncement||cachedAcks.some(a=>a.resident_id===currentUser.id)){el.innerHTML='';return;}
   el.innerHTML='<div style="background:#FFF9C4;border:2px solid #F0D000;border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:2px 3px 8px rgba(0,0,0,0.15)"><div style="font-size:13px;font-weight:700;color:#7B6000;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Notice from management</div><div style="font-size:15px;color:#3A3000;line-height:1.6;margin-bottom:14px">'+cachedAnnouncement.message+'</div><button class="btn btn-navy btn-sm" onclick="ackAnnouncement()" style="background:#7B6000">Got it &#10003;</button></div>';
 }
-async function ackAnnouncement(){if(!cachedAnnouncement)return;const record={id:'ack-'+Date.now(),announcement_id:cachedAnnouncement.id,resident_id:currentUser.id,resident_name:currentUser.name,org:curOrg()};const{error}=await sb.from('announcement_acks').insert(record);if(error){toast('Could not acknowledge.');return;}cachedAcks.push(record);renderStickyNote();toast('Got it!');}
+let _ackBusy=false;
+async function ackAnnouncement(){if(!cachedAnnouncement||_ackBusy)return;_ackBusy=true;const record={id:'ack-'+Date.now(),announcement_id:cachedAnnouncement.id,resident_id:currentUser.id,resident_name:currentUser.name,org:curOrg()};const{error}=await sb.from('announcement_acks').insert(record);if(error){_ackBusy=false;toast('Could not acknowledge.');return;}cachedAcks.push(record);renderStickyNote();_ackBusy=false;toast('Got it!');}
 
 function renderCurfewAction(){
   const el=document.getElementById('res-curfew-action');if(!el)return;
@@ -2449,15 +2450,16 @@ async function submitDocSignature(){
   if(!docSigHasMark||!sigHasRealMark(docSigCanvas)){toast('Please sign before submitting.',true);return;}
   if(!currentSigningDoc)return;
   const btn=document.getElementById('doc-sign-btn');
+  if(btn.dataset.saving)return;btn.dataset.saving='1';
   btn.textContent='Saving…';btn.classList.add('btn-disabled');
   const sigData=docSigCanvas.toDataURL('image/jpeg',0.6);
   const updates={status:'resident_signed',resident_sig:sigData,resident_signed_at:new Date().toISOString()};
   if(!isDemoMode){
     const{error}=await sb.from('resident_documents').update(updates).eq('id',currentSigningDoc.id);
-    if(error){toast('Could not save. Try again.',true);btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');return;}
+    if(error){toast('Could not save. Try again.',true);btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}
   }
   cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentSigningDoc.id?{...d,...updates}:d);
-  btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');
+  btn.textContent='Sign & confirm ✓';btn.classList.remove('btn-disabled');delete btn.dataset.saving;
   closeModal('modal-sign-doc');
   toast('Document signed! Your manager will countersign shortly.');
   renderResDocsCard();
@@ -2502,15 +2504,16 @@ async function submitCountersign(){
   if(!mgrSigHasMark||!sigHasRealMark(mgrSigCanvas)){toast('Please sign before submitting.',true);return;}
   if(!currentCountersignDoc)return;
   const btn=document.getElementById('countersign-btn');
+  if(btn.dataset.saving)return;btn.dataset.saving='1';
   btn.textContent='Saving…';btn.classList.add('btn-disabled');
   const sigData=mgrSigCanvas.toDataURL('image/jpeg',0.6);
   const updates={status:'complete',manager_sig:sigData,manager_signed_at:new Date().toISOString(),manager_name:currentUser.name};
   if(!isDemoMode){
     const{error}=await sb.from('resident_documents').update(updates).eq('id',currentCountersignDoc.id);
-    if(error){toast('Could not save. Try again.',true);btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');return;}
+    if(error){toast('Could not save. Try again.',true);btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');delete btn.dataset.saving;return;}
   }
   cachedResidentDocs=cachedResidentDocs.map(d=>d.id===currentCountersignDoc.id?{...d,...updates}:d);
-  btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');
+  btn.textContent='Countersign ✓';btn.classList.remove('btn-disabled');delete btn.dataset.saving;
   closeModal('modal-countersign-doc');
   toast('Document countersigned and complete.');
   renderDashDocsAlert();

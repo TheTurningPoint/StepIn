@@ -60,15 +60,22 @@ Deno.serve(async (req) => {
   const { error: orgErr } = await admin.from("orgs").insert({ subdomain, name: orgName });
   if (orgErr) return json({ error: "Could not create org: " + orgErr.message }, 500);
 
-  const ownerId = "owner-" + Date.now();
+  const ownerId = "owner-" + Date.now() + "-" + Math.floor(Math.random() * 1e6); // collision-resistant
   const { error: resErr } = await admin.from("residents").insert({
     id: ownerId, name: ownerName, role: "owner", org: subdomain, status: "active",
     email: ownerEmail && ownerEmail.includes("@") ? ownerEmail : null,
   });
-  if (resErr) return json({ error: "Could not create owner: " + resErr.message }, 500);
+  if (resErr) {
+    await admin.from("orgs").delete().eq("subdomain", subdomain); // roll back the orphan org row so it can be retried
+    return json({ error: "Could not create owner: " + resErr.message }, 500);
+  }
 
   const { error: pinErr } = await admin.rpc("admin_set_pin_hash", { p_id: ownerId, p_new_pin: ownerPin });
-  if (pinErr) return json({ error: "Could not set owner PIN: " + pinErr.message }, 500);
+  if (pinErr) {
+    await admin.from("residents").delete().eq("id", ownerId); // roll back the owner that has no usable PIN
+    await admin.from("orgs").delete().eq("subdomain", subdomain);
+    return json({ error: "Could not set owner PIN: " + pinErr.message }, 500);
+  }
 
   await admin.from("settings").upsert(
     { org: subdomain, house_name: orgName, required: 3, lab_policy: "all" },
