@@ -105,8 +105,10 @@ Deno.serve(async (req) => {
   const { data: curfew } = await admin.from("curfew_log").select("late,action,house,org,ts").gte("ts", since);
   const { data: grievances } = await admin.from("grievances").select("status,house,org,grievance_date");
 
-  // Already sent this ISO week?
-  const { data: sentLog } = await admin.from("reminders_log").select("resident_id").eq("kind", "weekly").eq("ref", weekRef);
+  // Already sent this ISO week? Match ref >= this week's Monday (ISO dates sort chronologically) so it
+  // also catches rows written earlier this week under the old run-date key — no double-send at the
+  // deploy boundary — while next week's later Monday still triggers a fresh send.
+  const { data: sentLog } = await admin.from("reminders_log").select("resident_id").eq("kind", "weekly").gte("ref", weekRef);
   const alreadySent = new Set((sentLog ?? []).map((x) => x.resident_id));
 
   const inScope = (r: { org: string; house?: string | null }, rec: { org: string; role: string; house?: string | null }) =>

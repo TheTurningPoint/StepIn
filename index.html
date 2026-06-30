@@ -1579,9 +1579,10 @@ async function ciSubmit(){
   const signerName=document.getElementById('sig-name').value.trim();
   if(!sigHasMark||!sigHasRealMark(sigCanvas)){toast('Please sign your full signature.');return;}
   if(!signerName){toast('Please enter the signer\'s name.');return;}
-  // Block a duplicate check-in to the SAME meeting on the SAME day (different meetings still count).
-  const ciDay=new Date(checkinData.ts).toDateString();
-  if((allCheckins||[]).some(c=>c.resident_id===currentUser.id&&(c.meeting_name||'').trim().toLowerCase()===(checkinData.meeting_name||'').trim().toLowerCase()&&new Date(c.ts).toDateString()===ciDay)){toast('You already checked in to this meeting today.',true);return;}
+  // Block an accidental rapid RE-submit of the same meeting (within 5 min) — but allow genuinely
+  // separate same-named sessions later in the day (a resident can attend two "AA" meetings).
+  const ciTs=new Date(checkinData.ts).getTime();
+  if((allCheckins||[]).some(c=>c.resident_id===currentUser.id&&(c.meeting_name||'').trim().toLowerCase()===(checkinData.meeting_name||'').trim().toLowerCase()&&Math.abs(new Date(c.ts).getTime()-ciTs)<300000)){toast('You just checked in to this meeting a moment ago.',true);return;}
   const btn=document.getElementById('submit-btn');
   if(btn.dataset.saving){return;}
   btn.dataset.saving='1';
