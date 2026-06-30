@@ -20,6 +20,18 @@ const FROM = "InStep <reminders@instepapp.com>";
 const WINDOW_DAYS = 7;
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
+
+// Effective screening result, mirroring effResult() in index.html: a lab verdict overrides the instant
+// test — prescribed/negative clears an instant positive (not a violation), positive confirms.
+function effResult(t: { result?: string; lab_result?: string; lab_sent_date?: string | null }): string | undefined {
+  let r = t.lab_result;
+  if (r === "confirmed") r = "positive";
+  if (t.lab_sent_date && r) {
+    if (r === "prescribed" || r === "negative") return "pass";
+    if (r === "positive") return "fail";
+  }
+  return t.result;
+}
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -85,7 +97,7 @@ Deno.serve(async (req) => {
 
   const { data: residents } = await admin.from("residents").select("id,house,org,status,role").eq("status", "active").eq("role", "resident");
   const { data: checkins } = await admin.from("checkins").select("resident_id,house,org,ts").gte("ts", since);
-  const { data: drugs } = await admin.from("drug_tests").select("result,house,org,test_date").gte("test_date", sinceDate);
+  const { data: drugs } = await admin.from("drug_tests").select("result,lab_result,lab_sent_date,house,org,test_date").gte("test_date", sinceDate);
   const { data: incidents } = await admin.from("incidents").select("house,org,incident_date").gte("incident_date", sinceDate);
   const { data: curfew } = await admin.from("curfew_log").select("late,action,house,org,ts").gte("ts", since);
   const { data: grievances } = await admin.from("grievances").select("status,house,org,grievance_date");
@@ -119,8 +131,8 @@ Deno.serve(async (req) => {
       meetings: ciInScope.length,
       onTrack,
       screenings: dr.length,
-      positives: dr.filter((d) => d.result === "fail").length,
-      refused: dr.filter((d) => d.result === "refused").length,
+      positives: dr.filter((d) => effResult(d) === "fail").length,
+      refused: dr.filter((d) => effResult(d) === "refused").length,
       late: cf.length,
       incidents: inc.length,
       grievancesNew: grAll.filter((g) => (g.grievance_date as string) >= sinceDate).length,
