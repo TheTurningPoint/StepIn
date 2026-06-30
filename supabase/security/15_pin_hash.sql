@@ -25,7 +25,7 @@ set search_path = public, extensions
 as $$
   select * from public.residents
   where lower(trim(name)) = lower(trim(p_name))
-    and (p_org is null or p_org = '' or org = p_org)
+    and p_org is not null and p_org <> '' and org = p_org  -- require an explicit org; empty must never match all tenants
     and pin_hash is not null
     and pin_hash = extensions.crypt(p_pin, pin_hash);
 $$;

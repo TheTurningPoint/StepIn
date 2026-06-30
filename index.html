@@ -1125,7 +1125,7 @@ const isOwner=()=>currentUser&&currentUser.role==='owner';
 const isStaff=()=>currentUser&&(currentUser.role==='manager'||currentUser.role==='owner');
 const myHouse=()=>isOwner()?(selectedHouse||null):currentUser&&currentUser.house;
 const orgName=()=>(cachedSettings&&cachedSettings.house_name)||(window.currentOrg&&currentOrg.name)||'InStep';
-const curOrg=()=>window.SI_ORG||null; // current tenant (subdomain), null in demo/local
+const curOrg=()=>window.SI_ORG||(currentUser&&currentUser.org)||null; // tenant: subdomain, else the logged-in user's own org (covers apex/www/preview hosts); null in demo
 // --- Lightweight error monitoring: best-effort log uncaught errors so the owner/vendor can see breakage.
 // Real logins only (never demo/local), de-duped, capped per session, and fully swallowed on failure.
 let _errSeen={},_errSent=0;

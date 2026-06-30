@@ -103,6 +103,7 @@ Deno.serve(async (req) => {
     return json({ error: "Bad request" }, 400);
   }
   if (!name || !pin) return json({ error: "Name and PIN required" }, 400);
+  if (!org) return json({ error: "Missing organization" }, 400); // an empty org would match across tenants
 
   if (await rateLimited(name.toLowerCase())) {
     return json({ message: "Too many attempts. Please wait 15 minutes, or ask your manager to reset your PIN." }, 429);

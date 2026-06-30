@@ -44,13 +44,15 @@ async function findUser(name: string, org: string) {
     .from("residents")
     .select("id,name,email,org")
     .not("email", "is", null);
-  const u = (rows ?? []).find(
+  if (!org) return null; // require an explicit org — never match across tenants
+  const matches = (rows ?? []).filter(
     (r) =>
       String(r.name).trim().toLowerCase() === name.toLowerCase() &&
-      (org === "" || String(r.org ?? "") === org) &&
+      String(r.org ?? "") === org &&
       r.email && String(r.email).includes("@"),
   );
-  return u ?? null;
+  if (matches.length !== 1) return null; // ambiguous (same name twice in an org) → refuse rather than guess
+  return matches[0];
 }
 
 async function sendEmail(to: string, code: string, org: string): Promise<boolean> {
@@ -88,6 +90,7 @@ Deno.serve(async (req) => {
     return json({ error: "Bad request" }, 400);
   }
   if (!name) return json({ error: "Name required" }, 400);
+  if (!org) return json({ error: "Missing organization" }, 400); // never allow a cross-tenant (empty-org) reset
 
   const generic = { ok: true, message: "If an account with an email on file exists, a code was sent." };
 
