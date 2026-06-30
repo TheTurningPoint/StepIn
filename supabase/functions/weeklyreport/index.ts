@@ -79,6 +79,9 @@ Deno.serve(async (req) => {
   const since = new Date(now - WINDOW_DAYS * 86400000).toISOString();
   const sinceDate = since.slice(0, 10);
   const runRef = new Date(now).toISOString().slice(0, 10);
+  // Dedupe by ISO week (the week's Monday), NOT a rolling 7-day window — so a daily cron sends once per
+  // week and a late/early weekly run can't double-send or skip a week from clock jitter.
+  const weekRef = new Date(now - (((new Date(now).getUTCDay() + 6) % 7)) * 86400000).toISOString().slice(0, 10);
   const rangeLabel = `${sinceDate} – ${runRef}`;
 
   // Recipients: active owners/managers with an email.
@@ -102,14 +105,14 @@ Deno.serve(async (req) => {
   const { data: curfew } = await admin.from("curfew_log").select("late,action,house,org,ts").gte("ts", since);
   const { data: grievances } = await admin.from("grievances").select("status,house,org,grievance_date");
 
-  // Already sent this run?
-  const { data: sentLog } = await admin.from("reminders_log").select("resident_id").eq("kind", "weekly").gte("sent_at", since);
+  // Already sent this ISO week?
+  const { data: sentLog } = await admin.from("reminders_log").select("resident_id").eq("kind", "weekly").eq("ref", weekRef);
   const alreadySent = new Set((sentLog ?? []).map((x) => x.resident_id));
 
   const inScope = (r: { org: string; house?: string | null }, rec: { org: string; role: string; house?: string | null }) =>
     r.org === rec.org && (rec.role === "owner" || r.house === rec.house);
 
-  let sent = 0;
+  let sent = 0, failures = 0;
   for (const rec of recipients) {
     if (alreadySent.has(rec.id)) continue;
     const info = orgInfo[rec.org as string] || { name: "your residence", required: 3 };
@@ -143,11 +146,12 @@ Deno.serve(async (req) => {
     const html = emailHtml(rec.name as string, scopeLabel, rangeLabel, s);
     if (!dryRun) {
       const ok = await sendEmail(rec.email as string, subject, html);
-      if (!ok) continue;
-      await admin.from("reminders_log").insert({ resident_id: rec.id, kind: "weekly", ref: runRef, org: rec.org });
+      if (!ok) { failures++; continue; } // leave no log row → retried next run
+      const { error: logErr } = await admin.from("reminders_log").insert({ resident_id: rec.id, kind: "weekly", ref: weekRef, org: rec.org });
+      if (logErr) console.error("weekly reminders_log insert failed for", rec.id, logErr.message);
     }
     sent++;
   }
 
-  return json({ ok: true, dryRun, sent, recipients: recipients.length });
+  return json({ ok: true, dryRun, sent, failures, recipients: recipients.length });
 });

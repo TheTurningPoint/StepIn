@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
         ...myDocs.map((d) => ({ resident_id: r.id, kind: "doc", ref: d.id, org: r.org })),
         ...myAnns.map((a) => ({ resident_id: r.id, kind: "ann", ref: a.id, org: r.org })),
       ];
-      if (rows.length) await admin.from("reminders_log").insert(rows);
+      if (rows.length) { const { error: logErr } = await admin.from("reminders_log").insert(rows); if (logErr) console.error("reminders_log insert failed for", r.id, logErr.message); }
     }
     emailed++;
     docCount += myDocs.length;
