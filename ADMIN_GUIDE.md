@@ -106,6 +106,32 @@ Three layers, cheapest first:
 
 ---
 
+## Scaling to a large facility (100+ residents) — ready when you need it
+
+The app loads each org's data into the browser and filters in memory. That's great up to ~30–50
+residents. A 20–30-resident pilot needs **nothing** below. But before onboarding a facility with
+**100+ residents**, OR once any org builds up many months of check-in/screening history, do this first
+— it's surgical (no schema change; the Supabase/RLS backend already handles 200 fine — the bottleneck
+is 100% client-side load strategy):
+
+1. **Stop bulk-loading inline signatures (the make-or-break).** Signatures are stored inline as base64
+   JPEGs (`sig_data_url`, `admin_sig`, `resident_sig`, `manager_sig`). The bulk list loads pull them
+   even though the list doesn't show them — at 200 residents × a year of history that's 100+ MB on
+   every manager login. Change these selects to explicit column lists that **exclude** the signature
+   columns, and fetch a signature only when opening/printing a single record:
+   - `loadAllDataInner` check-ins — `index.html:1264` (`from('checkins').select('*')`)
+   - `loadDrugTests` — `index.html:1992`
+   - `resident_documents` load — `index.html:2338`
+   This alone removes ~95% of the payload.
+2. **Bound the check-in load** to a recent window (e.g. last 90 days) for the dashboard; query wider
+   date ranges on demand inside the report views. (`index.html:1264` has no `.limit()` / time filter.)
+3. **Group residents by building/wing/track** in the UI using the existing `house` field and the owner
+   roll-up (already groups by "house") — so 200 residents show as grouped buildings, not one flat list.
+
+Effort: roughly a focused half-day, mostly #1. Do it during a pilot, not under deadline.
+
+---
+
 ## Multi-tenancy status — read before independent customer #2
 
 Shared multi-tenancy is **built**. Independent owners can safely share this one backend, isolated by
