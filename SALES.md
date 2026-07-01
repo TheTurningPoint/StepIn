@@ -66,6 +66,14 @@ screens."*
   requirement."*
 - **"Built for recovery residences specifically?"** — *"Yes — it's built around the NARR standard:
   attendance, screening, incidents, grievances, signed documents. Not a generic property app."*
+- **"How do documents and signatures work — is that legal?"** — *"Residents e-sign house rules,
+  releases, and agreements right on their phone. You get back a single audit-ready PDF: your exact
+  original, plus a signature page showing both parties, their roles, and timestamps — the same
+  'keep the original, append the signatures' approach e-sign tools like DocuSign use. That's a valid
+  electronic signature for this kind of paperwork — intent to sign, consent, and a retained record are
+  all captured — and it's searchable and printable for your NARR file instead of sitting in a binder.
+  For anything unusually high-stakes you'd still use a dedicated e-sign service, but for house documents
+  this is exactly right."* (Honest framing — don't claim courtroom-grade tamper-proofing.)
 
 If you don't know an answer, say *"good question, let me confirm and get right back to you."* Never
 guess on data/privacy questions.
