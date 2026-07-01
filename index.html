@@ -1084,10 +1084,11 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 
 <div class="modal-bg" id="modal-add-doc-template" onclick="if(event.target===this)closeModal('modal-add-doc-template')"><div class="modal"><div class="modal-handle"></div>
 <h2>Add document template</h2>
-<p class="text-mid" style="margin-bottom:16px">Add a document for residents to sign. Paste a public PDF URL (Google Drive, Dropbox, etc.).</p>
+<p class="text-mid" style="margin-bottom:16px">Add a document for residents to sign. Upload the file (kept in-app), or paste a link.</p>
 <div class="field"><label>Document name</label><input type="text" id="doc-template-name" placeholder="e.g. House Rules Agreement"></div>
 <div class="field"><label>Description <span style="font-weight:400;color:var(--mid)">(shown to resident)</span></label><textarea id="doc-template-desc" placeholder="e.g. Please read and sign the house rules..." style="height:70px;resize:none"></textarea></div>
-<div class="field"><label>PDF URL</label><input type="url" id="doc-template-url" placeholder="https://..."></div>
+<div class="field"><label>Upload file <span style="font-weight:400;color:var(--mid)">(PDF or image)</span></label><input type="file" id="doc-template-file" accept="application/pdf,image/*" style="font-size:13px"><p style="font-size:12px;color:var(--mid);margin-top:6px;line-height:1.5">The exact file is stored and preserved on each signed record.</p></div>
+<div class="field"><label>…or a link <span style="font-weight:400;color:var(--mid)">(optional)</span></label><input type="url" id="doc-template-url" placeholder="https://..."></div>
 <div class="field"><label style="display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:15px;font-weight:500;cursor:pointer"><input type="checkbox" id="doc-template-required"> Required for all new residents</label></div>
 <button class="btn btn-primary" id="doc-template-btn" onclick="saveDocTemplate()">Add document</button>
 <button class="btn btn-outline mt8" onclick="closeModal('modal-add-doc-template')">Cancel</button>
@@ -1547,10 +1548,10 @@ function printSignedDoc(docId){
     +'<div style="font-size:13px;color:#666;margin-top:4px;">Resident: <strong>'+d.resident_name+'</strong></div>'
     +'<div style="font-size:12px;color:#C0392B;font-weight:600;margin-top:8px;">&#9888; This record certifies that the parties below have reviewed and agreed to the document referenced above.</div>'
     +'</div>'
-    +(d.template_url?'<div style="background:#f9f9f9;border:1.5px solid #ddd;border-radius:8px;padding:14px;margin-bottom:20px;">'
+    +((d.template_file_path||d.template_url)?'<div style="background:#f9f9f9;border:1.5px solid #ddd;border-radius:8px;padding:14px;margin-bottom:20px;">'
     +'<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Original document</div>'
-    +'<div style="font-size:13px;color:#333;">'+d.template_url+'</div>'
-    +'<div style="font-size:11px;color:#999;margin-top:4px;">The original document is available at the URL above.</div>'
+    +'<div style="font-size:13px;color:#333;">'+(d.template_file_path?'A copy of the exact document signed is stored on file.':d.template_url)+'</div>'
+    +'<div style="font-size:11px;color:#999;margin-top:4px;">'+(d.template_file_path?'Retained with this record.':'The original document is available at the URL above.')+'</div>'
     +'</div>':'')
     +'<div class="sig-block">'
     +'<div class="sig-header">Signatures</div>'
@@ -2528,8 +2529,8 @@ function openSignDoc(docId){
   document.getElementById('sign-doc-name').textContent=doc.template_name;
   document.getElementById('sign-doc-desc').textContent=doc.template_desc||'Please read this document carefully before signing.';
   const link=document.getElementById('sign-doc-link');
-  if(doc.template_url){link.href=doc.template_url;link.style.display='inline-block';}
-  else link.style.display='none';
+  if(docHasFile(doc)){link.style.display='inline-block';link.href='#';link.onclick=function(e){e.preventDefault();openDocFile(doc);};}
+  else{link.style.display='none';link.onclick=null;}
   docSigHasMark=false;
   document.getElementById('modal-sign-doc').classList.add('open');
   setTimeout(initDocSigCanvas,300);
@@ -2639,30 +2640,42 @@ function renderDocTemplates(){
     +'<div style="flex:1"><div style="font-size:14px;font-weight:700">'+t.name+'</div>'
     +'<div style="font-size:12px;color:var(--mid);margin-top:2px">'+t.description+'</div>'
     +(t.required?'<span class="pill pill-yellow" style="margin-top:4px;display:inline-block">Required</span>':'')
+    +(docHasFile(t)?' <span class="pill" style="margin-top:4px;display:inline-block;background:var(--cream);color:var(--mid)">&#128206; '+(t.file_path?'file':'link')+'</span> <button data-tid="'+t.id+'" onclick="openDocForId(\'t\',this.dataset.tid)" style="background:none;border:none;color:var(--pink);font-size:12px;font-weight:700;cursor:pointer;padding:4px 0">View</button>':'')
     +'</div>'
     +'<button data-tid="'+t.id+'" onclick="deleteDocTemplate(this.dataset.tid)" style="background:none;border:none;color:var(--danger);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0">&#128465;</button>'
     +'</div>').join('');
   // Also populate send checkboxes
   const sendList=document.getElementById('docs-send-list');
   if(sendList)sendList.innerHTML=cachedDocTemplates.map(t=>'<label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--sand);cursor:pointer;font-size:14px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--charcoal)">'
-    +'<input type="checkbox" class="doc-send-check" value="'+t.id+'" data-name="'+t.name+'" data-desc="'+(t.description||'')+'" data-url="'+(t.url||'')+'"> '+t.name+'</label>').join('');
+    +'<input type="checkbox" class="doc-send-check" value="'+t.id+'" data-name="'+t.name+'" data-desc="'+(t.description||'')+'" data-url="'+(t.url||'')+'" data-file="'+(t.file_path||'')+'"> '+t.name+'</label>').join('');
 }
 
 function openAddDocTemplate(){
-  ['doc-template-name','doc-template-desc','doc-template-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['doc-template-name','doc-template-desc','doc-template-url','doc-template-file'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const cb=document.getElementById('doc-template-required');if(cb)cb.checked=false;
   document.getElementById('modal-add-doc-template').classList.add('open');
 }
 
+// ── Document files (Supabase Storage; falls back to an external URL) ──
+const DOC_BUCKET='documents';
+function storageReady(){return !isDemoMode&&sb&&sb.storage&&typeof sb.storage.from==='function';}
+async function uploadDocFile(templateId,file){const org=curOrg()||'org';const safe=String(file.name||'file').replace(/[^a-zA-Z0-9._-]/g,'_').slice(-60);const path=org+'/'+templateId+'_'+safe;const{error}=await sb.storage.from(DOC_BUCKET).upload(path,file,{upsert:true,contentType:file.type||undefined});if(error)throw error;return path;}
+function docHasFile(d){return !!(d&&(d.file_path||d.template_file_path||d.url||d.template_url));}
+async function openDocFile(d){if(!d)return;const path=d.file_path||d.template_file_path;const url=d.url||d.template_url;if(path&&storageReady()){try{const{data,error}=await sb.storage.from(DOC_BUCKET).createSignedUrl(path,3600);if(error)throw error;window.open(data.signedUrl,'_blank');return;}catch(e){/* fall through to url */}}if(url){window.open(url,'_blank');return;}toast(isDemoMode?'Demo — the uploaded file opens here in the live app.':'No file attached.',isDemoMode?false:true);}
+function openDocForId(kind,id){const d=kind==='t'?cachedDocTemplates.find(x=>x.id===id):cachedResidentDocs.find(x=>x.id===id);openDocFile(d);}
+function docViewBtn(kind,id){return '<button class="btn btn-outline btn-sm" onclick="openDocForId(\''+kind+'\',\''+id+'\')" style="margin-bottom:12px">&#128196; View document</button>';}
 async function saveDocTemplate(){
   const name=document.getElementById('doc-template-name').value.trim();
   const desc=document.getElementById('doc-template-desc').value.trim();
   const url=document.getElementById('doc-template-url').value.trim();
   const required=document.getElementById('doc-template-required').checked;
   if(!name){toast('Please enter a document name.',true);return;}
+  const fileEl=document.getElementById('doc-template-file');const file=fileEl&&fileEl.files&&fileEl.files[0];
   const btn=document.getElementById('doc-template-btn');
   btn.textContent='Adding…';btn.classList.add('btn-disabled');
   const newT={id:'dt-'+Date.now(),name,description:desc,url:url||null,required,org:curOrg(),created_at:new Date().toISOString()};
+  if(file&&storageReady()){btn.textContent='Uploading…';try{newT.file_path=await uploadDocFile(newT.id,file);}catch(e){toast('Could not upload the file: '+(e.message||'try again'),true);btn.textContent='Add document';btn.classList.remove('btn-disabled');return;}}
+  else if(file&&isDemoMode){toast('Demo — the file isn’t stored, but this works in the live app.');}
   if(!isDemoMode){
     const{error}=await sb.from('document_templates').insert(newT);
     if(error){toast('Could not add: '+error.message,true);btn.textContent='Add document';btn.classList.remove('btn-disabled');return;}
@@ -2689,7 +2702,7 @@ async function sendDocsToResident(){
   const checks=[...document.querySelectorAll('.doc-send-check:checked')];
   if(!checks.length){toast('Select at least one document.',true);return;}
   const r=allResidents.find(x=>x.id===resId);
-  const records=checks.map(cb=>({id:'rd-'+Date.now()+'-'+cb.value,resident_id:resId,resident_name:resName,template_id:cb.value,template_name:cb.dataset.name,template_desc:cb.dataset.desc,template_url:cb.dataset.url,status:'pending',house:r?r.house:null,org:curOrg(),created_at:new Date().toISOString()}));
+  const records=checks.map(cb=>{const rec={id:'rd-'+Date.now()+'-'+cb.value,resident_id:resId,resident_name:resName,template_id:cb.value,template_name:cb.dataset.name,template_desc:cb.dataset.desc,template_url:cb.dataset.url,status:'pending',house:r?r.house:null,org:curOrg(),created_at:new Date().toISOString()};if(cb.dataset.file)rec.template_file_path=cb.dataset.file;return rec;});
   if(!isDemoMode){
     const{error}=await sb.from('resident_documents').insert(records);
     if(error){toast('Could not send: '+error.message,true);return;}
@@ -2702,7 +2715,7 @@ async function sendDocsToResident(){
 async function autoSendDocsToNewResident(resId,resName,house){
   const required=cachedDocTemplates.filter(t=>t.required);
   if(!required.length)return;
-  const records=required.map(t=>({id:'rd-'+Date.now()+'-'+t.id,resident_id:resId,resident_name:resName,template_id:t.id,template_name:t.name,template_desc:t.description||'',template_url:t.url||null,status:'pending',house:house||null,org:curOrg(),created_at:new Date().toISOString()}));
+  const records=required.map(t=>{const rec={id:'rd-'+Date.now()+'-'+t.id,resident_id:resId,resident_name:resName,template_id:t.id,template_name:t.name,template_desc:t.description||'',template_url:t.url||null,status:'pending',house:house||null,org:curOrg(),created_at:new Date().toISOString()};if(t.file_path)rec.template_file_path=t.file_path;return rec;});
   if(!isDemoMode){try{await sb.from('resident_documents').insert(records);}catch(e){console.log('doc send err',e);}}
   cachedResidentDocs=[...cachedResidentDocs,...records];
 }
