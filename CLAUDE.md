@@ -170,3 +170,24 @@ email (MX/SPF/DKIM/DMARC) for the domain live in Cloudflare; the registrar is IO
 - **RLS is the security boundary.** Data tables are locked to logged-in (token-bearing)
   users via Supabase RLS; `login2` issues the token (claims `urole`/`house`). Don't
   loosen policies back to anonymous. See `supabase/security/*.sql`.
+
+## Language standard (recovery-sensitive copy)
+
+This is a recovery context; the words carry real weight and someone on their worst day
+reads them. Hold ALL user-facing copy — in-app strings, marketing pages, emails, demo
+data — to this standard. (Internal enum values like `pass`/`fail` may stay as-is; they
+never reach a human.)
+
+- **Results:** *Negative / Positive / Declined* — never `pass`/`fail`, `clean`/`dirty`,
+  or "failed a test" in anything a person sees.
+- **People:** *resident*, *person in recovery* — never "client" (resident-facing),
+  never "addict"/"abuser"/"junkie".
+- **Events — describe the behavior, not the character:** "declined the test," "signed in
+  after curfew," "starting a new recovery count." Never "refused to comply," "relapsed"
+  as a UI verb, or corrections vocabulary ("contraband," "infraction," "offender").
+- **Claims — say exactly what the software does:** "recorded, timestamped, signed."
+  Use *tamper-evident / permanent / not-even-we-can-read-it* ONLY when it is literally,
+  technically true.
+- **Two voices, on purpose:** resident-facing = warm companion (hearts allowed);
+  staff-facing = calm professional; outbound/marketing = honest operator. **Demo data is
+  sales copy** — hold it to the resident-facing bar.

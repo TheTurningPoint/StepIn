@@ -49,8 +49,8 @@ function emailHtml(name: string, scopeLabel: string, rangeLabel: string, s: Reco
       ${row("Meeting check-ins", String(s.meetings))}
       ${row("Residents on track this week", `${s.onTrack} of ${s.residents}`)}
       ${row("Screenings", String(s.screenings))}
-      ${row("— positive", String(s.positives))}
-      ${row("— refused", String(s.refused))}
+      ${row("— Positive", String(s.positives))}
+      ${row("— Declined", String(s.refused))}
       ${row("Late curfew sign-ins", String(s.late))}
       ${row("Incidents", String(s.incidents))}
       ${row("New grievances", String(s.grievancesNew))}
