@@ -7,3 +7,6 @@ supabase/
 wrangler.toml
 .assetsignore
 CNAME
+admin.html
+beecon-eye.png
+beecon-lockup.png
