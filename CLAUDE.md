@@ -37,7 +37,6 @@ site served as-is). Everything below lives at the repo root.
 | `.assetsignore` | Files Cloudflare must **not** serve publicly (SQL, docs, function source). |
 | `supabase/` | Edge function source (`functions/login2`) and RLS/security SQL migrations (`security/*.sql`). Not served publicly. |
 | `.github/workflows/` | `deploy-functions.yml` — deploys the `login2` Edge Function via CI. |
-| `CNAME` | Legacy GitHub-Pages artifact (`instepapp.com`); ignored by Cloudflare, kept harmlessly. |
 
 There is **no** `package.json`, lockfile, or front-end build configuration — the site
 is plain static files.
