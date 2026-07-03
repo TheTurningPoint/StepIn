@@ -424,7 +424,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div style="background:var(--charcoal);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
       <div>
         <div style="font-size:14px;font-weight:700;color:white">Incident log</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px">NARR compliance &middot; Timestamped records</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px">Built for NARR documentation &middot; Timestamped records</div>
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-sm" onclick="openIncidentHistory()" style="background:rgba(255,255,255,0.10);color:white;border:1px solid rgba(255,255,255,0.14);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);font-size:12px;padding:7px 12px">History</button>
@@ -659,7 +659,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         <div class="divider" style="margin-top:0"></div>
         <div class="flex-between" style="margin-bottom:12px">
           <span class="text-mid">Document templates</span>
-          <button class="btn btn-gold btn-sm" onclick="openAddDocTemplate()">+ Add</button>
+          <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="addNarrStarterTemplates()" style="white-space:nowrap">+ NARR pack</button><button class="btn btn-gold btn-sm" onclick="openAddDocTemplate()">+ Add</button></div>
         </div>
         <div id="doc-templates-list"></div>
         <div class="divider"></div>
@@ -2848,6 +2848,26 @@ async function saveDocTemplate(){
   closeModal('modal-add-doc-template');
   toast('Document added.');
   renderDocTemplates();
+}
+
+async function addNarrStarterTemplates(){
+  const pack=[
+    {name:'Resident Agreement & House Rules',description:'By signing, you confirm you have received and reviewed the house rules — the conduct, curfew, guest, and responsibility expectations for living here — and agree to follow them.'},
+    {name:'Resident Rights',description:'By signing, you confirm you have received and reviewed your rights as a resident: to be treated with dignity, to privacy, to raise concerns without retaliation, and to a fair discharge process.'},
+    {name:'Code of Conduct & Ethics',description:'By signing, you confirm you have received and reviewed the standards of conduct for residents and staff — honesty, respect, and safety, with no discrimination or harassment.'},
+    {name:'Non-Discrimination & Fair Housing',description:'By signing, you confirm you have received and reviewed this residence’s non-discrimination and fair-housing policy — equal treatment regardless of protected class or recovery status.'},
+    {name:'Good Neighbor Policy',description:'By signing, you confirm you have received and reviewed the good-neighbor policy — noise, parking, guests, and respect for the surrounding community.'},
+    {name:'Grievance & Appeals Procedure',description:'By signing, you confirm you have received and reviewed how to raise a concern or appeal a decision (including a discharge), and how it is handled and tracked.'}
+  ];
+  const have=new Set((cachedDocTemplates||[]).map(t=>(t.name||'').trim().toLowerCase()));
+  const toAdd=pack.filter(p=>!have.has(p.name.toLowerCase()));
+  if(!toAdd.length){toast('Starter templates are already in your list.');return;}
+  const stamp=Date.now();
+  const recs=toAdd.map((p,i)=>({id:'dt-'+stamp+'-'+i,name:p.name,description:p.description,url:null,required:false,org:curOrg(),created_at:new Date().toISOString()}));
+  if(!isDemoMode){const{error}=await sb.from('document_templates').insert(recs);if(error){toast('Could not add: '+error.message,true);return;}}
+  recs.forEach(r=>cachedDocTemplates.push(r));
+  renderDocTemplates();
+  toast('Added '+recs.length+' starter templates — review each and attach your house’s own policy file if you have one.');
 }
 
 async function deleteDocTemplate(id){
