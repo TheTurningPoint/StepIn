@@ -9,8 +9,8 @@
 1. **Never say "tamper-proof," "GPS-verified," or "verified attendance."**
    Say **"timestamped and signed"** and **"GPS location-stamped, witness-signed."**
    The witness signature is the verification — the GPS is a location stamp.
-2. **Rent is not in-app yet.** Today: payment link. In-app billing is on the
-   roadmap. Say it before they ask.
+2. **Rent is not in-app yet.** Rent stays on whatever method the house already
+   uses; in-app billing is on the roadmap. Say it before they ask.
 3. **Show, don't pitch.** The demo click-path is the meeting. Open
    `?demo=manager` and let the product talk.
 4. **Set sobriety dates during setup** — the recovery-day counter falls back to
@@ -100,7 +100,7 @@ no setup fee.
 
 **Sobriety Hub** — closest competitor. ~$75 per full user + $25 per manager +
 $250 onboarding; cost grows with headcount. It **does have in-app rent
-collection — our honest gap.** Today InStep handles rent via a payment link;
+collection — our honest gap.** InStep keeps rent on the house's current method;
 in-app billing is roadmapped. If rent collection is their #1 need, say so
 plainly and note the total price difference still usually favors InStep.
 
@@ -184,8 +184,8 @@ month — want me to get you started?" **Then stop talking.**
 - **Never "GPS-verified" or "verified attendance."** Say *GPS location-stamped
   and witness-signed* — the witness signature is the verification; the GPS is
   a location stamp.
-- **Rent isn't in-app yet.** Payment link today; in-app billing roadmapped.
-  Volunteer it before they find it.
+- **Rent isn't in-app yet.** Rent stays on the house's current method; in-app
+  billing roadmapped. Volunteer it before they find it.
 - **Scale:** an org past ~100 residents needs a half-day client-side
   optimization first. The backend already scales. (Not their situation today —
   relevant only if the 200-bed pilot comes up.)

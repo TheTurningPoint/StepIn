@@ -44,7 +44,7 @@ InStep is the whole house on a phone — no install, a branded web address (`you
 
 Behind the scenes: daily reminder emails to residents, a weekly summary email to staff, per-org feature flags (e.g., curfew off, "Building" instead of "House" for complexes).
 
-**What's live vs. near-term.** Everything above is shipped and verified in production, including org-level data isolation. Two known items are documented and scheduled, not hidden: (1) a half-day client-side optimization before any single org exceeds ~100 residents (signature payloads and query windows — the backend already handles the scale); (2) in-app rent billing is on the roadmap; rent is handled by payment link today.
+**What's live vs. near-term.** Everything above is shipped and verified in production, including org-level data isolation. Two known items are documented and scheduled, not hidden: (1) a half-day client-side optimization before any single org exceeds ~100 residents (signature payloads and query windows — the backend already handles the scale); (2) in-app rent billing is on the roadmap; rent stays on the house's existing method for now.
 
 **Trust posture.** Data is login-gated, isolated per house and per organization by database-level rules, PINs stored as one-way hashes, encrypted in transit and at rest. The marketing says exactly what the product does — "timestamped and signed," never "tamper-proof." E-signed documents follow the retain-the-original-plus-signature-page approach standard e-sign tools use, framed honestly. The privacy policy names the operator's own obligations (42 CFR Part 2 / HIPAA where applicable) rather than pretending them away.
 
@@ -86,7 +86,7 @@ Onboarding is a moat-lite: same-day setup, founder does it personally, resident 
 
 **Why InStep wins the small/mid operator:** flat, transparent pricing; genuinely mobile-first for residents (the check-in and grievance features residents actually use daily — the resident-voice piece NARR looks for); same-day setup; a human answers the email; and it was built by someone with lived recovery experience who designed for the worst day — a relapse, a split screening result, a resident who doesn't come home — not the demo. That last one cannot be copied by a funded team, and it shows in the product's priorities.
 
-**Honest gap:** in-app rent billing (Sobriety Hub has it; InStep bridges with a payment link, roadmapped).
+**Honest gap:** in-app rent billing (Sobriety Hub has it; InStep keeps rent on the house's current method, in-app billing roadmapped).
 
 ## 8. The studio & roadmap
 
