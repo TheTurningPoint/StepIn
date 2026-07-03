@@ -568,6 +568,20 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
         <div class="field"><label>Medical notes <span style="font-weight:400;color:var(--mid)">(allergies, meds, naloxone)</span></label><textarea id="edit-medical" placeholder="e.g. Allergic to penicillin; carries naloxone" style="height:60px;resize:none"></textarea></div>
         <button class="btn btn-navy btn-sm" onclick="saveResidentContact()">Save contact info</button>
         <div class="divider"></div>
+        <div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Excuse from meetings</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="btn btn-warn btn-sm" id="excuse-mode-single" onclick="setExcuseMode('single')" style="flex:1;font-size:12px">Single day</button>
+          <button class="btn btn-outline btn-sm" id="excuse-mode-range" onclick="setExcuseMode('range')" style="flex:1;font-size:12px">Date range</button>
+        </div>
+        <div id="excuse-single-fields" class="field"><label>Date</label><input type="date" id="excuse-date"></div>
+        <div id="excuse-range-fields" style="display:none">
+          <div class="field"><label>From</label><input type="date" id="excuse-date-from"></div>
+          <div class="field"><label>To</label><input type="date" id="excuse-date-to"></div>
+          <p class="text-mid" style="font-size:12px;margin-bottom:12px">Creates an excuse record for each day in the range.</p>
+        </div>
+        <div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. IOP program, work schedule, medical..."></div>
+        <button class="btn btn-warn btn-sm" onclick="excuseResident()">Mark as excused</button>
+        <div class="divider"></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-warn" style="flex:1" onclick="dischargeResident()">&#128682; Discharge</button>
           <button class="btn btn-danger" style="flex:1" onclick="removeResident()">&#128465; Delete</button>
@@ -589,50 +603,20 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     </div>
   </div>
 
-  <!-- Excuse a resident -->
-  <div class="card" id="excuse-card" style="padding:0;overflow:hidden">
-    <button onclick="toggleSettingsSection('excuse-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Excuse a resident</span>
-      <span id="excuse-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
-    </button>
-    <div id="excuse-panel" style="display:none;padding:0 20px 20px">
-      <div class="field"><select id="excuse-resident-select"><option value="">Select resident&#8230;</option></select></div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <button class="btn btn-outline btn-sm" id="excuse-mode-single" onclick="setExcuseMode('single')" style="flex:1;font-size:12px">Single day</button>
-        <button class="btn btn-outline btn-sm" id="excuse-mode-range" onclick="setExcuseMode('range')" style="flex:1;font-size:12px">Date range</button>
-      </div>
-      <div id="excuse-single-fields" class="field"><label>Date</label><input type="date" id="excuse-date"></div>
-      <div id="excuse-range-fields" style="display:none">
-        <div class="field"><label>From</label><input type="date" id="excuse-date-from"></div>
-        <div class="field"><label>To</label><input type="date" id="excuse-date-to"></div>
-        <p class="text-mid" style="font-size:12px;margin-bottom:12px">Creates an excuse record for each day in the range.</p>
-      </div>
-      <div class="field"><label>Reason</label><input type="text" id="excuse-reason" placeholder="e.g. IOP program, work schedule, medical..."></div>
-      <button class="btn btn-warn" onclick="excuseResident()">Mark as excused</button>
-    </div>
-  </div>
-
-  <!-- My name on records -->
+  <!-- My account (name on records + email + PIN) -->
   <div class="card" style="padding:0;overflow:hidden">
-    <button onclick="toggleSettingsSection('signame-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">My name on records</span>
-      <span id="signame-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
+    <button onclick="toggleSettingsSection('pin-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
+      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">My account</span>
+      <span id="pin-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
     </button>
-    <div id="signame-panel" style="display:none;padding:0 20px 20px">
+    <div id="pin-panel" style="display:none;padding:0 20px 20px">
+      <div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Name on records</div>
       <p style="font-size:12px;color:var(--mid);line-height:1.5;margin-bottom:14px">Your full legal name and title appear on the signature line of documents you countersign and screenings you administer &mdash; not your login name.</p>
       <div class="field"><label>Your full name</label><input type="text" id="mgr-doc-name" placeholder="e.g. Kendra Smith"></div>
       <div class="field"><label>Title</label><input type="text" id="mgr-doc-title" placeholder="e.g. House Manager" maxlength="40"></div>
       <button class="btn btn-outline" onclick="saveDocSigner()">Save my name</button>
-    </div>
-  </div>
-
-  <!-- Change my PIN -->
-  <div class="card" style="padding:0;overflow:hidden">
-    <button onclick="toggleSettingsSection('pin-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
-      <span style="font-size:15px;font-weight:700;color:var(--charcoal)">Change my PIN</span>
-      <span id="pin-panel-arrow" style="font-size:18px;color:var(--mid);transition:transform 0.2s">&#8250;</span>
-    </button>
-    <div id="pin-panel" style="display:none;padding:0 20px 20px">
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Change my PIN</div>
       <div class="field"><label>Current PIN</label><input type="password" id="mgr-pin-current" placeholder="Current PIN" maxlength="4" inputmode="numeric"></div>
       <div class="field"><label>New PIN</label><input type="password" id="mgr-pin-new" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric"></div>
       <div class="field"><label>Confirm</label><input type="password" id="mgr-pin-confirm" placeholder="Repeat new PIN" maxlength="4" inputmode="numeric"></div>
@@ -1753,7 +1737,7 @@ function mgrTab(tab,btn){
   if(tab==='report'){if(isOwner())selectedHouse=null;renderReport();switchReportTab('attendance');}
   if(tab==='settings'){
     // Close all accordion panels on entry so it's always collapsed/clean
-    ['manage-panel','alumni-panel','excuse-panel','pin-panel','org-panel'].forEach(id=>{
+    ['manage-panel','alumni-panel','pin-panel','org-panel'].forEach(id=>{
       const p=document.getElementById(id);if(p)p.style.display='none';
       const a=document.getElementById(id+'-arrow');if(a)a.style.transform='';
     });
@@ -1834,7 +1818,6 @@ function populateSelects(){
   const res=residents();
   const opts=res.map(r=>'<option value="'+r.id+'">'+r.name+'</option>').join('');
   const optsWithName=res.map(r=>'<option value="'+r.id+'|'+r.name+'">'+r.name+'</option>').join('');
-  const sel1=document.getElementById('excuse-resident-select');if(sel1)sel1.innerHTML='<option value="">Select resident\u2026</option>'+optsWithName;
   const sel2=document.getElementById('incident-resident');if(sel2)sel2.innerHTML='<option value="">House-wide (no specific resident)</option>'+optsWithName;
   const sel3=document.getElementById('incident-history-filter');if(sel3)sel3.innerHTML='<option value="all">All residents</option>'+opts;
   const sel4=document.getElementById('incident-report-filter');if(sel4)sel4.innerHTML='<option value="all">All residents &amp; house-wide</option>'+opts;
@@ -1880,12 +1863,11 @@ function setExcuseMode(mode){
   }
 }
 async function excuseResident(){
-  const val=document.getElementById('excuse-resident-select').value;
+  const resId=document.getElementById('manage-resident-select').value;
   const reason=document.getElementById('excuse-reason').value.trim();
-  if(!val){toast('Select a resident.');return;}
+  if(!resId){toast('Select a resident first (above).');return;}
   if(!reason){toast('Please enter a reason.',true);return;}
-  const[resId,resName]=val.split('|');
-  const r=allResidents.find(x=>x.id===resId);
+  const r=allResidents.find(x=>x.id===resId);const resName=r?r.name:'';
   const rangeVisible=document.getElementById('excuse-range-fields').style.display!=='none';
   let dates=[];
   if(rangeVisible){
@@ -1958,7 +1940,7 @@ async function saveNewResident(){const name=document.getElementById('add-name').
 
 async function saveNewManager(){const houseName=document.getElementById('add-mgr-name').value.trim();const mgrId=document.getElementById('add-mgr-id').value.trim();const pin=document.getElementById('add-mgr-pin').value.trim();if(!houseName){toast('Please enter a house name.',true);return;}if(!mgrId){toast('Please enter the manager\'s full name.',true);return;}if(pin.length!==4||isNaN(pin)){toast('PIN must be 4 digits.',true);return;}if(allManagers.find(m=>(m.name||'').toLowerCase()===mgrId.toLowerCase())){toast('A manager with that name already exists \u2014 use a distinct full name (it\'s their sign-in name).',true);return;}const btn=document.getElementById('add-mgr-btn');btn.textContent='Adding\u2026';btn.classList.add('btn-disabled');const newM={id:'m-'+Date.now(),name:mgrId,role:'manager',house:houseName,org:curOrg()};const{error}=await sb.from('residents').insert(newM);if(error){toast('Could not add: '+error.message,true);btn.textContent='Add house';btn.classList.remove('btn-disabled');return;}try{await sb.rpc('set_pin',{p_id:newM.id,p_new_pin:pin});}catch(e){}allManagers.push({id:newM.id,name:newM.name,role:'manager',house:houseName});btn.textContent='Add house';btn.classList.remove('btn-disabled');closeModal('modal-add-manager');toast(mgrId+' added as manager of '+houseName+'.');buildHouseDropdown();renderOwnerHouseList();populateSelects();}
 
-function onManageResidentChange(){const id=document.getElementById('manage-resident-select').value;const panel=document.getElementById('manage-resident-panel');if(!id){panel.style.display='none';return;}const r=allResidents.find(x=>x.id===id);if(!r){panel.style.display='none';return;}document.getElementById('edit-name-value').value=r.name;document.getElementById('phase-value').value=r.phase||1;document.getElementById('reset-pin-value').value='';const miEl=document.getElementById('edit-move-in-date');if(miEl)miEl.value=r.move_in_date||'';const sobEl=document.getElementById('edit-sobriety-date');if(sobEl)sobEl.value=r.sobriety_date||'';const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};sv('edit-phone',r.phone);sv('edit-email',r.email);sv('edit-emerg-name',r.emergency_name);sv('edit-emerg-phone',r.emergency_phone);sv('edit-emerg-relation',r.emergency_relation);sv('edit-medical',r.medical_notes);const en=document.getElementById('edit-notify');if(en)en.checked=!!r.notify_opt_in;panel.style.display='block';}
+function onManageResidentChange(){const id=document.getElementById('manage-resident-select').value;const panel=document.getElementById('manage-resident-panel');if(!id){panel.style.display='none';return;}const r=allResidents.find(x=>x.id===id);if(!r){panel.style.display='none';return;}document.getElementById('edit-name-value').value=r.name;document.getElementById('phase-value').value=r.phase||1;document.getElementById('reset-pin-value').value='';const miEl=document.getElementById('edit-move-in-date');if(miEl)miEl.value=r.move_in_date||'';const sobEl=document.getElementById('edit-sobriety-date');if(sobEl)sobEl.value=r.sobriety_date||'';const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};sv('edit-phone',r.phone);sv('edit-email',r.email);sv('edit-emerg-name',r.emergency_name);sv('edit-emerg-phone',r.emergency_phone);sv('edit-emerg-relation',r.emergency_relation);sv('edit-medical',r.medical_notes);const en=document.getElementById('edit-notify');if(en)en.checked=!!r.notify_opt_in;const _t=new Date().toISOString().split('T')[0];['excuse-date','excuse-date-from','excuse-date-to'].forEach(fid=>{const fe=document.getElementById(fid);if(fe)fe.value=_t;});const _er=document.getElementById('excuse-reason');if(_er)_er.value='';setExcuseMode('single');panel.style.display='block';}
 
 async function editResidentName(){const id=document.getElementById('manage-resident-select').value;const newName=document.getElementById('edit-name-value').value.trim();if(!id){toast('Please select a resident.',true);return;}if(!newName||newName.length<2){toast('Please enter a valid name.',true);return;}const r=allResidents.find(x=>x.id===id);if(!r)return;if(!await uiConfirm('Rename '+r.name+' to '+newName+'?',{title:'Rename resident',confirmLabel:'Rename'}))return;const{error}=await sb.from('residents').update({name:newName}).eq('id',id);if(error){toast('Could not update name.',true);return;}allResidents=allResidents.map(x=>x.id===id?{...x,name:newName}:x);toast(r.name+' renamed to '+newName+'.');document.getElementById('edit-name-value').value='';populateSelects();renderMgrResidents();}
 
@@ -2454,8 +2436,6 @@ function toggleSettingsSection(panelId){
   if(!isOpen&&panelId==='alumni-panel')loadDischargedInline();
   // When opening manage panel, populate select
   if(!isOpen&&panelId==='manage-panel')populateSelects();
-  // When opening excuse panel, populate select + set today's date
-  if(!isOpen&&panelId==='excuse-panel'){populateSelects();const today=new Date().toISOString().split('T')[0];document.getElementById('excuse-date').value=today;document.getElementById('excuse-date-from').value=today;document.getElementById('excuse-date-to').value=today;setExcuseMode('single');}
   // When opening org panel, load settings + house list
   if(!isOpen&&panelId==='org-panel'){loadSettings();renderOwnerHouseList();}
   if(!isOpen&&panelId==='docs-panel'){if(!isDemoMode)loadDocuments().then(()=>renderDocTemplates());else renderDocTemplates();const sel=document.getElementById('docs-send-resident');if(sel){const res=residents();sel.innerHTML='<option value="">Select resident…</option>'+res.map(r=>'<option value="'+r.id+'|'+r.name+'">'+r.name+'</option>').join('');}}
