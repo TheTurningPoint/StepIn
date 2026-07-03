@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .topbar-right{display:flex;align-items:center;gap:8px;}
 .badge-role{font-size:12px;font-weight:700;background:var(--pink-dark);color:var(--white);padding:4px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;}
 .badge-owner{background:var(--gold-light)!important;}
-.btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer;padding:6px 12px;border-radius:20px;}
+.btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;cursor:pointer;padding:8px 13px;border-radius:20px;min-height:36px;}
 
 /* BODY */
 .body{flex:1;overflow-y:auto;padding:20px;background:#F7EDF4;}
@@ -1703,7 +1703,7 @@ function showDemoBanner(screenId){
   const screen=document.getElementById(screenId);if(!screen)return;
   const topbar=screen.querySelector('.topbar');if(!topbar)return;
   const banner=document.createElement('div');banner.id='demo-banner';banner.style.cssText='background:linear-gradient(135deg,var(--gold-light),var(--gold));color:white;text-align:center;padding:10px;font-size:13px;font-weight:700;letter-spacing:0.5px;flex-shrink:0;';
-  banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Exit demo</button>';
+  banner.innerHTML='&#127981; DEMO MODE &mdash; Explore freely, nothing is saved &mdash; <button onclick="exitDemo()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px;min-height:34px">Exit demo</button>';
   topbar.after(banner);
 }
 function enterManager(){
