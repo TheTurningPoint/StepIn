@@ -6,12 +6,11 @@
 <title>Beecon Works — the light that guides you home</title>
 <meta name="description" content="Beecon Works builds software that guides people home. Our first product is InStep, for sober living and recovery residences.">
 <meta name="theme-color" content="#F5F1EA">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z' fill='%23E8B24A'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M22 12 L17 20.66 L7 20.66 L2 12 L7 3.34 L17 3.34 Z' fill='none' stroke='%23DFA23C' stroke-width='1.6'/%3E%3Cpath d='M12 5 L13.4 10.6 L19 12 L13.4 13.4 L12 19 L10.6 13.4 L5 12 L10.6 10.6 Z' fill='%23E8B24A'/%3E%3C/svg%3E">
 <style>
   :root{
     --gold:#E8B24A; --gold-deep:#DFA23C; --ink:#241C15; --cream:#F5F1EA;
     --body:#4f463b; --line:rgba(36,28,21,0.10);
-    --dark:#140F0A; --dark2:#1c150e;
     --serif:'Iowan Old Style',Georgia,'Times New Roman',serif;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
@@ -30,12 +29,13 @@
     font-size:12px; font-weight:600; color:var(--gold-deep); margin-bottom:22px;}
 
   /* ── HERO ── */
-  .hero{text-align:center; padding:120px 28px 96px;}
-  .hero .mark{width:clamp(230px,64vw,380px); margin:0 auto;}
+  .hero{text-align:center; padding:104px 28px 92px;}
+  .hero .glyph{width:clamp(84px,21vw,118px); margin:0 auto 22px;}
+  .hero .wm{width:clamp(210px,58vw,344px); margin:0 auto;}
   .hero .works{font-family:var(--sans); text-transform:uppercase; letter-spacing:0.52em;
-    font-size:13px; font-weight:600; color:var(--ink); opacity:0.62; margin:20px 0 0 0.52em;}
+    font-size:13px; font-weight:600; color:var(--ink); opacity:0.62; margin:18px 0 0 0.52em;}
   .hero .tagline{font-family:var(--serif); font-style:italic; font-size:clamp(19px,4.6vw,23px);
-    color:var(--body); margin-top:40px;}
+    color:var(--body); margin-top:38px;}
 
   /* ── SECTIONS ── */
   section{padding:104px 0;}
@@ -46,16 +46,16 @@
 
   hr.rule{border:0; height:1px; background:var(--line); max-width:660px; margin:0 auto;}
 
-  /* ── FOR BEE (dark, full-bleed) ── */
-  .bee{background:var(--dark); color:#e9e0d4; text-align:center; padding:110px 28px;
-    background-image:radial-gradient(ellipse 60% 50% at 50% 40%, rgba(232,178,74,0.10), transparent 72%);}
-  .bee .eye{width:clamp(240px,62vw,400px); margin:0 auto 8px; opacity:0.98;}
-  .bee .ded{max-width:520px; margin:24px auto 0;}
+  /* ── FOR BEE (light band, white-on-white) ── */
+  .bee{background:#fff; text-align:center; padding:104px 28px;
+    background-image:radial-gradient(ellipse 56% 46% at 50% 40%, rgba(232,178,74,0.13), transparent 70%);}
+  .bee .glyph{width:clamp(128px,36vw,190px); margin:0 auto 10px;}
+  .bee .ded{max-width:520px; margin:18px auto 0;}
   .bee .ded p{font-family:var(--serif); font-size:clamp(18px,4.4vw,21px); line-height:1.6;
-    color:#efe7db; margin-bottom:14px;}
-  .bee .ded strong{color:#fff; font-weight:600;}
+    color:var(--ink); margin-bottom:14px;}
+  .bee .ded strong{font-weight:600;}
   .bee .forbee{font-family:var(--serif); font-style:italic; font-size:clamp(19px,4.6vw,22px);
-    color:var(--gold); margin-bottom:0;}
+    color:var(--gold-deep); margin-bottom:0;}
 
   /* ── PRODUCT ── */
   .product{text-align:center;}
@@ -77,7 +77,7 @@
   footer .copy{margin-top:38px; font-size:12px; letter-spacing:0.04em; color:var(--body); opacity:0.55;}
 
   @media (max-width:520px){
-    .hero{padding:88px 26px 72px;} section{padding:80px 0;} .bee{padding:88px 26px;}
+    .hero{padding:80px 26px 68px;} section{padding:80px 0;} .bee{padding:84px 26px;}
   }
 </style>
 </head>
@@ -85,7 +85,8 @@
 
 <!-- ── HERO ── -->
 <header class="hero">
-  <img class="mark" src="beecon-wordmark.png" alt="beecon" width="1031" height="293">
+  <img class="glyph" src="beecon-mark.svg" alt="" aria-hidden="true" width="200" height="200">
+  <img class="wm" src="beecon-wordmark.png" alt="beecon" width="1031" height="293">
   <div class="works">Works</div>
   <div class="tagline">The light that guides you home.</div>
 </header>
@@ -98,14 +99,18 @@
   <p>Beecon Works began with lived experience, and it shows in the work. We design every screen for someone&rsquo;s hardest day, not for the demo. And we say exactly what our software does &mdash; nothing more.</p>
 </section>
 
-<!-- ── FOR BEE (dark) ── -->
+<hr class="rule">
+
+<!-- ── FOR BEE (light) ── -->
 <section class="bee">
-  <img class="eye" src="beecon-eye.png" alt="An illustrated eye with a warm light at its center, above the beecon wordmark">
+  <img class="glyph" src="beecon-mark.svg" alt="The beecon mark — a honeycomb holding a gold star" width="200" height="200">
   <div class="ded">
     <p>Beecon carries the name of <strong>Bee</strong>. The gold star in our mark is hers &mdash; the light left on for anyone still finding their way home. Every product we build is that light, kept burning.</p>
     <p class="forbee">For Bee.</p>
   </div>
 </section>
+
+<hr class="rule">
 
 <!-- ── WHAT WE BUILD ── -->
 <section class="wrap product">
