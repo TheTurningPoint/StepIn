@@ -1,0 +1,9 @@
+name = "beeconworks"
+compatibility_date = "2024-11-01"
+
+# Static-site (assets-only) Worker for beeconworks.com. Serves the files in
+# this folder (beeconworks/) as the website — no server code. Independent of
+# the root "instep" Worker; the root .assetsignore excludes beeconworks/ so
+# InStep never serves these files.
+[assets]
+directory = "."
