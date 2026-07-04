@@ -7,5 +7,6 @@ supabase/
 wrangler.toml
 .assetsignore
 admin.html
+beeconworks/
 beecon-eye.png
 beecon-lockup.png
