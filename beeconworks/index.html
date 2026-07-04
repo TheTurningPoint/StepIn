@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Beecon Works — the light that guides you home</title>
 <meta name="description" content="Beecon Works builds software that guides people home. Our first product is InStep, for sober living and recovery residences.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,8 86,29 86,71 50,92 14,71 14,29' fill='none' stroke='%23241C15' stroke-width='8' stroke-linejoin='round'/%3E%3Cpath d='M50 37 L57 50 L71 57 L57 64 L50 79 L43 64 L29 57 L43 50 Z' fill='%23E8B24A'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z' fill='%23E8B24A'/%3E%3C/svg%3E">
 <style>
   :root{
     --gold:#E8B24A; --gold-deep:#DFA23C; --ink:#241C15; --cream:#F5F1EA;
@@ -17,60 +17,53 @@
   html{scroll-behavior:smooth;}
   body{
     background:var(--cream); color:var(--body);
-    font-family:var(--sans); line-height:1.65; font-size:17px;
+    font-family:var(--sans); line-height:1.7; font-size:17px;
     -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   }
-  .wrap{max-width:680px; margin:0 auto; padding:0 24px;}
-  section{padding:44px 0;}
-  .serif{font-family:var(--serif);}
-  h2{font-family:var(--serif); color:var(--ink); font-size:15px; font-weight:400;
-     text-transform:uppercase; letter-spacing:0.22em; opacity:0.55; margin-bottom:20px;}
+  .wrap{max-width:600px; margin:0 auto; padding:0 26px;}
+  section{padding:40px 0;}
+  h2{font-family:var(--serif); color:var(--ink); font-size:14px; font-weight:400;
+     text-transform:uppercase; letter-spacing:0.24em; opacity:0.5; margin-bottom:18px;}
   p{margin-bottom:16px;}
-  p.lead{font-family:var(--serif); font-size:22px; line-height:1.55; color:var(--ink);}
-  a{color:var(--gold-deep); text-decoration:none; border-bottom:1px solid rgba(223,162,60,0.4);}
-  a:hover{border-bottom-color:var(--gold-deep);}
-  .divider{width:100%; height:1px; background:var(--line); border:0; max-width:680px; margin:0 auto;}
+  p.lead{font-family:var(--serif); font-size:23px; line-height:1.55; color:var(--ink);}
+  a{color:var(--gold-deep); text-decoration:none;}
+  .divider{width:100%; height:1px; background:var(--line); border:0; max-width:600px; margin:0 auto;}
 
   /* ── HERO ── */
-  .hero{text-align:center; padding:80px 24px 56px;
-    background:radial-gradient(ellipse 70% 55% at 50% 34%, rgba(232,178,74,0.16) 0%, transparent 70%);}
-  .mark{width:96px; height:96px; color:var(--ink); margin:0 auto 26px; display:block;}
-  .wordmark{font-family:var(--serif); font-size:40px; color:var(--ink); letter-spacing:-0.01em; line-height:1;}
-  .wordmark .star{display:inline-block; width:0.42em; height:0.42em; vertical-align:0.32em; margin:0 -0.02em;}
-  .wordmark .works{color:var(--gold-deep); font-style:italic; margin-left:0.14em;}
-  .tagline{font-family:var(--serif); font-style:italic; font-size:20px; color:var(--body); margin-top:18px;}
+  .hero{text-align:center; padding:92px 24px 60px;
+    background:radial-gradient(ellipse 68% 52% at 50% 30%, rgba(232,178,74,0.18) 0%, transparent 72%);}
+  .wordmark{font-family:var(--serif); font-weight:700; font-size:60px; color:var(--ink);
+    letter-spacing:-0.015em; line-height:1;}
+  .wordmark .e2{color:var(--gold-deep);}
+  .wordmark .works{font-weight:400; font-style:italic; font-size:0.5em; color:var(--body);
+    letter-spacing:0.02em; display:block; margin-top:8px;}
+  .tagline{font-family:var(--sans); text-transform:uppercase; letter-spacing:0.28em;
+    font-size:12px; color:var(--gold-deep); margin-top:26px;}
 
   /* ── DEDICATION ── */
-  .dedication{max-width:560px; margin:0 auto; text-align:center;
-    padding:34px 30px; border:1px solid var(--line); border-radius:14px;
-    background:rgba(255,255,255,0.4);}
-  .dedication .flame{width:30px; height:30px; margin:0 auto 14px; display:block; color:var(--ink);}
-  .dedication p{font-family:var(--serif); font-size:19px; line-height:1.6; color:var(--ink); margin-bottom:12px;}
+  .dedication{max-width:540px; margin:0 auto; text-align:center;
+    padding:36px 32px; border:1px solid var(--line); border-radius:14px;
+    background:rgba(255,255,255,0.45);}
+  .dedication .star{width:26px; height:26px; margin:0 auto 16px; display:block;}
+  .dedication p{font-family:var(--serif); font-size:19px; line-height:1.62; color:var(--ink); margin-bottom:12px;}
   .dedication .forbee{font-style:italic; color:var(--gold-deep); font-size:20px; margin-bottom:0;}
 
-  /* ── PRINCIPLES ── */
-  .principle{margin-bottom:22px;}
-  .principle b{font-family:var(--serif); color:var(--ink); font-weight:600; font-size:18px; display:block; margin-bottom:2px;}
-  .principle span{font-size:16px;}
-
   /* ── PRODUCT ── */
-  .product{background:rgba(255,255,255,0.45); border:1px solid var(--line); border-radius:16px; padding:28px 26px;}
-  .product .name{font-family:var(--serif); font-size:26px; color:var(--ink); margin-bottom:6px;}
-  .btn{display:inline-block; margin-top:14px; background:var(--ink); color:var(--cream);
-    font-family:var(--sans); font-weight:600; font-size:15px; padding:11px 20px; border-radius:9px;
-    border:0; letter-spacing:0.01em;}
-  .btn:hover{background:#33281d;}
+  .product .name{font-family:var(--serif); font-weight:700; font-size:24px; color:var(--ink);}
+  .product .name .e2{color:var(--gold-deep);}
+  .product .see{display:inline-block; margin-top:6px; font-weight:600; font-size:15px;
+    border-bottom:1px solid rgba(223,162,60,0.45); padding-bottom:1px;}
 
   /* ── FOOTER ── */
-  footer{text-align:center; padding:52px 24px 64px; color:var(--body);}
-  footer .fword{font-family:var(--serif); font-size:22px; color:var(--ink); margin-bottom:10px;}
-  footer .fword .star{display:inline-block; width:0.4em; height:0.4em; vertical-align:0.3em;}
-  footer .contact{font-size:16px; margin-bottom:18px;}
-  footer .closing{font-family:var(--serif); font-style:italic; font-size:15px; opacity:0.7;}
+  footer{text-align:center; padding:52px 24px 66px; color:var(--body);}
+  footer .fword{font-family:var(--serif); font-weight:700; font-size:22px; color:var(--ink); margin-bottom:14px;}
+  footer .fword .e2{color:var(--gold-deep);}
+  footer .contact{font-size:16px; margin-bottom:14px;}
+  footer .closing{font-family:var(--serif); font-style:italic; font-size:16px; color:var(--ink); opacity:0.85;}
 
   @media (max-width:520px){
     body{font-size:16px;}
-    .wordmark{font-size:34px;} p.lead{font-size:20px;} .hero{padding:60px 22px 44px;}
+    .wordmark{font-size:46px;} p.lead{font-size:21px;} .hero{padding:70px 22px 48px;}
   }
 </style>
 </head>
@@ -78,21 +71,8 @@
 
 <!-- ── HERO ── -->
 <header class="hero">
-  <svg class="mark" viewBox="0 0 100 100" role="img" aria-label="Beecon">
-    <defs>
-      <radialGradient id="glow" cx="50%" cy="57%" r="42%">
-        <stop offset="0%" stop-color="#F2C25A" stop-opacity="0.55"/>
-        <stop offset="60%" stop-color="#F2C25A" stop-opacity="0.12"/>
-        <stop offset="100%" stop-color="#F2C25A" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <circle cx="50" cy="57" r="40" fill="url(#glow)"/>
-    <polygon points="50,8 86,29 86,71 50,92 14,71 14,29" fill="none" stroke="currentColor"
-             stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M50 37 L57 50 L71 57 L57 64 L50 79 L43 64 L29 57 L43 50 Z" fill="#E8B24A"/>
-  </svg>
-  <div class="wordmark">be<svg class="star" viewBox="0 0 24 24"><path d="M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z" fill="#E8B24A"/></svg>econ<span class="works">works</span></div>
-  <div class="tagline">The light that guides you home.</div>
+  <div class="wordmark">be<span class="e2">e</span>con<span class="works">works</span></div>
+  <div class="tagline">The light that guides you home</div>
 </header>
 
 <hr class="divider">
@@ -100,15 +80,14 @@
 <!-- ── THE WHY ── -->
 <section class="wrap">
   <h2>Why we exist</h2>
-  <p class="lead">We build software that guides people home. Second chances, third, fifth — as many as it takes.</p>
-  <p>Every product answers one question: <em>does this help someone find their way back?</em> If it doesn't, we don't build it. We design for the worst day, not the demo — because in our world the hard moments <em>are</em> the product, and that's where trust is won.</p>
-  <p>We build where we've known the pain from the inside. That's the one thing no funded team can fake — and it's why what we make is real.</p>
+  <p class="lead">We build software for recovery — sober living, second chances, the long way home.</p>
+  <p>We've walked that road. So we don't design for the demo; we design for the worst day: the relapse, the discharge, the night someone doesn't come home. If it holds there, it holds. We say what's true. Nothing more.</p>
 </section>
 
 <!-- ── DEDICATION ── -->
 <section class="wrap">
   <div class="dedication">
-    <svg class="flame" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z" fill="#E8B24A"/></svg>
+    <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z" fill="#E8B24A"/></svg>
     <p>Beecon carries the name of <strong>Bee</strong>. The gold star in our mark is hers — the light left on for anyone still finding their way home. Every product we build is that light, kept burning.</p>
     <p class="forbee">For Bee.</p>
   </div>
@@ -120,35 +99,17 @@
 <section class="wrap">
   <h2>What we build</h2>
   <div class="product">
-    <div class="name">InStep</div>
-    <p style="margin-bottom:0">Our first product — management software for sober living and recovery residences. Attendance, screenings, incidents, grievances, and signed documents that hold up on someone's worst day, not just in a demo. Timestamped, signed, and built around the NARR documentation standard. Live today.</p>
-    <a class="btn" href="https://instepapp.com" target="_blank" rel="noopener">See InStep &#8594;</a>
+    <p class="name">InStep</p>
+    <p>Our first product — management software for recovery residences. Live and in use today.</p>
+    <a class="see" href="https://instepapp.com" target="_blank" rel="noopener">See InStep &#8594;</a>
   </div>
-</section>
-
-<!-- ── HOW WE BUILD ── -->
-<section class="wrap">
-  <h2>How we build</h2>
-  <div class="principle"><b>Lived experience is the moat.</b><span>We build where we know the pain from the inside.</span></div>
-  <div class="principle"><b>Design for the worst day.</b><span>Relapse, a discharge, a resident who doesn't come home — the edge cases are the product.</span></div>
-  <div class="principle"><b>Trust is a feature.</b><span>Privacy, isolation, honest claims. We say exactly what the software does — never more.</span></div>
-  <div class="principle"><b>Radical simplicity.</b><span>Boring, legible tech ships faster and breaks less.</span></div>
-  <div class="principle"><b>Fail safe, always.</b><span>Nothing new is ever allowed to break the core.</span></div>
-</section>
-
-<hr class="divider">
-
-<!-- ── MODEL ── -->
-<section class="wrap">
-  <h2>The model</h2>
-  <p>Revenue funds mission. The paid work earns so the free work can reach the people who can't pay — that mission arm is <strong>The Beecon Foundation</strong>. One shipped product with one real customer beats two half-built ideas. We ship, we listen, and we let real people pull the next thing out of us.</p>
 </section>
 
 <!-- ── FOOTER ── -->
 <footer>
-  <div class="fword serif">be<svg class="star" viewBox="0 0 24 24"><path d="M12 1 L14.3 9.7 L23 12 L14.3 14.3 L12 23 L9.7 14.3 L1 12 L9.7 9.7 Z" fill="#E8B24A"/></svg>econ works</div>
-  <div class="contact">Talk to us — <a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a></div>
-  <div class="closing">Born from InStep. Built to guide people home.</div>
+  <div class="fword">be<span class="e2">e</span>con works</div>
+  <div class="contact"><a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a></div>
+  <div class="closing">The light stays on.</div>
 </footer>
 
 </body>
