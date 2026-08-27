@@ -74,6 +74,7 @@ Meeting check-ins with witness signature.
 | `signer_name` | witness name |
 | `sig_data_url` | witness signature, JPEG data URL |
 | `ts` | ISO timestamp |
+| `duration_minutes` | minutes from finishing meeting details to witness signature submitted (nullable; null on rows recorded before this was added) |
 | `house` | scoping |
 
 ## `curfew_log`
