@@ -1782,7 +1782,7 @@ function renderOwnerDashboard(){
   renderDashDocsAlert();
   const curfewEl=document.getElementById('dash-curfew-list');const attEl=document.getElementById('dash-attendance-list');
   if(!selectedHouse){
-    const houses=[...new Set(allResidents.map(r=>r.house).filter(Boolean))].sort();
+    const houses=[...new Set([...allResidents.map(r=>r.house),...allManagers.map(m=>m.house)].filter(Boolean))].sort();
     const req=cachedSettings.required||3;const weekStart=getWeekStart();
     if(!houses.length){if(curfewEl)curfewEl.innerHTML='<div class="empty"><div class="empty-icon">&#127968;</div><h3>No '+unitLabelPlural().toLowerCase()+' yet</h3><p>Add your first '+unitLabel().toLowerCase()+' and manager to start tracking residents.</p><button class="btn btn-gold btn-sm" onclick="openAddManager()">+ Add '+unitLabel().toLowerCase()+'</button></div>';if(attEl){attEl.innerHTML='';const c=attEl.closest('.card');if(c)c.style.display='none';}return;}
     const resCardAll=document.getElementById('residents-card');if(resCardAll)resCardAll.style.display='none';
