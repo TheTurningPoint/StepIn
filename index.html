@@ -1436,6 +1436,10 @@ async function enterResident(){
   ['home','chores','calendar','meetings','pin'].forEach(t=>{const el=document.getElementById('res-tab-'+t);if(el)el.style.display=t==='home'?'block':'none';});
   if(!isDemoMode){try{await loadAllData();}catch(e){toast('Could not load data.',true);}}
   renderResidentHome();
+  if(!isDemoMode){
+    const pending=ciLoadProgress();
+    if(pending&&pending.ts&&pending.meeting_type&&pending.meeting_name){checkinData=pending;show('screen-checkin');ciShowSigStep();}
+  }
 }
 
 function renderResidentHome(){
@@ -1663,15 +1667,20 @@ function toggleResMeetings(){const allEl=document.getElementById('res-all-meetin
 
 // ── CHECK-IN ──
 function ciShow(step){['loc','details','sig','done'].forEach(s=>document.getElementById('ci-step-'+s).style.display=s===step?'block':'none');const n={loc:0,details:1,sig:2,done:3}[step];document.getElementById('checkin-steps').innerHTML=n>0?[1,2,3].map(i=>'<div class="step-dot '+(i===n?'active':i<n?'done':'')+'"></div>').join(''):'';}
+const CI_PROGRESS_KEY='si_checkin_progress';
+function ciSaveProgress(){if(isDemoMode||!currentUser)return;try{localStorage.setItem(CI_PROGRESS_KEY,JSON.stringify({resident_id:currentUser.id,data:checkinData,saved_at:Date.now()}));}catch(e){}}
+function ciClearProgress(){try{localStorage.removeItem(CI_PROGRESS_KEY);}catch(e){}}
+function ciLoadProgress(){try{const raw=localStorage.getItem(CI_PROGRESS_KEY);if(!raw)return null;const p=JSON.parse(raw);if(!p||!p.data||!currentUser||p.resident_id!==currentUser.id)return null;if(Date.now()-(p.saved_at||0)>12*3600000){ciClearProgress();return null;}return p.data;}catch(e){return null;}}
+function ciShowSigStep(){document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');const distEl=document.getElementById('ci-distance-display');if(distEl){distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; GPS location recorded with this check-in.</div></div>';}setTimeout(initSigCanvas,200);}
 function startCheckin(){
-  checkinData={};show('screen-checkin');ciShow('loc');
+  ciClearProgress();checkinData={};show('screen-checkin');ciShow('loc');
   if(isDemoMode){checkinData.lat='39.7392';checkinData.lng='-104.9847';const el=document.getElementById('loc-status');el.className='loc-box success';el.innerHTML='&#9989; Demo location: Denver, CO &mdash; ready to proceed.';document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');return;}
   if(!navigator.geolocation){toast('Location services aren’t available on this device.',true);return;}
   document.getElementById('loc-status').className='loc-box';document.getElementById('loc-status').innerHTML='&#128205; Getting your location\u2026';document.getElementById('btn-loc-proceed').classList.add('btn-disabled');
   navigator.geolocation.getCurrentPosition(pos=>{checkinData.lat=pos.coords.latitude.toFixed(6);checkinData.lng=pos.coords.longitude.toFixed(6);const el=document.getElementById('loc-status');el.className='loc-box success';el.innerHTML='\u2705 Location captured. You may proceed.';document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');},()=>{const el=document.getElementById('loc-status');el.className='loc-box error';el.innerHTML='\u274C Location access denied.<br><small>Go to Settings \u2192 Privacy \u2192 Location Services.</small>';},{timeout:15000,enableHighAccuracy:true,maximumAge:0});
 }
 function locProceed(){if(!checkinData.lat){toast('Location not ready.',true);return;}ciShow('details');}
-function cancelCheckin(){show('screen-resident');renderResidentHome();}
+function cancelCheckin(){ciClearProgress();show('screen-resident');renderResidentHome();}
 async function finishCheckin(){if(!isDemoMode){await loadAllData();}show('screen-resident');renderResidentHome();}
 async function ciDetails(){
   const type=document.getElementById('ci-type').value;const name=document.getElementById('ci-name').value.trim();const addr=document.getElementById('ci-addr').value.trim();
@@ -1681,10 +1690,8 @@ async function ciDetails(){
   // Distance calculation removed — GPS coordinates captured, geocoding dropped
 
   if(btn){btn.textContent='Next \u2014 Get someone to sign \u2794';btn.classList.remove('btn-disabled');}
-  document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');
-  const distEl=document.getElementById('ci-distance-display');
-  if(distEl){distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; GPS location recorded with this check-in.</div></div>';}
-  setTimeout(initSigCanvas,200);
+  ciSaveProgress();
+  ciShowSigStep();
 }
 async function ciSubmit(){
   const signerName=document.getElementById('sig-name').value.trim();
@@ -1713,6 +1720,7 @@ async function ciSubmit(){
     ciSaveErr=e2;
   }catch(e){ciSaveErr={message:e.message==='timeout'?'Connection timed out. Tap Submit to try again.':e.message};}
   if(ciSaveErr){toast(ciSaveErr.message||'Save failed. Check your connection.',true);done();return;}
+  ciClearProgress();
   allCheckins.unshift(record);
   done();
   document.getElementById('confirm-detail').textContent=checkinData.meeting_type+' \u00b7 '+checkinData.meeting_name+' \u00b7 '+fmtDate(new Date(checkinData.ts))+' at '+fmtTime(new Date(checkinData.ts))+' \u00b7 '+fmtDuration(durationMinutes)+' in the meeting';
