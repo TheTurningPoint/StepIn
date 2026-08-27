@@ -1190,13 +1190,16 @@ const isOwner=()=>currentUser&&currentUser.role==='owner';
 const isStaff=()=>currentUser&&(currentUser.role==='manager'||currentUser.role==='owner');
 const myHouse=()=>isOwner()?(selectedHouse||null):currentUser&&currentUser.house;
 const orgName=()=>(cachedSettings&&cachedSettings.house_name)||(window.currentOrg&&currentOrg.name)||'InStep';
-// Per-org feature config (default ON / "House" so behavior is unchanged before the migration runs).
-const featCurfew=()=>!cachedSettings||cachedSettings.feature_curfew!==false;
-const featChores=()=>!cachedSettings||cachedSettings.feature_chores!==false;
 // Temporary master switch (settings.meeting_only) — strips the app down to meeting check-in/finder,
 // the resident Me tab, and manager resident management + the attendance report. Flip the column back
 // to false to restore whatever this org's feature_curfew/feature_chores already say, no deploy needed.
+// Folded directly into featCurfew/featChores (rather than only applyFeatureFlags) so every call site —
+// including non-UI checks like the dashboard "needs attention" widget — respects it, not just the ones
+// that happen to also call applyFeatureFlags.
 const featMeetingOnly=()=>!!(cachedSettings&&cachedSettings.meeting_only);
+// Per-org feature config (default ON / "House" so behavior is unchanged before the migration runs).
+const featCurfew=()=>!featMeetingOnly()&&(!cachedSettings||cachedSettings.feature_curfew!==false);
+const featChores=()=>!featMeetingOnly()&&(!cachedSettings||cachedSettings.feature_chores!==false);
 const unitLabel=()=>(cachedSettings&&cachedSettings.unit_label)||'House';
 const unitLabelPlural=()=>{const u=unitLabel();return /s$/i.test(u)?u:u+'s';};
 // Show/hide feature surfaces + apply the unit label per the current org's settings. Safe to call any
@@ -1204,7 +1207,7 @@ const unitLabelPlural=()=>{const u=unitLabel();return /s$/i.test(u)?u:u+'s';};
 function applyFeatureFlags(){
   const show=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?'':'none';};
   const mo=featMeetingOnly();
-  const cf=!mo&&featCurfew(),ch=!mo&&featChores();
+  const cf=featCurfew(),ch=featChores();
   // Curfew surfaces
   ['dash-inout-card','set-checkin-loc-field','excuse-card','res-curfew-action','res-curfew-history-block'].forEach(id=>show(id,cf));
   // Chores surfaces
@@ -2625,10 +2628,10 @@ function gotoAwaySignin(house){try{if(isOwner()&&!selectedHouse&&house){selectHo
 function renderDashAttention(){
   const el=document.getElementById('dash-attention');if(!el)return;
   const openGrv=isStaff()?(cachedGrievances||[]).filter(g=>g.status!=='resolved').length:0;
-  const pending=(typeof cachedResidentDocs!=='undefined'?cachedResidentDocs:[]).filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
+  const pending=featMeetingOnly()?[]:(typeof cachedResidentDocs!=='undefined'?cachedResidentDocs:[]).filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
   const labPolicy=cachedSettings.lab_policy||'all';
   let unsentLab=0;
-  if(isStaff()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
+  if(isStaff()&&!featMeetingOnly()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
   let awaySignins=0,awayHouse='';
   if(isStaff()&&featCurfew()){const cutoff=Date.now()-7*86400000;const awl=(curfewLog()||[]).filter(l=>l.action==='in'&&new Date(l.ts).getTime()>=cutoff&&signInAwayMi(l)).sort((a,b)=>new Date(b.ts)-new Date(a.ts));awaySignins=awl.length;awayHouse=awl[0]?(awl[0].house||''):'';}
   if(!openGrv&&!pending.length&&!unsentLab&&!awaySignins){
