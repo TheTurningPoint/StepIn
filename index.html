@@ -318,8 +318,8 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
     <div id="res-more-panel" style="display:none;padding:0 20px 20px">
       <div id="res-upcoming-events-card" style="display:none;margin-bottom:16px"><div class="card-title">Upcoming events</div><div id="res-upcoming-events"></div></div>
       <div style="margin-bottom:16px"><div class="card-title">Recent meetings</div><div id="res-log-list"></div><div id="res-all-meetings" style="display:none"></div><button id="res-meetings-toggle" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="toggleResMeetings()">View all meetings</button></div>
-      <div style="margin-bottom:16px"><div class="card-title">&#128196; Signed documents</div><div id="res-signed-docs"></div></div>
-      <div style="margin-bottom:16px"><div class="card-title">&#128137; Screening</div><div id="res-drug-tests"></div></div>
+      <div id="res-docs-signed-block" style="margin-bottom:16px"><div class="card-title">&#128196; Signed documents</div><div id="res-signed-docs"></div></div>
+      <div id="res-screening-block" style="margin-bottom:16px"><div class="card-title">&#128137; Screening</div><div id="res-drug-tests"></div></div>
       <div id="res-curfew-history-block"><div class="card-title">Sign in &amp; out history</div><div id="res-curfew-history"></div></div>
     </div>
   </div>
@@ -403,7 +403,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:14px 2px 8px">Log</div>
 
   <!-- Screening — two-tone tool card -->
-  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+  <div id="mgr-screening-card" style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
     <div style="background:var(--pink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
       <div>
         <div style="font-size:14px;font-weight:700;color:white">Screening</div>
@@ -420,7 +420,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <!-- Incident log — two-tone, dark -->
-  <div style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+  <div id="mgr-incident-card" style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
     <div style="background:var(--charcoal);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
       <div>
         <div style="font-size:14px;font-weight:700;color:white">Incident log</div>
@@ -458,7 +458,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <!-- Events — accordion with date badge -->
-  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+  <div id="mgr-events-card" style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('events-panel')">
       <div id="events-date-badge" style="width:38px;height:38px;border-radius:8px;background:var(--pink-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
         <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.5px" id="events-badge-day">—</div>
@@ -477,7 +477,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   </div>
 
   <!-- Sticky note — accordion with yellow pin -->
-  <div style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
+  <div id="mgr-note-card" style="background:white;border-radius:12px;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.08);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden">
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleActionSection('note-panel')">
       <div style="width:38px;height:38px;border-radius:8px;background:#FFF9C4;border:1.5px solid #F0D000;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📌</div>
       <div style="flex:1">
@@ -650,7 +650,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
       <!-- Owner-only org tools -->
   <!-- Documents — owner only -->
   <div id="owner-tools" style="display:none">
-    <div class="card" style="padding:0;overflow:hidden;border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important">
+    <div id="owner-docs-card" class="card" style="padding:0;overflow:hidden;border:2px solid rgba(200,134,10,0.3)!important;background:rgba(200,134,10,0.03)!important">
       <button onclick="toggleSettingsSection('docs-panel')" style="width:100%;background:none;border:none;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left">
         <span style="font-size:15px;font-weight:700;color:var(--gold-light)">&#128196; Documents</span>
         <span id="docs-panel-arrow" style="font-size:18px;color:var(--gold-light);transition:transform 0.2s">&#8250;</span>
@@ -1193,17 +1193,27 @@ const orgName=()=>(cachedSettings&&cachedSettings.house_name)||(window.currentOr
 // Per-org feature config (default ON / "House" so behavior is unchanged before the migration runs).
 const featCurfew=()=>!cachedSettings||cachedSettings.feature_curfew!==false;
 const featChores=()=>!cachedSettings||cachedSettings.feature_chores!==false;
+// Temporary master switch (settings.meeting_only) — strips the app down to meeting check-in/finder,
+// the resident Me tab, and manager resident management + the attendance report. Flip the column back
+// to false to restore whatever this org's feature_curfew/feature_chores already say, no deploy needed.
+const featMeetingOnly=()=>!!(cachedSettings&&cachedSettings.meeting_only);
 const unitLabel=()=>(cachedSettings&&cachedSettings.unit_label)||'House';
 const unitLabelPlural=()=>{const u=unitLabel();return /s$/i.test(u)?u:u+'s';};
 // Show/hide feature surfaces + apply the unit label per the current org's settings. Safe to call any
 // time (no-ops on missing elements); called after settings load, on screen entry, and after save.
 function applyFeatureFlags(){
   const show=(id,on)=>{const e=document.getElementById(id);if(e)e.style.display=on?'':'none';};
-  const cf=featCurfew(),ch=featChores();
+  const mo=featMeetingOnly();
+  const cf=!mo&&featCurfew(),ch=!mo&&featChores();
   // Curfew surfaces
   ['dash-inout-card','set-checkin-loc-field','excuse-card','res-curfew-action','res-curfew-history-block'].forEach(id=>show(id,cf));
   // Chores surfaces
   ['res-nav-chores','mgr-chores-card'].forEach(id=>show(id,ch));
+  // Meeting-only mode: hide every other feature surface (residents keep check-in, the Meetings finder
+  // tab, and the Me tab; managers keep resident management and the attendance report).
+  ['res-nav-calendar','res-docs-card','res-upcoming-events-card','res-docs-signed-block','res-screening-block'].forEach(id=>show(id,!mo));
+  ['mgr-screening-card','mgr-incident-card','mgr-events-card','mgr-note-card','owner-docs-card'].forEach(id=>show(id,!mo));
+  ['report-tab-drugtests','report-tab-incidents','report-tab-grievances','report-tab-documents'].forEach(id=>show(id,!mo));
   // Unit label on static elements
   const u=unitLabel(),up=unitLabelPlural();
   const setTxt=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
