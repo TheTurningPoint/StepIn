@@ -71,6 +71,7 @@ Meeting check-ins with witness signature.
 | `resident_id`, `resident_name` | who checked in |
 | `meeting_type`, `meeting_name`, `address` | meeting details |
 | `lat`, `lng` | GPS at check-in (or null) |
+| `sig_lat`, `sig_lng` | GPS re-checked when the witness signature is submitted (nullable; null on rows recorded before this was added) |
 | `signer_name` | witness name |
 | `sig_data_url` | witness signature, JPEG data URL |
 | `ts` | ISO timestamp |
