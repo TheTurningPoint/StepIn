@@ -59,8 +59,10 @@
 
   /* ── PRODUCT ── */
   .product{text-align:center;}
+  .product .instep-mark{width:32px; height:auto; margin:0 auto 14px;}
   .product .name{font-family:var(--serif); font-weight:600; font-size:clamp(30px,7vw,42px);
     color:var(--ink); letter-spacing:-0.01em;}
+  .product .name .step{color:#2BD4D4;}
   .product p{max-width:500px; margin:20px auto 0; font-size:clamp(16px,4vw,18px);}
   .product .cta{display:inline-block; margin-top:34px; font-family:var(--sans); font-weight:600;
     font-size:15px; color:var(--ink); border-bottom:1.5px solid var(--gold); padding-bottom:3px;}
@@ -115,7 +117,13 @@
 <!-- ── WHAT WE BUILD ── -->
 <section class="wrap product">
   <div class="eyebrow">What we build</div>
-  <div class="name">InStep</div>
+  <svg class="instep-mark" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><linearGradient id="lg-instep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+    <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(36,28,21,0.18)"/>
+    <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg-instep)"/>
+    <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg-instep)"/>
+  </svg>
+  <div class="name">In<span class="step">Step</span></div>
   <p>InStep is management software for recovery residences &mdash; attendance, screenings, records, and reports.</p>
   <a class="cta" href="https://instepapp.com" target="_blank" rel="noopener">Visit instepapp.com &#8594;</a>
 </section>
