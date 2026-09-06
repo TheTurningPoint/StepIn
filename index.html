@@ -1458,6 +1458,7 @@ async function enterResident(){
   renderResidentHome();
   if(!isDemoMode){
     ciSyncPending();
+    curfewSyncPending();
     const pending=ciLoadProgress();
     if(pending&&pending.ts&&pending.meeting_type&&pending.meeting_name){checkinData=pending;show('screen-checkin');ciShowSigStep();}
   }
@@ -1522,22 +1523,59 @@ async function doCurfewAction(action,destination){
   navigator.geolocation.getCurrentPosition(async pos=>{
     const now=new Date();const phase=currentUser.phase||1;const isLate=action==='in'&&isCurfewLate(phase,now);
     const record={id:'cl-'+Date.now(),resident_id:currentUser.id,resident_name:currentUser.name,action,ts:now.toISOString(),lat:pos.coords.latitude.toFixed(6),lng:pos.coords.longitude.toFixed(6),late:isLate,excused:false,destination:destination||null,house:currentUser.house||null,org:curOrg()};
-    let clErr;try{const r2=await sb.from('curfew_log').insert(record);clErr=r2.error;}catch(e){clErr={message:e.message};}
+    const doneToast=()=>{if(action==='out')toast('Signed out. Be home by '+getCurfewLabel(phase,now)+'.');else if(isLate)toast('Welcome home. This sign-in was after curfew, so it\'s marked late.');else toast('Welcome home! ❤️');};
+    const queueForLater=()=>{curfewQueueAdd(record);allCurfewLog.unshift({...record,_pending:true});doneToast();toast('No connection right now — saved on your phone. It’ll sync automatically once you’re back online.');renderCurfewAction();renderResCurfewDetail();};
+    if(!navigator.onLine){queueForLater();return;}
+    let clErr;
+    try{
+      const saveRace=Promise.race([sb.from('curfew_log').insert(record),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),12000))]);
+      const{error}=await saveRace;
+      clErr=error;
+    }catch(e){queueForLater();return;}
     if(clErr){toast('Could not save. Check your connection.',true);return;}
     allCurfewLog.unshift(record);
-    if(action==='out')toast('Signed out. Be home by '+getCurfewLabel(phase,now)+'.');
-    else if(isLate)toast('Welcome home. This sign-in was after curfew, so it\'s marked late.');
-    else toast('Welcome home! ❤️');
+    doneToast();
     renderCurfewAction();renderResCurfewDetail();
-  },()=>{toast('Location access denied. Enable location services in your settings, then try again.',true);},{timeout:10000,enableHighAccuracy:true});
+  },()=>{toast('Location access denied. Enable location services in your settings, then try again.',true);},{timeout:20000,enableHighAccuracy:true,maximumAge:0});
 }
+// ── OFFLINE CURFEW QUEUE ── sign-in/out actions that couldn't reach Supabase (no connection when
+// arriving home) are queued here and flushed automatically once we're back online.
+const CURFEW_QUEUE_KEY='si_pending_curfew';
+function curfewQueueGet(){try{return JSON.parse(localStorage.getItem(CURFEW_QUEUE_KEY)||'[]');}catch(e){return[];}}
+function curfewQueueSet(arr){try{localStorage.setItem(CURFEW_QUEUE_KEY,JSON.stringify(arr));}catch(e){}}
+function curfewQueueAdd(record){const q=curfewQueueGet();q.push(record);curfewQueueSet(q);}
+function curfewQueueRemove(id){curfewQueueSet(curfewQueueGet().filter(r=>r.id!==id));}
+let curfewSyncing=false;
+async function curfewSyncPending(){
+  if(isDemoMode||curfewSyncing||!navigator.onLine)return;
+  const q=curfewQueueGet();
+  if(!q.length)return;
+  curfewSyncing=true;
+  let syncedAny=false;
+  for(const record of q){
+    try{
+      const{error}=await sb.from('curfew_log').insert(record);
+      if(!error||/duplicate|already exists/i.test(error.message||'')){
+        curfewQueueRemove(record.id);
+        allCurfewLog=allCurfewLog.map(l=>l.id===record.id?{...l,_pending:false}:l);
+        syncedAny=true;
+      }
+      // any other structured error: leave it queued, it'll retry next time
+    }catch(e){
+      break; // still offline/unreachable — stop this pass, the next online/app-open will retry
+    }
+  }
+  curfewSyncing=false;
+  if(syncedAny){renderCurfewAction();renderResCurfewDetail();}
+}
+window.addEventListener('online',()=>{curfewSyncPending();});
 
 function renderResCurfewDetail(){
   const histEl=document.getElementById('res-curfew-history');if(!histEl)return;
   if(!featCurfew()){histEl.innerHTML='';return;}
   const myCurfewLog=allCurfewLog.filter(l=>l.resident_id===currentUser.id);
   if(!myCurfewLog.length){histEl.innerHTML='<div class="empty"><div class="empty-icon">&#128274;</div><h3>No check-ins yet</h3><p>Your sign in and out history will appear here.</p></div>';return;}
-  histEl.innerHTML=myCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?' <span class="pill pill-red">Late</span>':'';const excTag=l.excused?' <span class="pill pill-blue">Excused</span>':'';const aw=signInAwayMi(l);const awTag=aw?' <span class="pill pill-red">&#9888;&#65039; Away ~'+aw.toFixed(1)+' mi</span>':'';return'<div class="curfew-row"><div style="font-size:20px">'+icon+'</div><div style="flex:1"><div style="font-size:14px;font-weight:600">'+label+lateTag+excTag+awTag+'</div><div style="font-size:12px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+'</div></div></div>';}).join('');}
+  histEl.innerHTML=myCurfewLog.slice(0,20).map(l=>{const d=new Date(l.ts);const icon=l.action==='out'?'&#128682;':'&#127968;';const label=l.action==='out'?('Signed out'+(l.destination?' \u2192 '+l.destination:'')):'Signed in';const lateTag=l.late?' <span class="pill pill-red">Late</span>':'';const excTag=l.excused?' <span class="pill pill-blue">Excused</span>':'';const aw=signInAwayMi(l);const awTag=aw?' <span class="pill pill-red">&#9888;&#65039; Away ~'+aw.toFixed(1)+' mi</span>':'';const pendingTag=l._pending?' <span class="pill pill-yellow">&#9203; Syncing…</span>':'';return'<div class="curfew-row"><div style="font-size:20px">'+icon+'</div><div style="flex:1"><div style="font-size:14px;font-weight:600">'+label+lateTag+excTag+awTag+pendingTag+'</div><div style="font-size:12px;color:var(--mid)">'+fmtDate(d)+' at '+fmtTime(d)+'</div></div></div>';}).join('');}
 
 let currentMeetingFilter='all';
 function filterMeetings(type){
