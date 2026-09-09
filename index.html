@@ -1694,24 +1694,31 @@ function ciClearProgress(){try{localStorage.removeItem(CI_PROGRESS_KEY);}catch(e
 function ciLoadProgress(){try{const raw=localStorage.getItem(CI_PROGRESS_KEY);if(!raw)return null;const p=JSON.parse(raw);if(!p||!p.data||!currentUser||p.resident_id!==currentUser.id)return null;if(Date.now()-(p.saved_at||0)>12*3600000){ciClearProgress();return null;}return p.data;}catch(e){return null;}}
 function ciShowSigStep(){document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');const distEl=document.getElementById('ci-distance-display');if(distEl){distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; GPS location recorded with this check-in.</div></div>';}setTimeout(initSigCanvas,200);}
 // ── OFFLINE CHECK-IN QUEUE ── completed check-ins that couldn't reach Supabase (no connection at
-// the meeting) are queued here and flushed automatically once we're back online.
-const CI_QUEUE_KEY='si_pending_checkins';
-function ciQueueGet(){try{return JSON.parse(localStorage.getItem(CI_QUEUE_KEY)||'[]');}catch(e){return[];}}
-function ciQueueSet(arr){try{localStorage.setItem(CI_QUEUE_KEY,JSON.stringify(arr));}catch(e){}}
-function ciQueueAdd(record){const q=ciQueueGet();q.push(record);ciQueueSet(q);}
-function ciQueueRemove(id){ciQueueSet(ciQueueGet().filter(r=>r.id!==id));}
+// the meeting) are queued in IndexedDB — not localStorage — because the service worker needs to
+// read it too, to retry via the Background Sync API even if the app is fully closed when the
+// connection comes back. Falls back to syncing on next app open on browsers without Background
+// Sync (Safari/iOS has no support for it at all).
+const CI_QUEUE_DB='instep-ci-queue',CI_QUEUE_STORE='pending';
+function ciQueueDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(CI_QUEUE_DB,1);req.onupgradeneeded=()=>{req.result.createObjectStore(CI_QUEUE_STORE,{keyPath:'id'});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+async function ciQueueAdd(record){try{const db=await ciQueueDB();await new Promise((resolve,reject)=>{const tx=db.transaction(CI_QUEUE_STORE,'readwrite');tx.objectStore(CI_QUEUE_STORE).put({...record,_token:SI_TOKEN});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}catch(e){}}
+async function ciQueueGet(){try{const db=await ciQueueDB();return await new Promise((resolve,reject)=>{const tx=db.transaction(CI_QUEUE_STORE,'readonly');const req=tx.objectStore(CI_QUEUE_STORE).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error);});}catch(e){return[];}}
+async function ciQueueRemove(id){try{const db=await ciQueueDB();await new Promise((resolve,reject)=>{const tx=db.transaction(CI_QUEUE_STORE,'readwrite');tx.objectStore(CI_QUEUE_STORE).delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}catch(e){}}
+// One-time move of anything queued under the old localStorage-only version of this feature.
+(async()=>{try{const legacy=JSON.parse(localStorage.getItem('si_pending_checkins')||'[]');if(legacy.length){for(const r of legacy)await ciQueueAdd(r);localStorage.removeItem('si_pending_checkins');}}catch(e){}})();
+async function ciRegisterBackgroundSync(){if(!('serviceWorker' in navigator)||!('SyncManager' in window))return;try{const reg=await navigator.serviceWorker.ready;await reg.sync.register('sync-checkins');}catch(e){}}
 let ciSyncing=false;
 async function ciSyncPending(){
   if(isDemoMode||ciSyncing||!navigator.onLine)return;
-  const q=ciQueueGet();
+  const q=await ciQueueGet();
   if(!q.length)return;
   ciSyncing=true;
   let syncedAny=false;
   for(const record of q){
+    const{_token,...cleanRecord}=record;
     try{
-      const{error}=await sb.from('checkins').insert(record);
+      const{error}=await sb.from('checkins').insert(cleanRecord);
       if(!error||/duplicate|already exists/i.test(error.message||'')){
-        ciQueueRemove(record.id);
+        await ciQueueRemove(record.id);
         allCheckins=allCheckins.map(c=>c.id===record.id?{...c,_pending:false}:c);
         syncedAny=true;
       }
@@ -1776,7 +1783,7 @@ async function ciSubmit(){
   if(checkinData.distance_from_meeting)record.distance_from_meeting=checkinData.distance_from_meeting;
   if(isDemoMode){allCheckins.unshift(record);done();document.getElementById('confirm-detail').textContent=checkinData.meeting_type+' \u00b7 '+checkinData.meeting_name+' \u00b7 '+fmtDate(new Date(checkinData.ts))+' at '+fmtTime(new Date(checkinData.ts))+' \u00b7 '+fmtDuration(durationMinutes)+' in the meeting';ciShow('done');return;}
   const confirmText=checkinData.meeting_type+' \u00b7 '+checkinData.meeting_name+' \u00b7 '+fmtDate(new Date(checkinData.ts))+' at '+fmtTime(new Date(checkinData.ts))+' \u00b7 '+fmtDuration(durationMinutes)+' in the meeting';
-  const queueForLater=()=>{ciQueueAdd(record);ciClearProgress();allCheckins.unshift({...record,_pending:true});done();document.getElementById('confirm-detail').textContent=confirmText;toast('No connection right now \u2014 saved on your phone. It\u2019ll sync automatically once you\u2019re back online.');ciShow('done');};
+  const queueForLater=async()=>{await ciQueueAdd(record);ciRegisterBackgroundSync();ciClearProgress();allCheckins.unshift({...record,_pending:true});done();document.getElementById('confirm-detail').textContent=confirmText;toast('No connection right now \u2014 saved on your phone. It\u2019ll sync automatically once you\u2019re back online.');ciShow('done');};
   if(!navigator.onLine){queueForLater();return;}
   let ciSaveErr;
   try{
