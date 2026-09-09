@@ -8,5 +8,6 @@ wrangler.toml
 .assetsignore
 admin.html
 beeconworks/
+ccg/
 beecon-eye.png
 beecon-lockup.png

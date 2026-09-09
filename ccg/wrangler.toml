@@ -1,0 +1,9 @@
+name = "ccg"
+compatibility_date = "2024-11-01"
+
+# Static-site (assets-only) Worker for ccg.beeconworks.com. Serves the files
+# in this folder (ccg/) as the site — no server code. Independent of the
+# "beeconworks" and root "instep" Workers; the root .assetsignore excludes
+# ccg/ so InStep never serves these files.
+[assets]
+directory = "."
