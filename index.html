@@ -1271,7 +1271,6 @@ function getMyStatus(){const today=new Date().toDateString();const logs=allCurfe
 
 // Per-org color themes (by subdomain). Used as a fallback when the orgs row has no
 // primary_color/accent_color, so known houses are branded without DB edits.
-const APP_DOMAINS=['instepapp','beeconworks']; // second-level labels that host org subdomains (see detectAndApplyOrg)
 const ORG_THEMES={theturningpoint:{primary:'#D43C8E'}}; // her logo's magenta-pink; topbar stays default black. Add {subdomain:{primary,topbar}} for other houses.
 function _shade(hex,p){hex=(hex||'').replace('#','');if(hex.length!==6)return'#'+hex;const n=parseInt(hex,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;if(p>=0){const f=p/100;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);}else{const f=1+p/100;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function _hexRgb(hex){hex=(hex||'').replace('#','');const n=parseInt(hex,16);return((n>>16)&255)+','+((n>>8)&255)+','+(n&255);}
@@ -1280,11 +1279,8 @@ async function detectAndApplyOrg(){
   try{
     const host=window.location.hostname;
     const parts=host.split('.');
-    // e.g. theturningpoint.instepapp.com → parts[0] = 'theturningpoint'.
-    // APP_DOMAINS: parent domains that host org subdomains (instepapp.com is the
-    // main brand; beeconworks.com also serves customer tenants, e.g. Continuum
-    // Compliance Group at ccg.beeconworks.com).
-    const subdomain=parts.length>=3&&APP_DOMAINS.includes(parts[1])?parts[0]:null;
+    // e.g. theturningpoint.instepapp.com → parts[0] = 'theturningpoint'
+    const subdomain=parts.length>=3&&parts[1]==='instepapp'?parts[0]:null;
     if(!subdomain||subdomain==='www'||subdomain==='app')return;
     if(subdomain==='theturningpoint'&&window.TP_APPLE_ICON){
       const iconEl=document.querySelector('link[rel="apple-touch-icon"]');if(iconEl)iconEl.href=window.TP_APPLE_ICON;
@@ -1352,7 +1348,7 @@ window.onload=async()=>{
   // ── ROOT DOMAIN → LANDING PAGE ──
   const _host=window.location.hostname;
   const _parts=_host.split('.');
-  const _sub=_parts.length>=3&&APP_DOMAINS.includes(_parts[1])?_parts[0]:null;
+  const _sub=_parts.length>=3&&_parts[1]==='instepapp'?_parts[0]:null;
   const _params=new URLSearchParams(window.location.search);
   const _demoRole=_params.get('demo');
   // If on bare root domain (instepapp.com or www) with no demo param, show landing page
