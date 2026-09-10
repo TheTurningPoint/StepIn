@@ -1,7 +1,10 @@
 // provisionorg — vendor-only tool to stand up a new customer org from a form (no hand-run SQL).
 //
-// POST { secret, subdomain, org_name, owner_name, owner_pin, owner_email? }
+// POST { secret, subdomain, org_name, owner_name, owner_pin, owner_email?, domain? }
 //   -> creates the orgs row, the first owner in residents (with a hashed PIN), and the settings row.
+//   `domain` is the parent domain the tenant's Worker custom domain will live under
+//   (defaults to instepapp.com; e.g. pass "beeconworks.com" for a beeconworks.com tenant).
+//   It must also be added to APP_DOMAINS in index.html for the app to recognize the subdomain.
 //
 // Secret-gated: the caller must send the ADMIN_SECRET. This can create owner accounts, so it is NOT
 // for end users — only the vendor with the secret. Generic 401 on a bad/missing secret.
@@ -47,6 +50,7 @@ Deno.serve(async (req) => {
   const ownerName = (b.owner_name ?? "").trim();
   const ownerPin = (b.owner_pin ?? "").trim();
   const ownerEmail = (b.owner_email ?? "").trim();
+  const domain = (b.domain ?? "").trim().toLowerCase() || "instepapp.com";
   // Facility config (set once at provisioning, not exposed in owner Settings). Default to a full house.
   const unitLabel = ((b.unit_label as string) ?? "").trim() || "House";
   const featureCurfew = b.feature_curfew !== false;
@@ -91,7 +95,7 @@ Deno.serve(async (req) => {
     ok: true,
     subdomain,
     owner_id: ownerId,
-    login_url: `https://${subdomain}.instepapp.com`,
-    note: "Add this subdomain as a Cloudflare Worker custom domain before the owner can sign in.",
+    login_url: `https://${subdomain}.${domain}`,
+    note: `Add ${subdomain}.${domain} as a Cloudflare Worker custom domain (pointing at the app Worker, not a marketing-site Worker) before the owner can sign in.`,
   });
 });
