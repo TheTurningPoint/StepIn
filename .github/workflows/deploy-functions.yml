@@ -6,7 +6,7 @@ name: Deploy Edge Functions
 on:
   workflow_dispatch:
   push:
-    branches: [claude/claude-md-docs-kgcw9e]
+    branches: [main]
     paths: ["supabase/functions/**"]
 
 jobs:

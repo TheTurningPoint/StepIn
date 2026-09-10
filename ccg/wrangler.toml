@@ -1,0 +1,9 @@
+name = "ccg"
+compatibility_date = "2024-11-01"
+
+# Static-site (assets-only) Worker for Continuum Compliance Group's marketing
+# site. Serves the files in this folder (ccg/) as the website — no server
+# code. Independent of the root "instep" Worker and the "beeconworks" Worker;
+# the root .assetsignore excludes ccg/ so InStep never serves these files.
+[assets]
+directory = "."
