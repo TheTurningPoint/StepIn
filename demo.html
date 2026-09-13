@@ -172,6 +172,24 @@ footer{padding:28px 24px;text-align:center;border-top:1px solid var(--softest);}
 footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
 .foot-copy{font-size:11px;color:var(--softer);margin-top:8px;}
 
+/* ── HERO CTA ── */
+.hero-cta{display:inline-block;margin:0 auto 32px;padding:12px 28px;border-radius:50px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);color:#fff;font-size:13px;font-weight:700;text-decoration:none;}
+
+/* ── ONBOARDING STEPS ── */
+.onboarding-steps{display:flex;flex-direction:column;gap:16px;max-width:360px;margin:28px auto 32px;text-align:left;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.step-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.step-desc{font-size:12px;color:var(--soft);line-height:1.6;}
+
+/* ── LEAD FORM ── */
+.lead-form{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:0 auto 16px;text-align:left;}
+.lead-form input,.lead-form textarea{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--softest);color:#fff;font-size:14px;font-family:inherit;}
+.lead-form input::placeholder,.lead-form textarea::placeholder{color:var(--softer);}
+.lead-form textarea{resize:vertical;}
+.lead-form button{width:100%;padding:16px;border:none;border-radius:50px;background:var(--grad);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(43,212,212,0.2);}
+.lead-note{font-size:11px;color:var(--softer);margin:-4px auto 20px;max-width:360px;}
+
 @media(min-width:480px){
   h1{font-size:42px;}
   .phone-wrap{max-width:360px;}
@@ -193,6 +211,7 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
   </div>
   <h1>Run your house.<br><em>Not paperwork.</em></h1>
   <p class="hero-sub">Meeting check-ins, curfew tracking, screenings, and compliance — built for sober living operators.</p>
+  <a href="#contact" class="hero-cta">&#128197; Book a demo</a>
 
   <!-- ROLE PICKER -->
   <div class="role-picker">
@@ -399,6 +418,17 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
   <p class="demo-caption" style="margin-top:24px;color:var(--soft)">Recovery happens in structure. InStep gives your house the structure &mdash; and the receipts.</p>
 </section>
 
+<!-- BENEFITS -->
+<section class="features">
+  <div class="section-eyebrow">What operators gain</div>
+  <div class="feature-list">
+    <div class="feature"><div class="fi">&#9203;</div><div><div class="fn">Hours back for managers</div><div class="fd">No more chasing paper logs or texting residents to check on curfew &mdash; it's all in one dashboard.</div></div></div>
+    <div class="feature"><div class="fi">&#128276;</div><div><div class="fn">Fewer missed curfews</div><div class="fd">Real-time in/out status means a late arrival gets caught the same night, not days later.</div></div></div>
+    <div class="feature"><div class="fi">&#128203;</div><div><div class="fn">Walk into any audit ready</div><div class="fd">Every check-in, screening, and incident is already timestamped, signed, and ready to print.</div></div></div>
+    <div class="feature"><div class="fi">&#128065;&#65039;</div><div><div class="fn">One view across every house</div><div class="fd">Owners see residents, meetings, and screenings for every location at a glance &mdash; no more calling around.</div></div></div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section class="features">
   <div class="section-eyebrow">What InStep does</div>
@@ -445,11 +475,25 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
 </section>
 
 <!-- CTA -->
-<section class="cta">
+<section class="cta" id="contact">
   <h2>Ready to get started?</h2>
-  <p>We'll get your house set up and walk you through everything. Reach out and we'll talk through what your house needs.</p>
-  <a href="mailto:hello@instepapp.com" class="btn-cta">Get in touch</a>
-  <p class="cta-note">hello@instepapp.com</p>
+  <p>We'll get your house set up and walk you through everything. Here's what that looks like.</p>
+
+  <div class="onboarding-steps">
+    <div class="step"><span class="step-num">1</span><div><div class="step-title">Setup</div><div class="step-desc">We configure your house, phases, curfews, and branding &mdash; usually within a day of your first call.</div></div></div>
+    <div class="step"><span class="step-num">2</span><div><div class="step-title">Training</div><div class="step-desc">A short walkthrough for your managers and residents, live or recorded, whatever fits your schedule.</div></div></div>
+    <div class="step"><span class="step-num">3</span><div><div class="step-title">Launch</div><div class="step-desc">Go live, typically within a week &mdash; with support while your team gets comfortable.</div></div></div>
+  </div>
+
+  <form class="lead-form" id="lead-form">
+    <input type="text" name="name" placeholder="Your name" required>
+    <input type="text" name="house" placeholder="House / organization name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <textarea name="message" rows="3" placeholder="Anything we should know? (optional)"></textarea>
+    <button type="submit">Book a demo</button>
+  </form>
+  <p class="lead-note">This opens a pre-filled email to hello@instepapp.com &mdash; we reply within one business day.</p>
+  <p class="cta-note">Prefer email? Write us directly at <a href="mailto:hello@instepapp.com" style="color:var(--teal)">hello@instepapp.com</a></p>
 </section>
 
 <!-- FOOTER -->
@@ -492,6 +536,18 @@ function setRole(role, btn) {
 function launchDemo(role) {
   window.location.href = 'https://demo.instepapp.com?demo=' + role;
 }
+
+document.getElementById('lead-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var f = e.target;
+  var name = f.name.value.trim();
+  var house = f.house.value.trim();
+  var email = f.email.value.trim();
+  var message = f.message.value.trim();
+  var subject = 'Demo request — ' + house;
+  var body = 'Name: ' + name + '\nHouse/Org: ' + house + '\nEmail: ' + email + (message ? ('\n\n' + message) : '');
+  window.location.href = 'mailto:hello@instepapp.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+});
 </script>
 
 </body></html>
