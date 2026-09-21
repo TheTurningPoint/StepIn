@@ -58,8 +58,13 @@ Per-tenant branding/config, keyed by subdomain. Loaded via
 | Column | Notes |
 | --- | --- |
 | `id` | always `1` |
+| `org` | subdomain, scopes settings per tenant |
 | `required` | int — required weekly meetings |
 | `house_name` | text |
+| `feature_curfew`, `feature_chores` | bool, default true — per-org feature toggles |
+| `feature_online_meetings` | bool, default false — opt-in per org; shows the online/virtual meeting checkbox in resident check-in |
+| `unit_label` | text, default `'House'` |
+| `meeting_only` | bool, default false — temporary per-org master switch (see `supabase/security/26_meeting_only.sql`) |
 
 ## `checkins`
 
@@ -76,6 +81,8 @@ Meeting check-ins with witness signature.
 | `sig_data_url` | witness signature, JPEG data URL |
 | `ts` | ISO timestamp |
 | `duration_minutes` | minutes from finishing meeting details to witness signature submitted (nullable; null on rows recorded before this was added) |
+| `is_online` | bool, default false — true when checked in to an online/virtual meeting instead of an in-person one |
+| `platform` | text or null — e.g. "Zoom", set only when `is_online` |
 | `house` | scoping |
 
 ## `curfew_log`
