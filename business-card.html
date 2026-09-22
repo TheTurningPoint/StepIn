@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InStep Business Card</title>
+<style>
+:root{--ink:#0D1017;--ink-mid:#161B26;--ink-card:#1C2235;--teal:#2BD4D4;--purple:#9B6FD4;--pink:#C0397A;--white:#FFFFFF;--muted:rgba(255,255,255,0.62);--grad:linear-gradient(135deg,var(--teal),var(--purple));--page:#E9EBF0;--page-ink:#1C2235;--page-muted:#5B6275;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0B0E14;--page-ink:#E8EAF0;--page-muted:#9AA1B2;}}
+:root[data-theme="dark"]{--page:#0B0E14;--page-ink:#E8EAF0;--page-muted:#9AA1B2;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--page);color:var(--page-ink);min-height:100vh;padding:32px 16px 48px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.bar{max-width:760px;margin:0 auto 28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;}
+.bar h1{font-size:18px;font-weight:700;letter-spacing:-0.2px;}
+.bar p{font-size:13px;color:var(--page-muted);margin-top:4px;max-width:460px;line-height:1.45;}
+.btn{font:inherit;font-size:14px;font-weight:700;color:var(--white);background:var(--pink);border:0;border-radius:10px;padding:10px 18px;cursor:pointer;}
+.btn:hover{filter:brightness(1.08);}
+.sheet{display:flex;flex-wrap:wrap;justify-content:center;gap:28px;}
+.side{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.side-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--page-muted);}
+/* The card: US standard 3.5in x 2in */
+.card{width:3.5in;height:2in;border-radius:10px;overflow:hidden;position:relative;color:var(--white);box-shadow:0 18px 40px rgba(13,16,23,0.28),0 2px 6px rgba(13,16,23,0.18);}
+.front{background:radial-gradient(ellipse at 50% -10%,rgba(43,212,212,0.16) 0%,transparent 62%),radial-gradient(ellipse at 110% 120%,rgba(155,111,212,0.22) 0%,transparent 55%),var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.front .mark{display:flex;align-items:center;gap:10px;}
+.wordmark{font-size:30px;font-weight:800;letter-spacing:-0.6px;line-height:1;}
+.wordmark span{color:var(--teal);}
+.front .line{font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:0.2px;margin-top:12px;}
+.front .line em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.front .stripe{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--grad);}
+.back{background:var(--ink-card);display:flex;padding:0.2in 0.2in 0.2in 0.22in;gap:0.16in;}
+.back .info{flex:1;display:flex;flex-direction:column;min-width:0;}
+.back .who{margin-top:2px;}
+.name{font-size:15px;font-weight:800;letter-spacing:-0.2px;line-height:1.15;}
+.role{font-size:9.5px;font-weight:600;color:var(--teal);margin-top:3px;letter-spacing:0.2px;}
+.contact{margin-top:auto;display:flex;flex-direction:column;gap:4px;font-size:9px;color:var(--white);}
+.contact div{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.contact i{font-style:normal;width:10px;height:10px;flex:none;border-radius:3px;background:var(--grad);opacity:0.9;}
+.what{font-size:7.5px;color:var(--muted);margin-top:7px;letter-spacing:0.2px;}
+.qr{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+.qr svg{width:0.92in;height:0.92in;background:var(--white);border-radius:6px;display:block;}
+.qr span{font-size:7px;color:var(--muted);letter-spacing:0.4px;}
+.mini{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:-0.1px;margin-bottom:auto;}
+.mini b{font-weight:800;}.mini b span{color:var(--teal);}
+[contenteditable]{outline:none;border-radius:3px;}
+[contenteditable]:hover{box-shadow:0 0 0 1px rgba(43,212,212,0.45);}
+[contenteditable]:focus{box-shadow:0 0 0 1px var(--teal);}
+[contenteditable]:empty::before{content:attr(data-ph);color:rgba(255,255,255,0.35);}
+.hint{max-width:760px;margin:28px auto 0;font-size:12.5px;line-height:1.55;color:var(--page-muted);}
+.hint code{font-size:12px;background:rgba(127,127,127,0.14);padding:1px 5px;border-radius:4px;}
+@media (max-width:420px){.card{transform:scale(0.9);transform-origin:top center;margin-bottom:-0.2in;}}
+/* Print: one card side per page at exact size, ready for a print shop or card stock */
+@page{size:3.5in 2in;margin:0;}
+@media print{
+  body{background:none;padding:0;min-height:0;}
+  .bar,.hint,.side-label{display:none;}
+  .sheet{display:block;}
+  .side{display:block;}
+  .card{border-radius:0;box-shadow:none;page-break-after:always;break-after:page;transform:none;margin:0;}
+  .side:last-child .card{page-break-after:auto;break-after:auto;}
+  [contenteditable]:empty::before{content:none;}
+  [contenteditable]:hover,[contenteditable]:focus{box-shadow:none;}
+  .row-empty{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div>
+    <h1>InStep business card</h1>
+    <p>Standard 3.5 × 2 in. Click any text on the back to edit it, then print or save as PDF. Each side prints on its own page.</p>
+  </div>
+  <button class="btn" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<div class="sheet">
+  <div class="side">
+    <div class="side-label">Front</div>
+    <div class="card front">
+      <div class="mark">
+        <svg width="40" height="31" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="lgF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+          <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.3)"/>
+          <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lgF)"/>
+          <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lgF)"/>
+        </svg>
+        <span class="wordmark">In<span>Step</span></span>
+      </div>
+      <div class="line">Run your house. <em>Not paperwork.</em></div>
+      <div class="stripe"></div>
+    </div>
+  </div>
+
+  <div class="side">
+    <div class="side-label">Back</div>
+    <div class="card back">
+      <div class="info">
+        <div class="mini">
+          <svg width="14" height="11" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs><linearGradient id="lgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
+            <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.35)"/>
+            <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lgB)"/>
+            <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lgB)"/>
+          </svg>
+          <b>In<span>Step</span></b>
+        </div>
+        <div class="who">
+          <div class="name" id="f-name" contenteditable="true" spellcheck="false" data-ph="Your Name"></div>
+          <div class="role" id="f-title" contenteditable="true" spellcheck="false" data-ph="Founder">Founder</div>
+        </div>
+        <div class="contact">
+          <div id="r-email"><i></i><span id="f-email" contenteditable="true" spellcheck="false" data-ph="hello@instepapp.com">hello@instepapp.com</span></div>
+          <div id="r-phone"><i></i><span id="f-phone" contenteditable="true" spellcheck="false" data-ph="Phone (optional)"></span></div>
+          <div id="r-web"><i></i><span id="f-web" contenteditable="true" spellcheck="false" data-ph="instepapp.com">instepapp.com</span></div>
+        </div>
+        <div class="what">Sober living management · NARR-ready reports</div>
+      </div>
+      <div class="qr">
+        <svg viewBox="-2 -2 29 29" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code for instepapp.com"><path fill="#0D1017" d="M0,0h1v1h-1zM1,0h1v1h-1zM2,0h1v1h-1zM3,0h1v1h-1zM4,0h1v1h-1zM5,0h1v1h-1zM6,0h1v1h-1zM9,0h1v1h-1zM11,0h1v1h-1zM13,0h1v1h-1zM14,0h1v1h-1zM15,0h1v1h-1zM16,0h1v1h-1zM18,0h1v1h-1zM19,0h1v1h-1zM20,0h1v1h-1zM21,0h1v1h-1zM22,0h1v1h-1zM23,0h1v1h-1zM24,0h1v1h-1zM0,1h1v1h-1zM6,1h1v1h-1zM8,1h1v1h-1zM10,1h1v1h-1zM11,1h1v1h-1zM14,1h1v1h-1zM15,1h1v1h-1zM18,1h1v1h-1zM24,1h1v1h-1zM0,2h1v1h-1zM2,2h1v1h-1zM3,2h1v1h-1zM4,2h1v1h-1zM6,2h1v1h-1zM10,2h1v1h-1zM12,2h1v1h-1zM14,2h1v1h-1zM16,2h1v1h-1zM18,2h1v1h-1zM20,2h1v1h-1zM21,2h1v1h-1zM22,2h1v1h-1zM24,2h1v1h-1zM0,3h1v1h-1zM2,3h1v1h-1zM3,3h1v1h-1zM4,3h1v1h-1zM6,3h1v1h-1zM12,3h1v1h-1zM14,3h1v1h-1zM15,3h1v1h-1zM16,3h1v1h-1zM18,3h1v1h-1zM20,3h1v1h-1zM21,3h1v1h-1zM22,3h1v1h-1zM24,3h1v1h-1zM0,4h1v1h-1zM2,4h1v1h-1zM3,4h1v1h-1zM4,4h1v1h-1zM6,4h1v1h-1zM8,4h1v1h-1zM9,4h1v1h-1zM10,4h1v1h-1zM14,4h1v1h-1zM15,4h1v1h-1zM18,4h1v1h-1zM20,4h1v1h-1zM21,4h1v1h-1zM22,4h1v1h-1zM24,4h1v1h-1zM0,5h1v1h-1zM6,5h1v1h-1zM9,5h1v1h-1zM10,5h1v1h-1zM15,5h1v1h-1zM18,5h1v1h-1zM24,5h1v1h-1zM0,6h1v1h-1zM1,6h1v1h-1zM2,6h1v1h-1zM3,6h1v1h-1zM4,6h1v1h-1zM5,6h1v1h-1zM6,6h1v1h-1zM8,6h1v1h-1zM10,6h1v1h-1zM12,6h1v1h-1zM14,6h1v1h-1zM16,6h1v1h-1zM18,6h1v1h-1zM19,6h1v1h-1zM20,6h1v1h-1zM21,6h1v1h-1zM22,6h1v1h-1zM23,6h1v1h-1zM24,6h1v1h-1zM9,7h1v1h-1zM13,7h1v1h-1zM14,7h1v1h-1zM15,7h1v1h-1zM0,8h1v1h-1zM2,8h1v1h-1zM4,8h1v1h-1zM6,8h1v1h-1zM11,8h1v1h-1zM13,8h1v1h-1zM20,8h1v1h-1zM23,8h1v1h-1zM2,9h1v1h-1zM3,9h1v1h-1zM4,9h1v1h-1zM8,9h1v1h-1zM10,9h1v1h-1zM11,9h1v1h-1zM16,9h1v1h-1zM17,9h1v1h-1zM18,9h1v1h-1zM24,9h1v1h-1zM4,10h1v1h-1zM5,10h1v1h-1zM6,10h1v1h-1zM10,10h1v1h-1zM11,10h1v1h-1zM13,10h1v1h-1zM17,10h1v1h-1zM19,10h1v1h-1zM20,10h1v1h-1zM22,10h1v1h-1zM23,10h1v1h-1zM24,10h1v1h-1zM0,11h1v1h-1zM1,11h1v1h-1zM7,11h1v1h-1zM9,11h1v1h-1zM11,11h1v1h-1zM13,11h1v1h-1zM14,11h1v1h-1zM15,11h1v1h-1zM17,11h1v1h-1zM18,11h1v1h-1zM19,11h1v1h-1zM20,11h1v1h-1zM23,11h1v1h-1zM0,12h1v1h-1zM2,12h1v1h-1zM3,12h1v1h-1zM6,12h1v1h-1zM9,12h1v1h-1zM13,12h1v1h-1zM16,12h1v1h-1zM17,12h1v1h-1zM18,12h1v1h-1zM21,12h1v1h-1zM23,12h1v1h-1zM24,12h1v1h-1zM3,13h1v1h-1zM4,13h1v1h-1zM5,13h1v1h-1zM8,13h1v1h-1zM10,13h1v1h-1zM11,13h1v1h-1zM16,13h1v1h-1zM18,13h1v1h-1zM21,13h1v1h-1zM24,13h1v1h-1zM0,14h1v1h-1zM2,14h1v1h-1zM6,14h1v1h-1zM9,14h1v1h-1zM10,14h1v1h-1zM16,14h1v1h-1zM18,14h1v1h-1zM19,14h1v1h-1zM22,14h1v1h-1zM23,14h1v1h-1zM24,14h1v1h-1zM1,15h1v1h-1zM2,15h1v1h-1zM4,15h1v1h-1zM5,15h1v1h-1zM7,15h1v1h-1zM8,15h1v1h-1zM11,15h1v1h-1zM13,15h1v1h-1zM14,15h1v1h-1zM15,15h1v1h-1zM18,15h1v1h-1zM20,15h1v1h-1zM23,15h1v1h-1zM0,16h1v1h-1zM5,16h1v1h-1zM6,16h1v1h-1zM7,16h1v1h-1zM8,16h1v1h-1zM9,16h1v1h-1zM10,16h1v1h-1zM12,16h1v1h-1zM14,16h1v1h-1zM16,16h1v1h-1zM17,16h1v1h-1zM18,16h1v1h-1zM19,16h1v1h-1zM20,16h1v1h-1zM21,16h1v1h-1zM8,17h1v1h-1zM9,17h1v1h-1zM10,17h1v1h-1zM11,17h1v1h-1zM12,17h1v1h-1zM13,17h1v1h-1zM16,17h1v1h-1zM20,17h1v1h-1zM21,17h1v1h-1zM23,17h1v1h-1zM24,17h1v1h-1zM0,18h1v1h-1zM1,18h1v1h-1zM2,18h1v1h-1zM3,18h1v1h-1zM4,18h1v1h-1zM5,18h1v1h-1zM6,18h1v1h-1zM9,18h1v1h-1zM10,18h1v1h-1zM11,18h1v1h-1zM12,18h1v1h-1zM14,18h1v1h-1zM15,18h1v1h-1zM16,18h1v1h-1zM18,18h1v1h-1zM20,18h1v1h-1zM21,18h1v1h-1zM23,18h1v1h-1zM24,18h1v1h-1zM0,19h1v1h-1zM6,19h1v1h-1zM9,19h1v1h-1zM12,19h1v1h-1zM13,19h1v1h-1zM16,19h1v1h-1zM20,19h1v1h-1zM21,19h1v1h-1zM0,20h1v1h-1zM2,20h1v1h-1zM3,20h1v1h-1zM4,20h1v1h-1zM6,20h1v1h-1zM8,20h1v1h-1zM9,20h1v1h-1zM10,20h1v1h-1zM11,20h1v1h-1zM14,20h1v1h-1zM16,20h1v1h-1zM17,20h1v1h-1zM18,20h1v1h-1zM19,20h1v1h-1zM20,20h1v1h-1zM21,20h1v1h-1zM23,20h1v1h-1zM24,20h1v1h-1zM0,21h1v1h-1zM2,21h1v1h-1zM3,21h1v1h-1zM4,21h1v1h-1zM6,21h1v1h-1zM11,21h1v1h-1zM19,21h1v1h-1zM20,21h1v1h-1zM21,21h1v1h-1zM22,21h1v1h-1zM0,22h1v1h-1zM2,22h1v1h-1zM3,22h1v1h-1zM4,22h1v1h-1zM6,22h1v1h-1zM8,22h1v1h-1zM10,22h1v1h-1zM13,22h1v1h-1zM15,22h1v1h-1zM16,22h1v1h-1zM17,22h1v1h-1zM20,22h1v1h-1zM24,22h1v1h-1zM0,23h1v1h-1zM6,23h1v1h-1zM9,23h1v1h-1zM10,23h1v1h-1zM11,23h1v1h-1zM15,23h1v1h-1zM16,23h1v1h-1zM20,23h1v1h-1zM21,23h1v1h-1zM23,23h1v1h-1zM0,24h1v1h-1zM1,24h1v1h-1zM2,24h1v1h-1zM3,24h1v1h-1zM4,24h1v1h-1zM5,24h1v1h-1zM6,24h1v1h-1zM8,24h1v1h-1zM9,24h1v1h-1zM10,24h1v1h-1zM12,24h1v1h-1zM15,24h1v1h-1zM16,24h1v1h-1zM18,24h1v1h-1zM19,24h1v1h-1zM23,24h1v1h-1zM24,24h1v1h-1z"/></svg>
+        <span>See it live</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="hint">Prefill from the link: <code>business-card.html?name=Jane%20Doe&amp;title=Founder&amp;phone=(303)%20555-0100</code> (also <code>email</code>, <code>web</code>). An empty phone line is left off the printed card. The QR code opens instepapp.com.</p>
+
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);
+  ['name','title','email','phone','web'].forEach(function(k){var v=q.get(k);if(v!==null){document.getElementById('f-'+k).textContent=v;}});
+  function sync(){var p=document.getElementById('f-phone');document.getElementById('r-phone').classList.toggle('row-empty',!p.textContent.trim());}
+  document.querySelectorAll('[contenteditable]').forEach(function(el){
+    el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();el.blur();}});
+    el.addEventListener('paste',function(e){e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData('text').replace(/\s+/g,' ');document.execCommand('insertText',false,t);});
+    el.addEventListener('input',sync);
+  });
+  sync();
+})();
+</script>
+</body>
+</html>
