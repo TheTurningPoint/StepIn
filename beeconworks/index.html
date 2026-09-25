@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Beecon Works — the light that guides you home</title>
+<title>Beecon Works — the light stays on</title>
 <meta name="description" content="Beecon Works builds software and compliance support for recovery residences &mdash; InStep for day-to-day management, and Continuum Compliance Group for documentation and certification.">
 <meta name="theme-color" content="#F5F1EA">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M22 12 L17 20.66 L7 20.66 L2 12 L7 3.34 L17 3.34 Z' fill='none' stroke='%23DFA23C' stroke-width='1.6'/%3E%3Cpath d='M12 5 L13.4 10.6 L19 12 L13.4 13.4 L12 19 L10.6 13.4 L5 12 L10.6 10.6 Z' fill='%23E8B24A'/%3E%3C/svg%3E">
@@ -36,6 +36,12 @@
     font-size:13px; font-weight:600; color:var(--ink); opacity:0.62; margin:18px 0 0 0.52em;}
   .hero .tagline{font-family:var(--serif); font-style:italic; font-size:clamp(19px,4.6vw,23px);
     color:var(--body); margin-top:38px;}
+  .hero .links{margin-top:30px; font-family:var(--sans); text-transform:uppercase; letter-spacing:0.14em;
+    font-size:12px; font-weight:600; color:var(--ink);}
+  .hero .links a{border-bottom:1.5px solid var(--gold); padding-bottom:3px;}
+  .hero .links a:hover{border-bottom-color:var(--gold-deep);}
+  .hero .links a,footer .flinks a{display:inline-block; white-space:nowrap;}
+  .hero .links .sep{color:var(--gold-deep); margin:0 12px;}
 
   /* ── SECTIONS ── */
   section{padding:104px 0;}
@@ -76,11 +82,15 @@
     max-width:420px; margin:0 auto 22px;}
   footer .contact{font-size:16px; margin-bottom:26px;}
   footer .contact a{border-bottom:1px solid var(--line); padding-bottom:2px;}
+  footer .flinks{font-size:14px; margin-bottom:14px;}
+  footer .flinks a{border-bottom:1px solid var(--line); padding-bottom:2px;}
+  footer .flinks .sep{color:var(--gold-deep); margin:0 10px;}
   footer .closing{font-family:var(--serif); font-style:italic; font-size:17px; color:var(--ink);}
   footer .copy{margin-top:38px; font-size:12px; letter-spacing:0.04em; color:var(--body); opacity:0.55;}
 
   @media (max-width:520px){
     .hero{padding:80px 26px 68px;} section{padding:80px 0;} section.wrap{padding:80px 26px;} .bee{padding:84px 26px;}
+    .hero .links .sep{display:none;} .hero .links a{display:table; margin:0 auto 14px;}
   }
 </style>
 </head>
@@ -91,7 +101,8 @@
   <img class="glyph" src="beecon-mark.png" alt="" aria-hidden="true" width="295" height="272">
   <img class="wm" src="beecon-wordmark.png" alt="beecon" width="1031" height="293">
   <div class="works">Works</div>
-  <div class="tagline">The light that guides you home.</div>
+  <div class="tagline">The light stays on.</div>
+  <nav class="links" aria-label="Our work"><a href="https://instepapp.com" target="_blank" rel="noopener">InStep</a><span class="sep" aria-hidden="true">&middot;</span><a href="https://ccg.beeconworks.com" target="_blank" rel="noopener">Continuum Compliance Group</a></nav>
 </header>
 
 <hr class="rule">
@@ -141,6 +152,7 @@
   <img class="fmark" src="beecon-wordmark.png" alt="beecon" width="1031" height="293">
   <!-- Saved for future use (mission/Foundation line, currently hidden):
        <div class="found">The work funds the mission: revenue from Beecon Works helps fund The Beecon Foundation.</div> -->
+  <nav class="flinks" aria-label="Our work"><a href="https://instepapp.com" target="_blank" rel="noopener">InStep</a><span class="sep" aria-hidden="true">&middot;</span><a href="https://ccg.beeconworks.com" target="_blank" rel="noopener">Continuum Compliance Group</a></nav>
   <div class="contact"><a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a></div>
   <div class="closing">The light stays on.</div>
   <div class="copy">&copy; Beecon Works</div>
