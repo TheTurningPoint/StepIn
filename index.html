@@ -351,7 +351,7 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
 <div class="steps" id="checkin-steps"></div>
 <div id="ci-step-loc" style="display:none"><div class="card"><div class="card-title">&#128205; Location verification</div><p style="font-size:14px;color:var(--mid);margin-bottom:16px">We need your location to confirm you were at the meeting. When your phone asks, tap <strong>Allow</strong>.</p><div id="loc-status" class="loc-box">Getting your location&#8230;</div><button class="btn btn-primary btn-disabled" id="btn-loc-proceed" onclick="locProceed()">Continue to check-in &#8594;</button></div></div>
 <div id="ci-step-details" style="display:none"><div class="card"><div class="card-title">Step 1 &#8212; Tell us about your meeting</div><div class="field"><label>Meeting type</label><select id="ci-type"><option value="">Select type...</option><option>AA (Alcoholics Anonymous)</option><option>NA (Narcotics Anonymous)</option><option>CA (Cocaine Anonymous)</option><option>SMART Recovery</option><option>Dharma Recovery</option><option>Al-Anon</option><option>Other</option></select></div><div class="field"><label>Meeting name</label><input type="text" id="ci-name" placeholder="e.g. Monday Night Serenity Group"></div><div class="field" id="ci-online-field" style="display:none"><label style="display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer"><input type="checkbox" id="ci-online" onchange="ciToggleOnline()" style="width:18px;height:18px;flex-shrink:0"> This was an online/virtual meeting</label></div><div class="field" id="ci-platform-field" style="display:none"><label>Platform</label><select id="ci-platform"><option>Zoom</option><option>Google Meet</option><option>Phone call</option><option>Other online platform</option></select></div><div class="field"><label id="ci-addr-label">Address or location (optional)</label><input type="text" id="ci-addr" placeholder="e.g. 123 Main St, Denver"></div><button class="btn btn-primary" onclick="ciDetails()">Next &#8212; Get someone to sign &#8594;</button></div></div>
-<div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><div id="ci-distance-display"></div><p style="font-size:14px;color:var(--mid);margin-bottom:16px" id="sig-intro">Keep this screen open through the meeting. When it wraps up, hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there, and ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
+<div id="ci-step-sig" style="display:none"><div class="card"><div class="card-title">Step 2 &#8212; Get a signature</div><div id="ci-distance-display"></div><p style="font-size:14px;color:var(--mid);margin-bottom:16px" id="sig-intro">Keep this screen open through the meeting. When it wraps up, hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there, and ask them to sign below with their finger.</p><p style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:10px">Signing for: <span id="sig-resident-name"></span></p><div class="sig-wrap"><canvas id="sig-canvas"></canvas><div class="sig-label" id="sig-hint">Sign here with your finger</div></div><div class="field mt8"><label>Their name (printed clearly)</label><input type="text" id="sig-name" placeholder="e.g. John D."></div><div class="field mt8" id="ci-screenshot-field" style="display:none"><label id="ci-screenshot-label">Attach a screenshot from the meeting</label><input type="file" id="ci-screenshot-file" accept="image/*" capture="environment" onchange="ciScreenshotSelected(event)" style="font-size:13px"><div id="ci-screenshot-preview" style="margin-top:8px;font-size:12px;color:var(--mid)"></div></div><div class="sig-btns"><button class="btn btn-outline btn-sm" onclick="clearSig()">Clear</button><button class="btn btn-primary" id="submit-btn" onclick="ciSubmit()" style="flex:1">Submit &#10003;</button></div></div></div>
 <div id="ci-step-done" style="display:none"><div class="card text-center"><div style="font-size:56px;margin:20px 0">&#9989;</div><h3 class="section-head">You're all set! &#127881;</h3><p class="text-mid mt8" id="confirm-detail"></p><div class="divider"></div><p style="font-size:13px;color:var(--soft)">Your check-in has been saved and sent to your manager. Great work showing up today.</p><button class="btn btn-navy mt16" onclick="finishCheckin()">Done &#8212; go back home</button></div></div>
 </div>
 </div>
@@ -1189,7 +1189,7 @@ const MAX_LOGIN_ATTEMPTS=5;
 let currentUser=null,sigCanvas,sigCtx,sigDrawing=false,sigHasMark=false,checkinData={},
     incSigCanvas,incSigCtx,incHasMark=false,dischargeTargetId=null,dischargeSigCanvas,dischargeSigCtx,dischargeHasMark=false,
     allResidents=[],allManagers=[],allOwners=[],allCheckins=[],allCurfewLog=[],allChores=[],allEvents=[],
-    cachedSettings={required:3,house_name:'',feature_curfew:true,feature_chores:true,feature_online_meetings:false,unit_label:'House'},cachedAnnouncement=null,cachedAcks=[],
+    cachedSettings={required:3,house_name:'',feature_curfew:true,feature_chores:true,feature_online_meetings:false,online_screenshot_required:true,unit_label:'House'},cachedAnnouncement=null,cachedAcks=[],
     selectedHouse=null;
 
 const isOwner=()=>currentUser&&currentUser.role==='owner';
@@ -1209,6 +1209,9 @@ const featChores=()=>!featMeetingOnly()&&(!cachedSettings||cachedSettings.featur
 // Opt-in per org (default OFF — off for every house until a house asks for it, no redeploy needed).
 // Lets a resident check in to an online/virtual meeting (Zoom, phone, etc.) instead of an in-person one.
 const featOnlineMeetings=()=>!!(cachedSettings&&cachedSettings.feature_online_meetings);
+// Mandatory by default for any org that turns online meetings on (opt-OUT pattern, like feature_curfew
+// above) — flip settings.online_screenshot_required to false for a house that wants it optional instead.
+const onlineScreenshotRequired=()=>!cachedSettings||cachedSettings.online_screenshot_required!==false;
 const unitLabel=()=>(cachedSettings&&cachedSettings.unit_label)||'House';
 const unitLabelPlural=()=>{const u=unitLabel();return /s$/i.test(u)?u:u+'s';};
 // Show/hide feature surfaces + apply the unit label per the current org's settings. Safe to call any
@@ -1442,7 +1445,7 @@ async function doLogin(){
 function showErr(el,msg){el.textContent=msg;el.style.display='block';}
 // Clear ALL in-memory state so one user's (or the demo's) data can never bleed into the next session
 // on a shared device. Mirrors the initial declarations at the top of the script.
-function resetState(){currentUser=null;selectedHouse=null;allResidents=[];allManagers=[];allOwners=[];allCheckins=[];allCurfewLog=[];allChores=[];allEvents=[];cachedDrugTests=[];cachedIncidents=[];cachedGrievances=[];myGrievances=[];cachedResidentDocs=[];cachedDocTemplates=[];cachedAnnouncement=null;cachedAcks=[];cachedSettings={required:3,house_name:'',feature_curfew:true,feature_chores:true,feature_online_meetings:false,unit_label:'House'};}
+function resetState(){currentUser=null;selectedHouse=null;allResidents=[];allManagers=[];allOwners=[];allCheckins=[];allCurfewLog=[];allChores=[];allEvents=[];cachedDrugTests=[];cachedIncidents=[];cachedGrievances=[];myGrievances=[];cachedResidentDocs=[];cachedDocTemplates=[];cachedAnnouncement=null;cachedAcks=[];cachedSettings={required:3,house_name:'',feature_curfew:true,feature_chores:true,feature_online_meetings:false,online_screenshot_required:true,unit_label:'House'};}
 function exitDemo(){isDemoMode=false;resetState();localStorage.removeItem('si_user');siSetToken(null);const b=document.getElementById('demo-banner');if(b)b.remove();show('screen-login');}
 function logout(){if(isDemoMode){window.location.href=window.location.origin+window.location.pathname;return;}resetState();localStorage.removeItem('si_user');siSetToken(null);document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
 function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident();}
@@ -1698,14 +1701,55 @@ function ciLoadProgress(){try{const raw=localStorage.getItem(CI_PROGRESS_KEY);if
 function ciShowSigStep(){
   document.getElementById('sig-resident-name').textContent=currentUser.name;ciShow('sig');
   const distEl=document.getElementById('ci-distance-display');const sigIntro=document.getElementById('sig-intro');
+  const shotField=document.getElementById('ci-screenshot-field');const shotLabel=document.getElementById('ci-screenshot-label');
   if(checkinData.is_online){
     if(distEl)distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128421; Online meeting'+(checkinData.platform?' · '+checkinData.platform:'')+'.</div></div>';
     if(sigIntro)sigIntro.textContent='This meeting happened online. If your sponsor, counselor, or meeting chairperson can confirm you attended, ask them to sign below. If no one else is available, you may sign to confirm your own attendance.';
+    if(shotField)shotField.style.display='block';
+    if(shotLabel)shotLabel.textContent='Attach a screenshot from the meeting'+(onlineScreenshotRequired()?' (required)':' (optional)');
+    if(!checkinData.screenshot_url){const shotFile=document.getElementById('ci-screenshot-file');if(shotFile)shotFile.value='';const shotPrev=document.getElementById('ci-screenshot-preview');if(shotPrev)shotPrev.innerHTML='';}
   }else{
     if(distEl)distEl.innerHTML='<div style="background:var(--cream);border:1.5px solid var(--sand);border-radius:10px;padding:12px;margin-bottom:14px"><div style="font-size:13px;color:var(--mid)">&#128205; GPS location recorded with this check-in.</div></div>';
     if(sigIntro)sigIntro.textContent='Keep this screen open through the meeting. When it wraps up, hand your phone to the meeting secretary, your sponsor, or anyone who can verify you were there, and ask them to sign below with their finger.';
+    if(shotField)shotField.style.display='none';
   }
   setTimeout(initSigCanvas,200);
+}
+// Resizes to maxDim on the long edge and re-encodes as JPEG — a phone photo can be several MB;
+// this keeps it small enough to store inline in the checkins row alongside the signature.
+function ciCompressImage(file,maxDim,quality){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        if(w>=h&&w>maxDim){h=Math.round(h*maxDim/w);w=maxDim;}
+        else if(h>w&&h>maxDim){w=Math.round(w*maxDim/h);h=maxDim;}
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=()=>reject(new Error('bad image'));
+      img.src=e.target.result;
+    };
+    reader.onerror=()=>reject(new Error('read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+async function ciScreenshotSelected(ev){
+  const file=ev.target.files&&ev.target.files[0];const preview=document.getElementById('ci-screenshot-preview');
+  if(!file){checkinData.screenshot_url=null;if(preview)preview.innerHTML='';return;}
+  if(preview)preview.textContent='Compressing…';
+  try{
+    const dataUrl=await ciCompressImage(file,1000,0.55);
+    checkinData.screenshot_url=dataUrl;
+    if(preview)preview.innerHTML='<img src="'+dataUrl+'" style="max-width:160px;max-height:160px;object-fit:contain;border:1px solid var(--sand);border-radius:8px;display:block">';
+  }catch(e){
+    checkinData.screenshot_url=null;
+    if(preview)preview.textContent='';
+    toast('Could not read that image — try another.',true);
+  }
 }
 // ── OFFLINE CHECK-IN QUEUE ── completed check-ins that couldn't reach Supabase (no connection at
 // the meeting) are queued in IndexedDB — not localStorage — because the service worker needs to
@@ -1756,6 +1800,8 @@ function startCheckin(){
   const onlineCb=document.getElementById('ci-online');if(onlineCb)onlineCb.checked=false;
   document.getElementById('ci-platform-field').style.display='none';
   document.getElementById('ci-addr-label').textContent='Address or location (optional)';
+  const shotFile=document.getElementById('ci-screenshot-file');if(shotFile)shotFile.value='';
+  const shotPrev=document.getElementById('ci-screenshot-preview');if(shotPrev)shotPrev.innerHTML='';
   if(isDemoMode){checkinData.lat='39.7392';checkinData.lng='-104.9847';const el=document.getElementById('loc-status');el.className='loc-box success';el.innerHTML='&#9989; Demo location: Denver, CO &mdash; ready to proceed.';document.getElementById('btn-loc-proceed').classList.remove('btn-disabled');return;}
   if(!navigator.geolocation){toast('Location services aren’t available on this device.',true);return;}
   document.getElementById('loc-status').className='loc-box';document.getElementById('loc-status').innerHTML='&#128205; Getting your location\u2026';document.getElementById('btn-loc-proceed').classList.add('btn-disabled');
@@ -1781,6 +1827,7 @@ async function ciSubmit(){
   const signerName=document.getElementById('sig-name').value.trim();
   if(!sigHasMark||!sigHasRealMark(sigCanvas)){toast('Please sign your full signature.');return;}
   if(!signerName){toast('Please enter the signer\'s name.');return;}
+  if(checkinData.is_online&&onlineScreenshotRequired()&&!checkinData.screenshot_url){toast('Please attach a screenshot from the meeting.',true);return;}
   // Block an accidental rapid RE-submit of the same meeting (within 5 min) — but allow genuinely
   // separate same-named sessions later in the day (a resident can attend two "AA" meetings).
   const ciTs=new Date(checkinData.ts).getTime();
@@ -1808,6 +1855,7 @@ async function ciSubmit(){
   if(checkinData.distance_from_meeting)record.distance_from_meeting=checkinData.distance_from_meeting;
   if(checkinData.is_online)record.is_online=true;
   if(checkinData.platform)record.platform=checkinData.platform;
+  if(checkinData.screenshot_url)record.screenshot_url=checkinData.screenshot_url;
   const onlineTag=checkinData.is_online?' \u00b7 Online':'';
   if(isDemoMode){allCheckins.unshift(record);done();document.getElementById('confirm-detail').textContent=checkinData.meeting_type+' \u00b7 '+checkinData.meeting_name+onlineTag+' \u00b7 '+fmtDate(new Date(checkinData.ts))+' at '+fmtTime(new Date(checkinData.ts))+' \u00b7 '+fmtDuration(durationMinutes)+' in the meeting';ciShow('done');return;}
   const confirmText=checkinData.meeting_type+' \u00b7 '+checkinData.meeting_name+onlineTag+' \u00b7 '+fmtDate(new Date(checkinData.ts))+' at '+fmtTime(new Date(checkinData.ts))+' \u00b7 '+fmtDuration(durationMinutes)+' in the meeting';
@@ -2212,6 +2260,11 @@ function buildReportDetail(r,meetings,req){
         ?'<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px">Signed by '+( c.signer_name||'Unknown')+sigMapLink+'</div>'
          +'<img src="'+c.sig_data_url+'" style="max-width:180px;max-height:60px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;display:block">'
         :'<div style="font-size:12px;color:var(--mid);margin-top:6px">Signed by: '+(c.signer_name||'Unknown')+sigMapLink+'</div>'
+      )
+      +(c.screenshot_url
+        ?'<div style="font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px">Meeting screenshot</div>'
+         +'<img src="'+c.screenshot_url+'" style="max-width:180px;max-height:120px;object-fit:contain;border:1px solid var(--sand);border-radius:6px;background:white;display:block">'
+        :''
       )+'</div>';
   }).join('');
   return rows+printBtn;
@@ -2223,7 +2276,7 @@ function printAttendanceReport(){const req=cachedSettings.required||3;const from
 function printAttendancePDF(data,label,weekStart,req){
   const org=orgName();const house=myHouse()||'';const now=new Date();const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);const dateRange='Week of '+fmtDate(weekStart)+' \u2013 '+fmtDate(weekEnd);
   const resRows=data.map(item=>{const wc=item.meetings.length;const met=wc>=req;const statusColor=met?'#166534':wc>0?'#92400E':'#991B1B';const statusBg=met?'#DCFCE7':wc>0?'#FEF3C7':'#FEE2E2';const statusLabel=met?'\u2713 Complete':wc>0?'In progress':'No meetings';
-  const meetingRows=item.meetings.map(c=>{const d=new Date(c.ts);const dist=c.is_online?' &bull; <span style="color:#166534">Online'+(c.platform?' &middot; '+c.platform:'')+'</span>':(c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined?' &bull; <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'#166534':parseFloat(c.distance_from_meeting)<=3?'#92400E':'#991B1B')+'">'+(parseFloat(c.distance_from_meeting)<=0.1?'At location':c.distance_from_meeting+' mi from meeting')+'</span>':'');const dur=c.duration_minutes!==null&&c.duration_minutes!==undefined?' &bull; '+fmtDuration(c.duration_minutes)+' in meeting':'';return'<div style="border:1px solid #eee;border-radius:8px;margin-bottom:12px;overflow:hidden;page-break-inside:avoid"><div style="padding:12px 14px;background:#f9f9f9;border-bottom:1px solid #eee"><div style="font-size:14px;font-weight:700">'+c.meeting_type+'</div><div style="font-size:13px;color:#666;margin-top:2px">'+c.meeting_name+'</div><div style="font-size:12px;color:#999;margin-top:2px">'+d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+dur+(c.address?' &bull; '+c.address:'')+dist+'</div></div><div style="padding:12px 14px"><div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Meeting Signature</div><div style="font-size:12px;color:#333;margin-bottom:6px">Signed by: <strong>'+(c.signer_name||'Unknown')+'</strong></div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" style="max-width:220px;max-height:80px;object-fit:contain;border:1px solid #eee;border-radius:4px;background:white;display:block">':'<div style="height:50px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature image on file</div>')+'</div></div>';}).join('');
+  const meetingRows=item.meetings.map(c=>{const d=new Date(c.ts);const dist=c.is_online?' &bull; <span style="color:#166534">Online'+(c.platform?' &middot; '+c.platform:'')+'</span>':(c.distance_from_meeting!==null&&c.distance_from_meeting!==undefined?' &bull; <span style="color:'+(parseFloat(c.distance_from_meeting)<=1?'#166534':parseFloat(c.distance_from_meeting)<=3?'#92400E':'#991B1B')+'">'+(parseFloat(c.distance_from_meeting)<=0.1?'At location':c.distance_from_meeting+' mi from meeting')+'</span>':'');const dur=c.duration_minutes!==null&&c.duration_minutes!==undefined?' &bull; '+fmtDuration(c.duration_minutes)+' in meeting':'';return'<div style="border:1px solid #eee;border-radius:8px;margin-bottom:12px;overflow:hidden;page-break-inside:avoid"><div style="padding:12px 14px;background:#f9f9f9;border-bottom:1px solid #eee"><div style="font-size:14px;font-weight:700">'+c.meeting_type+'</div><div style="font-size:13px;color:#666;margin-top:2px">'+c.meeting_name+'</div><div style="font-size:12px;color:#999;margin-top:2px">'+d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+dur+(c.address?' &bull; '+c.address:'')+dist+'</div></div><div style="padding:12px 14px"><div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Meeting Signature</div><div style="font-size:12px;color:#333;margin-bottom:6px">Signed by: <strong>'+(c.signer_name||'Unknown')+'</strong></div>'+(c.sig_data_url?'<img src="'+c.sig_data_url+'" style="max-width:220px;max-height:80px;object-fit:contain;border:1px solid #eee;border-radius:4px;background:white;display:block">':'<div style="height:50px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999">No signature image on file</div>')+(c.screenshot_url?'<div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-top:10px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Meeting Screenshot</div><img src="'+c.screenshot_url+'" style="max-width:220px;max-height:160px;object-fit:contain;border:1px solid #eee;border-radius:4px;background:white;display:block">':'')+'</div></div>';}).join('');
   return'<div style="border:1.5px solid #ddd;border-radius:10px;margin-bottom:20px;overflow:hidden;page-break-inside:avoid"><div style="background:#0A0A0A;padding:14px 18px;display:flex;justify-content:space-between;align-items:center"><div style="color:white"><div style="font-size:16px;font-weight:800">'+item.r.name+'</div><div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px">Phase '+(item.r.phase||1)+' &bull; '+wc+' of '+req+' meetings</div></div><span style="background:'+statusBg+';color:'+statusColor+';font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px">'+statusLabel+'</span></div><div style="padding:14px">'+(meetingRows||'<div style="font-size:13px;color:#999;padding:8px 0">No meetings recorded this week.</div>')+'</div></div>';}).join('');
   const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Attendance Report \u2014 '+label+'</title><style>body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;margin:0;padding:24px;color:#000;background:white;}@media print{body{padding:0;}.no-print{display:none;}}h1{font-size:22px;font-weight:800;margin:0 0 4px;}.header{border-bottom:2px solid #000;padding-bottom:16px;margin-bottom:24px;}</style></head><body><div class="header"><div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Confidential Attendance Record</div><h1>'+org+(house?' \u2014 '+house:'')+'</h1><div style="font-size:13px;color:#666;">'+label+' &bull; '+dateRange+'</div><div style="font-size:13px;color:#666;">Generated: '+now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'</div><div style="font-size:12px;color:#C0392B;font-weight:600;margin-top:4px">&#9888; Each check-in is GPS location-stamped at check-in and again at signature, and witness-signed.</div></div>'+resRows+'<div style="margin-top:32px;padding-top:16px;border-top:1px solid #ddd;font-size:11px;color:#999">Generated by InStep &bull; instepapp.com</div><script>window.onload=function(){window.print();}<\/script></body></html>';
   printHTML(html);

@@ -63,6 +63,7 @@ Per-tenant branding/config, keyed by subdomain. Loaded via
 | `house_name` | text |
 | `feature_curfew`, `feature_chores` | bool, default true — per-org feature toggles |
 | `feature_online_meetings` | bool, default false — opt-in per org; shows the online/virtual meeting checkbox in resident check-in |
+| `online_screenshot_required` | bool, default true — mandatory once online meetings are on; set false for a house that wants the screenshot optional |
 | `unit_label` | text, default `'House'` |
 | `meeting_only` | bool, default false — temporary per-org master switch (see `supabase/security/26_meeting_only.sql`) |
 
@@ -83,6 +84,7 @@ Meeting check-ins with witness signature.
 | `duration_minutes` | minutes from finishing meeting details to witness signature submitted (nullable; null on rows recorded before this was added) |
 | `is_online` | bool, default false — true when checked in to an online/virtual meeting instead of an in-person one |
 | `platform` | text or null — e.g. "Zoom", set only when `is_online` |
+| `screenshot_url` | text or null — compressed JPEG data URL of a meeting screenshot, mandatory on `is_online` rows unless `settings.online_screenshot_required` is false |
 | `house` | scoping |
 
 ## `curfew_log`
