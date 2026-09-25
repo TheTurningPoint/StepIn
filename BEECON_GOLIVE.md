@@ -40,9 +40,9 @@ so the domain isn't claimed twice.
 
 ---
 
-## Part 3 — Make the contact email work (optional, ~2 min)
+## Part 3 — Make the contact email work ✅ done (mailbox is live)
 
-The site's contact link is **hello@beeconworks.com**. Until you set up a mailbox, mail to it goes nowhere.
+The site's contact link is **hello@beeconworks.com**, and that mailbox is live. It also receives the InStep site's contact links and demo-request form. (Steps below kept for reference.)
 Easiest free fix — **Cloudflare Email Routing**:
 
 1. Cloudflare dashboard → pick **beeconworks.com** → left sidebar **Email** → **Email Routing** → **Get started**.
@@ -70,4 +70,4 @@ rebuilds and redeploys within a minute. No uploads, no dashboard.
 *Live checklist:*
 - [ ] the `*.workers.dev` URL loads and looks right
 - [ ] beeconworks.com shows the site (SSL green padlock)
-- [ ] hello@beeconworks.com forwards to your inbox
+- [x] hello@beeconworks.com is live (also receives InStep inquiries)
