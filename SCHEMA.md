@@ -72,10 +72,12 @@ Meeting check-ins with witness signature.
 | `meeting_type`, `meeting_name`, `address` | meeting details |
 | `lat`, `lng` | GPS at check-in (or null) |
 | `sig_lat`, `sig_lng` | GPS re-checked when the witness signature is submitted (nullable; null on rows recorded before this was added) |
-| `signer_name` | witness name |
-| `sig_data_url` | witness signature, JPEG data URL |
+| `signer_name` | witness name (null for online meetings) |
+| `sig_data_url` | witness signature, JPEG data URL (null for online meetings) |
 | `ts` | ISO timestamp |
 | `duration_minutes` | minutes from finishing meeting details to witness signature submitted (nullable; null on rows recorded before this was added) |
+| `is_online` | `true` for an online meeting (no witness signature; default `false`) |
+| `topic_description` | resident's description of what an online meeting covered (min 10 chars; null for in-person) |
 | `house` | scoping |
 
 ## `curfew_log`
