@@ -2,57 +2,195 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>InStep — Sober Living Management</title>
+<meta name="description" content="InStep: meeting check-ins, curfew, screenings, and compliance records for recovery residences. A Beecon Works product.">
+<title>InStep | Sober Living Compliance</title>
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADeUlEQVR42u2Xv28cRRTHP2/m+S6+89mRiJMUkRCyKBIhpLiBVLFFAQoVDQ0NoaHibzi5p4kEEkg0cUITGv4DXzoaCiIR4OiC5GDnwD/O9p3vZuZR7PpuY8uWfbERCEYarbQ7eu8z3++bt7vw//ivDzmTqGbyfAaxv29L9bo7eOvgvTMd1+oPSu80W5MffNeavFZ/UDpq7amR1c0cwPXvH92YfG/2cX95tdn+c7U5e3328Ud3H90orjkTgEYji2XibpVrUzM+pEsupkvV8akZj7uVLTqYT09bfp/oyU4nuWjRRUjdjveJ3mHrzwJAfBLnI8lHUBFHOPy06ajH7Gaj4WFuzwC2mlkSl8DH7OoSeAFJh4caDUDEHkLYB+X4GHQvcQ7iBThFAAHszSdPxu1p+8NKz71U23ZW3Y5r7v6v97+GTRcQ78HtqVAEaLwgwM2lJf9wfj50Wxu3z1++8vm5p5uUSsZU6Ty99m8V4FMNqB/LFUjgAQmnpkDmuQaZls2twNpGsA6Y86pJpvfXwHEsOLIPGIiZZZNhf/fRggZUo2QzoGP9FAYA+yDcKABmJgImItlE7OKzH12mAKIh32EEjeCjCIAPmf8DC1JWmCe2QETszid3yjNXL1QAnq00O7fff60LWUCNhQlY7rOzLOneMXR2QgusnvXrbz9bfOPV1y/+FIjNKOmXy1eu/vzNF/feAihHcxry5PnV50k0DZXxcQhzbIAGDQeQxN6uVWuvABfMbHqiWn1ZEu8CjPUzAJ/boCGbxRoYNKIIbqRTYPR6/V4yswjQ6/e9iO1CFlC1YIFBigWAYg3Y0QroEd1OAIcMHHRCVmiahtJryIKEfJcawOWNyMcMIJ12K9YA6gsWFArNFar/OEX4QgBFCwiHWJBGt8AOloVZ3ojsOQsMiMNng93nIDFiIyhgCgRs+NYTEwUYi6hGgg8WBhYEpxmAUxcJPlrYU0CS6YkBnFmrcm5cY4oKUB2vsL7daQFoX1qV6oSWSkmrwajFGptxvZUr0KqUazpWTjoRoJpqbKWN1mGvwwMA8wvz2bHrjt9dWfsDdTJFgtXd1tZau7sISMfZVzsryz3f9ZPWhfX2clu3ZRFMpvSHL3dWf+9Ud5mMHVjvdDZ7FhYBFvLY/5o/I1mq1wufXTC3MB8FDEzq9YYvLl5YmIvZH9BRz/6B4y9oJMytAtuSOgAAAABJRU5ErkJggg==">
 <style>
 :root{
-  --ink:#0D1017;
-  --ink-mid:#161B26;
-  --ink-card:#1C2235;
-  --teal:#2BD4D4;
-  --teal-dim:rgba(43,212,212,0.15);
-  --purple:#9B6FD4;
-  --grad:linear-gradient(135deg,#2BD4D4,#9B6FD4);
-  --white:#FFFFFF;
-  --soft:rgba(255,255,255,0.55);
-  --softer:rgba(255,255,255,0.28);
-  --softest:rgba(255,255,255,0.07);
-  --border:rgba(255,255,255,0.09);
-  --pink:#C0397A;
-  --success:#2A7A50;
-  --warn:#C47A1A;
-  --danger:#B83232;
-  --gold:#C8860A;
-  --radius:14px;
-  --radius-sm:10px;
+  --gold:#E8B24A;--gold-deep:#DFA23C;--gold-ink:#7A5A12;--gold-wash:#F8EDD3;
+  --ink:#241C15;--body:#4F463B;--muted:#6E6356;
+  --cream:#F5F1EA;--paper:#FFFFFF;--line:#E6DFD3;
+  --green:#2F6B4F;--green-wash:#E6F1EA;
+  --serif:'Iowan Old Style','Palatino Linotype',Georgia,'Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--ink);color:var(--white);min-height:100vh;overscroll-behavior:none;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
 
-/* ── HERO ── */
-.hero{padding:64px 24px 48px;text-align:center;background:radial-gradient(ellipse at top,rgba(43,212,212,0.09) 0%,transparent 65%),var(--ink);}
-.logo-row{display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:36px;}
-.wordmark{font-size:26px;font-weight:800;letter-spacing:-0.4px;}
-.wordmark span{color:var(--teal);}
-h1{font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:14px;}
-h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hero-sub{font-size:15px;color:var(--soft);line-height:1.75;max-width:320px;margin:0 auto 40px;}
+/* NAV */
+nav{position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.94);backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line);}
+.nav-in{display:flex;align-items:center;justify-content:space-between;padding:16px 0;gap:16px;}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;}
+.brand-word{font-family:var(--serif);font-size:23px;font-weight:700;letter-spacing:-0.2px;}
+.brand-by{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);padding-left:12px;border-left:1px solid var(--line);}
+.nav-right{display:flex;align-items:center;gap:30px;}
+.nav-links{display:flex;gap:26px;font-size:14px;}
+.nav-links a{text-decoration:none;color:var(--body);}
+.nav-links a:hover{color:var(--ink);}
+.btn{display:inline-block;background:var(--ink);color:#fff;text-decoration:none;font:600 14px var(--sans);padding:13px 22px;border-radius:4px;border:1px solid var(--ink);cursor:pointer;}
+.btn:hover{background:#3A2F25;}
+.btn-ghost{background:transparent;color:var(--ink);}
+.btn-ghost:hover{background:var(--ink);color:#fff;}
 
-/* ── ROLE PICKER ── */
-.role-picker{display:flex;gap:8px;max-width:440px;margin:0 auto 24px;padding:0 4px;}
-.role-btn{flex:1;padding:12px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--softest);color:var(--softer);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.18s;text-align:center;line-height:1.4;}
-.role-btn .role-icon{font-size:20px;display:block;margin-bottom:4px;}
-.role-btn.active{border-color:var(--teal);background:var(--teal-dim);color:var(--white);}
-.role-btn:active{transform:scale(0.96);}
+/* HERO */
+.hero{background:var(--cream);border-bottom:1px solid var(--line);}
+.hero-in{padding-top:88px;padding-bottom:92px;display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;}
+.eyebrow,.sec-label{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold-ink);margin-bottom:20px;}
+.eyebrow:before,.sec-label:before{content:"";width:24px;height:2px;background:var(--gold);}
+h1{font-family:var(--serif);font-size:56px;line-height:1.06;letter-spacing:-1.2px;font-weight:700;margin-bottom:24px;}
+.lede{font-size:19px;color:var(--body);max-width:500px;margin-bottom:34px;line-height:1.65;}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+
+/* RECORD CARD */
+.record{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:6px;box-shadow:0 30px 60px -30px rgba(36,28,21,0.35);overflow:hidden;}
+.record-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--line);}
+.record-title{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;}
+.sample{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:3px 8px;border-radius:3px;}
+.rows{padding:4px 22px 6px;}
+.row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.row .k{color:var(--muted);}
+.row .v{font-weight:600;text-align:right;}
+.mono{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;}
+.sig-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;}
+.recorded{display:flex;align-items:flex-start;gap:10px;margin:6px 22px 22px;padding:12px 14px;background:var(--green-wash);border-radius:4px;color:var(--green);font-size:13px;font-weight:700;line-height:1.5;}
+.recorded span{font-weight:500;}
+
+/* PROOF STRIP */
+.proof{border-bottom:1px solid var(--line);}
+.proof-in{display:grid;grid-template-columns:repeat(3,1fr);}
+.proof-item{display:flex;gap:14px;padding:28px 28px 28px 0;}
+.proof-item + .proof-item{padding-left:28px;border-left:1px solid var(--line);}
+.proof-item svg{flex-shrink:0;margin-top:3px;}
+.proof-item h4{font-size:15px;margin-bottom:4px;}
+.proof-item p{font-size:14px;color:var(--body);}
+
+/* SECTIONS */
+section{padding:92px 0;border-top:1px solid var(--line);}
+section.tint{background:var(--cream);}
+h2{font-family:var(--serif);font-size:40px;line-height:1.13;letter-spacing:-0.8px;font-weight:700;margin-bottom:18px;max-width:680px;}
+.sec-sub{font-size:17px;color:var(--body);max-width:620px;margin-bottom:48px;}
+
+/* DEMO */
+.demo-grid{display:grid;grid-template-columns:1fr auto;gap:80px;align-items:center;}
+.demo-copy{max-width:460px;}
+.role-tabs{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--ink);border-radius:4px;overflow:hidden;}
+.role-tab{flex:1;padding:13px 10px;border:none;background:var(--paper);font:600 14px var(--sans);color:var(--ink);cursor:pointer;}
+.role-tab + .role-tab{border-left:1px solid var(--ink);}
+.role-tab.active{background:var(--ink);color:#fff;}
+.demo-caption{font-size:16.5px;color:var(--body);min-height:84px;margin-bottom:22px;line-height:1.65;}
+.btn-full{display:block;width:100%;text-align:center;padding:16px 22px;font-size:15px;}
+.demo-note{font-size:13px;color:var(--muted);margin-top:12px;}
+.video-link{display:flex;align-items:center;gap:14px;margin-top:28px;padding-top:24px;border-top:1px solid var(--line);}
+.video-thumb{position:relative;width:132px;height:74px;flex-shrink:0;border-radius:4px;background:#000 center/cover no-repeat;cursor:pointer;border:none;}
+.video-thumb:after{content:"\25B6";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;background:rgba(36,28,21,0.35);border-radius:4px;}
+.video-link a{color:var(--gold-ink);font-weight:600;text-decoration:none;}
+.video-modal{display:none;position:fixed;inset:0;z-index:50;background:rgba(20,15,10,0.82);align-items:center;justify-content:center;padding:20px;}
+.video-modal.open{display:flex;}
+.video-box{position:relative;width:100%;max-width:900px;aspect-ratio:16/9;background:#000;}
+.video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.video-close{position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;}
+
+/* STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;}
+.step{border-top:2px solid var(--ink);padding-top:18px;}
+.step-n{font-family:var(--serif);font-size:15px;color:var(--gold-ink);font-weight:700;margin-bottom:10px;}
+.step h3{font-size:17px;margin-bottom:8px;}
+.step p{font-size:14.5px;color:var(--body);}
+.callout{margin-top:44px;padding:20px 24px;background:var(--gold-wash);border-left:3px solid var(--gold);font-size:15.5px;max-width:780px;}
+
+/* TWO COL */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:64px;}
+.two h3{font-family:var(--serif);font-size:27px;margin-bottom:14px;letter-spacing:-0.4px;}
+.two p{color:var(--body);font-size:16px;margin-bottom:14px;}
+.list{list-style:none;margin-top:8px;}
+.list li{padding:11px 0;border-bottom:1px solid var(--line);font-size:15px;display:flex;gap:12px;}
+.list li:last-child{border-bottom:none;}
+.list li:before{content:"";flex:0 0 6px;height:6px;background:var(--gold);transform:rotate(45deg);margin-top:9px;}
+
+/* COST */
+.cost{background:var(--ink);color:#fff;border-top:none;}
+.cost .sec-label{color:var(--gold);}
+.cost h2{color:#fff;}
+.cost-grid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:40px;border-top:1px solid rgba(255,255,255,0.14);}
+.cost-item{padding:28px 28px 8px 0;}
+.cost-item + .cost-item{padding-left:28px;border-left:1px solid rgba(255,255,255,0.14);}
+.cost-num{font-family:var(--serif);font-size:40px;font-weight:700;color:var(--gold);letter-spacing:-1px;}
+.cost-lab{font-size:14px;color:rgba(255,255,255,0.7);margin-top:6px;max-width:260px;}
+.cost-note{margin-top:32px;font-size:13px;color:rgba(255,255,255,0.5);}
+
+/* SETTINGS PANEL */
+.cfg-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:start;}
+.cfg{background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:0 24px 48px -30px rgba(36,28,21,0.3);}
+.cfg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;}
+.cfg-org{font:600 12px ui-monospace,'SF Mono',Menlo,monospace;letter-spacing:0;text-transform:none;color:var(--gold-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cfg-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-row .n{font-size:14.5px;font-weight:600;}
+.cfg-row .d{font-size:12.5px;color:var(--muted);}
+.cfg-val{flex-shrink:0;font-size:12px;font-weight:700;border:1px solid var(--line);border-radius:3px;padding:4px 10px;background:var(--cream);}
+.sw{flex-shrink:0;position:relative;width:38px;height:22px;border-radius:11px;background:#D8D0C3;}
+.sw:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.2);}
+.sw.on{background:var(--ink);}
+.sw.on:after{left:19px;background:var(--gold);}
+.cfg-always{background:var(--gold-wash);}
+.note-strong{margin-top:22px;font-size:16px;font-weight:600;}
+
+/* ALSO */
+.also{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:6px;background:var(--paper);overflow:hidden;}
+.also > div{padding:26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+.also > div:nth-child(3n){border-right:none;}
+.also > div:nth-last-child(-n+3){border-bottom:none;}
+.also h4{font-size:15.5px;margin-bottom:6px;}
+.also p{font-size:14px;color:var(--body);}
+.tag{display:inline-block;margin-left:6px;padding:1px 6px;border:1px solid var(--gold);border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--gold-ink);vertical-align:2px;}
+
+/* PRIVACY */
+.priv{display:grid;grid-template-columns:repeat(3,1fr);gap:0 40px;}
+.priv div{padding:18px 0;border-top:1px solid var(--line);}
+.priv h4{font-size:15px;margin-bottom:4px;}
+.priv p{font-size:14px;color:var(--body);}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.price-card{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:6px;padding:42px;box-shadow:0 24px 48px -30px rgba(36,28,21,0.3);}
+.price-num{font-family:var(--serif);font-size:76px;font-weight:700;letter-spacing:-2px;line-height:1;}
+.price-per{font-size:15px;color:var(--muted);margin-top:8px;}
+.price-note{font-size:13.5px;color:var(--muted);}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:start;}
+.about p{font-size:18px;max-width:680px;margin-bottom:16px;line-height:1.7;}
+.about p.small{font-size:15px;color:var(--muted);}
+.pull{font-family:var(--serif);font-size:24px;line-height:1.4;border-left:3px solid var(--gold);padding-left:20px;margin:6px 0 22px;max-width:640px;}
+
+/* CONTACT */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;}
+.onb{list-style:none;counter-reset:s;}
+.onb li{counter-increment:s;display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line);}
+.onb li:before{content:counter(s,decimal-leading-zero);font-family:var(--serif);font-weight:700;color:var(--gold-ink);}
+.onb b{display:block;font-size:15.5px;}
+.onb span{font-size:14px;color:var(--body);}
+.lead-form{display:grid;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:28px;}
+.lead-form input,.lead-form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:4px;font:15px var(--sans);color:var(--ink);background:#FDFCFA;}
+.lead-form input:focus,.lead-form textarea:focus{outline:2px solid var(--gold);outline-offset:-1px;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;font-size:13.5px;color:var(--muted);}
+.foot a{text-decoration:none;}
+.foot a:hover{color:var(--ink);}
+.foot-links{display:flex;gap:22px;flex-wrap:wrap;}
+.powered{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;}
 
 /* ── PHONE FRAME ── */
 .phone-wrap{max-width:340px;margin:0 auto;}
-.phone{background:var(--ink-card);border-radius:36px;border:1.5px solid var(--border);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);}
+.phone{background:#1C1712;border-radius:36px;border:1.5px solid #2E261E;overflow:hidden;box-shadow:0 36px 70px -28px rgba(36,28,21,0.5),0 0 0 1px rgba(36,28,21,0.08);}
 .phone-notch{height:10px;background:#0a0a0a;border-radius:36px 36px 0 0;}
 .phone-screen{min-height:580px;position:relative;overflow:hidden;color:#2A1A22;}
-
 /* ── DEMO SCREENS ── */
 .demo-screen{display:none;flex-direction:column;min-height:580px;}
 .demo-screen.active{display:flex;}
@@ -133,131 +271,99 @@ h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-web
 .d-house-cell-num{font-size:16px;font-weight:800;color:#C0397A;}
 .d-house-cell-label{font-size:9px;color:#7A5566;font-weight:600;text-transform:uppercase;}
 
-/* ── BELOW PHONE ── */
-.demo-caption{text-align:center;margin:16px auto 0;font-size:12px;color:var(--softer);max-width:340px;line-height:1.6;padding:0 24px;}
-.tap-hint{text-align:center;font-size:11px;color:var(--softer);margin-top:8px;margin-bottom:48px;letter-spacing:0.3px;}
-
-/* ── FEATURES ── */
-.features{padding:56px 24px;background:var(--ink-mid);}
-.video-wrap{max-width:640px;margin:0 auto;}
-.video-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);background:#000 center/cover no-repeat;box-shadow:0 24px 60px rgba(0,0,0,0.45);cursor:pointer;}
-.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
-.video-play{position:absolute;inset:0;margin:auto;width:72px;height:72px;border-radius:50%;border:none;background:var(--grad);color:var(--white);font-size:26px;padding-left:5px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.5);}
-.video-frame:hover .video-play{transform:scale(1.06);}
-.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:28px;text-align:center;}
-.feature-list{display:flex;flex-direction:column;gap:14px;max-width:420px;margin:0 auto;}
-.feature{display:flex;gap:14px;align-items:flex-start;padding:14px;background:var(--softest);border-radius:var(--radius);border:1px solid var(--border);}
-.fi{font-size:20px;flex-shrink:0;margin-top:1px;}
-.fn{font-size:14px;font-weight:700;margin-bottom:3px;}
-.fd{font-size:12px;color:var(--soft);line-height:1.6;}
-
-/* ── PRICING ── */
-.pricing{padding:56px 24px;text-align:center;}
-.price-card{background:var(--ink-mid);border:1.5px solid rgba(43,212,212,0.2);border-radius:20px;padding:32px 24px;max-width:420px;margin:0 auto;}
-.price-num{font-size:56px;font-weight:800;letter-spacing:-2px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.price-per{font-size:14px;color:var(--softer);margin-bottom:24px;}
-.price-list{list-style:none;text-align:left;margin-bottom:24px;}
-.price-list li{font-size:13px;color:var(--soft);padding:9px 0;border-bottom:1px solid var(--softest);display:flex;align-items:center;gap:10px;}
-.price-list li:last-child{border:none;}
-.ck{color:var(--teal);font-size:14px;flex-shrink:0;}
-.price-note{font-size:12px;color:var(--softer);}
-
-/* ── CTA ── */
-.cta{padding:56px 24px;text-align:center;}
-.cta h2{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px;}
-.cta p{font-size:14px;color:var(--soft);margin-bottom:28px;line-height:1.7;max-width:320px;margin-left:auto;margin-right:auto;}
-.btn-cta{display:inline-block;background:var(--grad);color:#fff;font-size:16px;font-weight:700;padding:18px 40px;border-radius:50px;text-decoration:none;box-shadow:0 4px 24px rgba(43,212,212,0.2);}
-.cta-note{font-size:12px;color:var(--softer);margin-top:14px;}
-
-/* ── FOOTER ── */
-footer{padding:28px 24px;text-align:center;border-top:1px solid var(--softest);}
-.foot-logo{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:8px;}
-.foot-wm{font-size:17px;font-weight:800;}
-.foot-wm span{color:var(--teal);}
-footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
-.foot-copy{font-size:11px;color:var(--softer);margin-top:8px;}
-
-/* ── HERO CTA ── */
-.diff{list-style:none;display:grid;gap:10px;max-width:440px;margin:-8px auto 32px;text-align:left;}
-.diff li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--softest);border:1px solid var(--border);border-radius:var(--radius-sm);}
-.diff .fi{color:var(--teal);font-weight:800;}
-.diff-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin:0 auto 12px;}
-.opt-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:20px;background:var(--teal-dim);color:var(--teal);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;vertical-align:2px;}
-.cfg{max-width:440px;margin:0 auto;background:var(--ink-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;}
-.cfg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;}
-.cfg-org{font-size:11px;font-weight:600;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cfg-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
-.cfg-row:last-child{border-bottom:none;}
-.cfg-val{flex-shrink:0;font-size:12px;font-weight:700;color:var(--white);background:var(--softest);border:1px solid var(--border);border-radius:8px;padding:5px 10px;}
-.sw{flex-shrink:0;position:relative;width:40px;height:23px;border-radius:12px;background:rgba(255,255,255,0.16);}
-.sw::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .2s;}
-.sw.on{background:var(--teal);}
-.sw.on::after{left:20px;}
-.story{max-width:460px;margin:0 auto;padding:22px 22px 6px;background:var(--ink-card);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:var(--radius);text-align:left;}
-.story p{font-size:15px;line-height:1.75;color:rgba(255,255,255,0.82);margin-bottom:16px;}
-.story p:last-child{color:var(--white);font-weight:600;}
-.hero-cta{display:inline-block;margin:0 auto 32px;padding:12px 28px;border-radius:50px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);color:#fff;font-size:13px;font-weight:700;text-decoration:none;}
-
-/* ── ONBOARDING STEPS ── */
-.onboarding-steps{display:flex;flex-direction:column;gap:16px;max-width:360px;margin:28px auto 32px;text-align:left;}
-.step{display:flex;gap:14px;align-items:flex-start;}
-.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.step-title{font-size:14px;font-weight:700;margin-bottom:2px;}
-.step-desc{font-size:12px;color:var(--soft);line-height:1.6;}
-
-/* ── LEAD FORM ── */
-.lead-form{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:0 auto 16px;text-align:left;}
-.lead-form input,.lead-form textarea{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--softest);color:#fff;font-size:14px;font-family:inherit;}
-.lead-form input::placeholder,.lead-form textarea::placeholder{color:var(--softer);}
-.lead-form textarea{resize:vertical;}
-.lead-form button{width:100%;padding:16px;border:none;border-radius:50px;background:var(--grad);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(43,212,212,0.2);}
-.lead-note{font-size:11px;color:var(--softer);margin:-4px auto 20px;max-width:360px;}
-
-@media(min-width:480px){
-  h1{font-size:42px;}
-  .phone-wrap{max-width:360px;}
+@media(max-width:900px){
+  h1{font-size:40px;} h2{font-size:30px;}
+  .hero-in{padding-top:52px;padding-bottom:60px;grid-template-columns:1fr;gap:44px;}
+  .two,.cfg-grid,.contact,.demo-grid,.price-grid{grid-template-columns:1fr;gap:44px;}
+  .steps{grid-template-columns:1fr 1fr;}
+  .proof-in,.cost-grid,.priv{grid-template-columns:1fr;}
+  .proof-item + .proof-item{padding-left:0;border-left:none;border-top:1px solid var(--line);}
+  .cost-item + .cost-item{padding-left:0;border-left:none;border-top:1px solid rgba(255,255,255,0.14);}
+  .also{grid-template-columns:1fr;}
+  .also > div{border-right:none !important;border-bottom:1px solid var(--line) !important;}
+  .also > div:last-child{border-bottom:none !important;}
+  .about{grid-template-columns:1fr;gap:18px;}
+  .brand-by,.nav-links{display:none;}
+  section{padding:64px 0;}
+  .demo-copy{max-width:none;}
+  .price-card{padding:30px;} .price-num{font-size:60px;}
 }
+@media(max-width:480px){ .wrap{padding-left:18px;padding-right:18px;} .steps{grid-template-columns:1fr;} .nav-in .btn{padding:10px 14px;} }
 </style>
 </head>
 <body>
 
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#"><svg width="28" height="24" viewBox="0 0 92 100" aria-hidden="true"><rect x="8" y="62" width="20" height="38" rx="4" fill="#CFC6B8"/><rect x="36" y="40" width="20" height="60" rx="4" fill="#241C15"/><rect x="64" y="14" width="20" height="86" rx="4" fill="#E8B24A"/></svg><span class="brand-word">InStep</span><span class="brand-by">A Beecon Works product</span></a>
+    <div class="nav-right">
+      <div class="nav-links"><a href="#demo">Demo</a><a href="#how">How it works</a><a href="#program">Your program</a><a href="#pricing">Pricing</a></div>
+      <a class="btn" href="#contact">Book a demo</a>
+    </div>
+  </div>
+</nav>
+
 <!-- HERO -->
-<section class="hero">
-  <div class="logo-row">
-    <svg width="30" height="23" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
-      <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.3)"/>
-      <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg)"/>
-      <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg)"/>
-    </svg>
-    <span class="wordmark">In<span>Step</span></span>
+<header class="hero">
+  <div class="wrap hero-in">
+    <div>
+      <div class="eyebrow">Sober living compliance</div>
+      <h1>Records that hold up when someone asks.</h1>
+      <p class="lede">InStep records every meeting check-in with two GPS readings and a witness signature, tracks curfew in real time, and keeps your house audit-ready. No binders. No backfilled sign-in sheets.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#demo">Try the demo</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+    </div>
+    <div class="record" aria-label="Sample attendance record">
+      <div class="record-head"><span class="record-title">Meeting attendance record</span><span class="sample">Sample</span></div>
+      <div class="rows">
+        <div class="row"><span class="k">Resident</span><span class="v">Alex R.</span></div>
+        <div class="row"><span class="k">Meeting</span><span class="v">Tuesday Night Big Book (AA)</span></div>
+        <div class="row"><span class="k">Check-in</span><span class="v">Tue, Sep 9 &middot; 7:02 PM</span></div>
+        <div class="row"><span class="k">Check-in location</span><span class="v mono">39.7392, &minus;104.9847</span></div>
+        <div class="row"><span class="k">Witness signed</span><span class="v">Tue, Sep 9 &middot; 7:58 PM</span></div>
+        <div class="row"><span class="k">Signing location</span><span class="v mono">39.7391, &minus;104.9849</span></div>
+        <div class="sig-row">
+          <span class="k" style="color:var(--muted);font-size:14px">Witness: J. Miller (secretary)</span>
+          <svg width="130" height="40" viewBox="0 0 130 40" aria-hidden="true"><path d="M4 28 C 14 6, 22 6, 24 20 S 34 34, 42 16 S 52 4, 58 20 S 70 34, 78 18 C 84 8, 92 10, 90 22 S 104 30, 126 12" fill="none" stroke="#241C15" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <div class="recorded"><b style="white-space:nowrap">&#10003; Recorded</b> <span>Both locations and the signature saved together. Any later change is logged with who made it.</span></div>
+    </div>
   </div>
-  <h1>Run your house.<br><em>Not paperwork.</em></h1>
-  <p class="hero-sub">Meeting check-ins, curfew tracking, screenings, and compliance — built for sober living operators.</p>
-  <a href="#contact" class="hero-cta">&#128197; Book a demo</a>
+</header>
 
-  <!-- WHAT MAKES INSTEP DIFFERENT -->
-  <div class="diff-eyebrow">What makes InStep different</div>
-  <ul class="diff">
-    <li><div class="fi">&#10003;</div><div><div class="fn">Signed by a witness, not just a GPS dot</div><div class="fd">In-person meetings are signed on the resident&rsquo;s phone by someone who was there, with a location stamp.</div></div></li>
-    <li><div class="fi">&#10003;</div><div><div class="fn">Built around the NARR Standard</div><div class="fd">Resident grievances tracked to resolution, discharge notices with a right to appeal, and a record of who changed what, by name.</div></div></li>
-    <li><div class="fi">&#10003;</div><div><div class="fn">Words written for people in recovery</div><div class="fd">Screenings read Negative, Positive, or Declined &mdash; never &ldquo;failed.&rdquo; Records describe what happened, not who someone is.</div></div></li>
-  </ul>
-
-  <!-- ROLE PICKER -->
-  <div class="role-picker">
-    <button class="role-btn active" onclick="setRole('resident',this)">
-      <span class="role-icon">&#127968;</span>Resident
-    </button>
-    <button class="role-btn" onclick="setRole('manager',this)">
-      <span class="role-icon">&#9881;&#65038;</span>Manager
-    </button>
-    <button class="role-btn" onclick="setRole('owner',this)">
-      <span class="role-icon">&#11088;</span>Owner
-    </button>
+<!-- PROOF STRIP -->
+<div class="proof">
+  <div class="wrap proof-in">
+    <div class="proof-item"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.5 5.2 2.3 8 10.5 10.5-8.2 2.5-10 5.3-10.5 10.5-.5-5.2-2.3-8-10.5-10.5C9.7 9.5 11.5 6.7 12 1.5z" fill="#E8B24A"/></svg><div><h4>Built around the NARR Standard</h4><p>Grievances tracked to resolution, discharge notices with a right to appeal, and a record of who changed what.</p></div></div>
+    <div class="proof-item"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.5 5.2 2.3 8 10.5 10.5-8.2 2.5-10 5.3-10.5 10.5-.5-5.2-2.3-8-10.5-10.5C9.7 9.5 11.5 6.7 12 1.5z" fill="#E8B24A"/></svg><div><h4>Words written for people in recovery</h4><p>Screenings read Negative, Positive, or Declined. Records describe what happened, not who someone is.</p></div></div>
+    <div class="proof-item"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.5 5.2 2.3 8 10.5 10.5-8.2 2.5-10 5.3-10.5 10.5-.5-5.2-2.3-8-10.5-10.5C9.7 9.5 11.5 6.7 12 1.5z" fill="#E8B24A"/></svg><div><h4>Private by design</h4><p>Each house and organization is walled off by the database itself, not just hidden in the app.</p></div></div>
   </div>
+</div>
 
-  <!-- PHONE -->
+<!-- DEMO -->
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-label">Try it</div>
+    <h2>See the real app before you talk to anyone.</h2>
+    <p class="sec-sub">Pick a role to preview it here, then open the full working demo with sample data. Nothing you do is saved.</p>
+    <div class="demo-grid">
+      <div class="demo-copy">
+        <div class="role-tabs">
+          <button class="role-tab active" onclick="setRole('resident',this)">Resident</button>
+          <button class="role-tab" onclick="setRole('manager',this)">Manager</button>
+          <button class="role-tab" onclick="setRole('owner',this)">Owner</button>
+        </div>
+        <p class="demo-caption" id="demo-caption">Residents track recovery, sign in and out, check in to meetings, and complete chores, all from their phone.</p>
+        <button class="btn btn-full" id="launch-btn" onclick="launchDemo()">Open the full demo as Resident</button>
+        <p class="demo-note">Fully interactive. Nothing is saved.</p>
+        <div class="video-link">
+          <button class="video-thumb" style="background-image:url('https://i.ytimg.com/vi/H_YwzaWbeEo/hqdefault.jpg')" onclick="playWalkthrough()" aria-label="Play the 80-second InStep overview"></button>
+          <div><div style="font-weight:600">InStep in 80 seconds</div><a href="https://youtu.be/QPPwd5g37zA" target="_blank" rel="noopener">Or watch the full 3-minute demo &rsaquo;</a></div>
+        </div>
+      </div>
   <div class="phone-wrap">
     <div class="phone">
       <div class="phone-notch"></div>
@@ -420,214 +526,228 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
       </div><!-- /phone-screen -->
     </div><!-- /phone -->
   </div><!-- /phone-wrap -->
-
-  <div style="text-align:center;margin:20px auto 0;max-width:340px;padding:0 24px;display:flex;flex-direction:column;gap:10px">
-  <button onclick="launchDemo('resident')" style="width:100%;padding:14px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px">
-    <span>&#127968; Try as Resident</span><span style="color:rgba(255,255,255,0.4)">&#8250;</span>
-  </button>
-  <button onclick="launchDemo('manager')" style="width:100%;padding:14px;border-radius:12px;background:rgba(43,212,212,0.10);border:1.5px solid rgba(43,212,212,0.2);color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px">
-    <span>&#9881;&#65038; Try as Manager</span><span style="color:rgba(255,255,255,0.4)">&#8250;</span>
-  </button>
-  <button onclick="launchDemo('owner')" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#2BD4D4,#9B6FD4);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;box-shadow:0 4px 20px rgba(43,212,212,0.2)">
-    <span>&#11088; Try as Owner</span><span>&#8250;</span>
-  </button>
-  <p style="font-size:11px;color:rgba(255,255,255,0.28);margin-top:2px">Fully interactive &mdash; nothing is saved</p>
-</div>
-<p class="demo-caption" id="demo-caption">Residents track recovery, sign in and out, check in to meetings, and complete chores — all on their phone.</p>
-  <p class="tap-hint">&#8593; Interactive demo &mdash; tap the role buttons to switch views</p>
-</section>
-
-<!-- VIDEO WALKTHROUGH -->
-<section class="features" id="walkthrough" style="background:var(--ink)">
-  <div class="section-eyebrow">See it in action</div>
-  <p class="hero-sub" style="max-width:420px;margin:0 auto 28px;text-align:center">InStep in 80 seconds &mdash; what your residents, managers, and owners actually see.</p>
-  <div class="video-wrap">
-    <div class="video-frame" id="video-frame" style="background-image:url('https://i.ytimg.com/vi/H_YwzaWbeEo/hqdefault.jpg')" onclick="playWalkthrough()" role="button" aria-label="Play the 80-second InStep overview">
-      <button class="video-play" type="button" aria-hidden="true" tabindex="-1">&#9654;</button>
     </div>
-    <p style="text-align:center;margin-top:16px;font-size:14px;font-weight:600"><a href="https://youtu.be/QPPwd5g37zA" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">&#9654; Watch the full 3-minute demo &rsaquo;</a></p>
   </div>
 </section>
 
-<!-- WHY IT MATTERS -->
-<section class="features" style="background:var(--ink)">
-  <div class="section-eyebrow">Why it matters</div>
-  <h1 style="font-size:30px;text-align:center;max-width:440px;margin:0 auto 14px">Accountability residents can stand on.<br><em>Compliance you can prove.</em></h1>
-  <p class="hero-sub" style="max-width:420px;margin:0 auto 32px">InStep turns the daily work of running a recovery residence into clean, verifiable records &mdash; keeping residents accountable and your house audit-ready.</p>
-  <div class="feature-list">
-    <div class="feature"><div class="fi">&#129309;</div><div><div class="fn">Resident accountability</div><div class="fd">Witness-signed meeting check-ins with a GPS location stamp, curfew sign-in/out, and signed screenings. Every resident&rsquo;s recovery work &mdash; recorded, timestamped, signed.</div></div></div>
-    <div class="feature"><div class="fi">&#128737;&#65039;</div><div><div class="fn">Compliance ready</div><div class="fd">Incident logs, a resident grievance process, and screening records &mdash; confidential, timestamped, one-tap printable. Built around the NARR Standard.</div></div></div>
-  </div>
-  <p class="demo-caption" style="margin-top:24px;color:var(--soft)">Recovery happens in structure. InStep gives your house the structure &mdash; and the receipts.</p>
-</section>
-
-<!-- BUILT BY A HOUSE MANAGER -->
-<section class="features built-by">
-  <div class="section-eyebrow">Why InStep exists</div>
-  <h1 style="font-size:30px;text-align:center;max-width:460px;margin:0 auto 18px">Built by a house manager<br><em>who uses it every day.</em></h1>
-  <div class="story">
-    <p>InStep started with meeting slips. Crumpled, lost, signed on a napkin, turned in a week late &mdash; and a house manager trying to piece together who actually went.</p>
-    <p>So we built the version we wanted on our own shifts: residents check in on their phone, someone at the meeting signs, and the record is just <em>there</em>. Recorded, timestamped, signed.</p>
-    <p>That&rsquo;s the whole point. Less time managing the logistics, more time spent as a community. The nights sitting with a resident &mdash; not a spreadsheet.</p>
-  </div>
-  <p class="demo-caption" style="margin-top:18px;color:var(--soft)">Made by Casey, a working house manager at a Denver recovery residence.</p>
-</section>
-
-<!-- BENEFITS -->
-<section class="features">
-  <div class="section-eyebrow">What operators gain</div>
-  <div class="feature-list">
-    <div class="feature"><div class="fi">&#9203;</div><div><div class="fn">Hours back for managers</div><div class="fd">No more chasing paper logs or texting residents to check on curfew &mdash; it's all in one dashboard.</div></div></div>
-    <div class="feature"><div class="fi">&#128276;</div><div><div class="fn">Fewer missed curfews</div><div class="fd">Real-time in/out status means a late arrival gets caught the same night, not days later.</div></div></div>
-    <div class="feature"><div class="fi">&#128203;</div><div><div class="fn">Walk into any audit ready</div><div class="fd">Every check-in, screening, and incident is already timestamped, signed, and ready to print.</div></div></div>
-    <div class="feature"><div class="fi">&#128065;&#65039;</div><div><div class="fn">One view across every house</div><div class="fd">Owners see residents, meetings, and screenings for every location at a glance &mdash; no more calling around.</div></div></div>
+<!-- HOW -->
+<section id="how" class="tint">
+  <div class="wrap">
+    <div class="sec-label">Meeting check-in</div>
+    <h2>Recorded at the meeting, and again at the signature.</h2>
+    <p class="sec-sub">Most systems record that a resident tapped a button. InStep records where the phone was when the check-in started, and where it was when the witness signed.</p>
+    <div class="steps">
+      <div class="step"><div class="step-n">01</div><h3>Location captured</h3><p>The resident&rsquo;s GPS position is recorded when the check-in starts.</p></div>
+      <div class="step"><div class="step-n">02</div><h3>Meeting details</h3><p>Type, name, and address of the meeting, entered on the resident&rsquo;s phone.</p></div>
+      <div class="step"><div class="step-n">03</div><h3>Witness signs</h3><p>The secretary, a sponsor, or another attendee signs on screen. A second GPS reading is taken at that moment.</p></div>
+      <div class="step"><div class="step-n">04</div><h3>One record</h3><p>Timestamps, both locations, and the signature are saved together, ready to print.</p></div>
+    </div>
+    <div class="callout"><strong>Why the second reading matters.</strong> It shows the phone was at the meeting when the witness signed, not that the resident checked in early and got a signature somewhere else.</div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features">
-  <div class="section-eyebrow">What InStep does</div>
-  <div class="feature-list">
-    <div class="feature"><div class="fi">&#129309;</div><div><div class="fn">Meeting check-ins</div><div class="fd">Witness-signed after every meeting, with a GPS location stamp. Recorded, timestamped, signed.</div></div></div>
-    <div class="feature"><div class="fi">&#127968;</div><div><div class="fn">Curfew tracking</div><div class="fd">Residents sign in and out. See real-time status across every house at a glance.</div></div></div>
-    <div class="feature"><div class="fi">&#128137;</div><div><div class="fn">Screenings</div><div class="fd">Log urine and breathalyzer results with dual signatures. Print-ready PDF every time.</div></div></div>
-    <div class="feature"><div class="fi">&#128138;</div><div><div class="fn">Medication tracking <span class="opt-tag">optional</span></div><div class="fd">Staff keep each resident&rsquo;s medication list; residents mark doses taken on their phone, or staff log observed doses. A resident sees only their own &mdash; enforced by the database, not just hidden. Off unless you turn it on.</div></div></div>
-    <div class="feature"><div class="fi">&#128196;</div><div><div class="fn">Document signing</div><div class="fd">House rules, intake forms — residents sign on their phone, you countersign. You get one audit-ready PDF: your original plus a signature page — the same approach e-sign tools like DocuSign use.</div></div></div>
-    <div class="feature"><div class="fi">&#128488;&#65039;</div><div><div class="fn">Incident &amp; grievance logs</div><div class="fd">Document incidents and resident grievances, track them to resolution, and print a confidential log for audits.</div></div></div>
-    <div class="feature"><div class="fi">&#128202;</div><div><div class="fn">Compliance reports</div><div class="fd">Attendance, screening, incident, and grievance reports ready to print. Built around the NARR Standard.</div></div></div>
+<!-- CURFEW + ONLINE -->
+<section>
+  <div class="wrap two">
+    <div>
+      <div class="sec-label">Curfew</div>
+      <h3>One screen for the whole house.</h3>
+      <p>Residents sign out and in from their phone. Managers see who is home, out, or late without a headcount.</p>
+      <ul class="list">
+        <li>Destination logged on every sign-out</li>
+        <li>Curfew by phase, with late sign-ins flagged automatically</li>
+        <li>Excused absences for a night or a date range, with the reason on record</li>
+      </ul>
+    </div>
+    <div>
+      <div class="sec-label">Online meetings</div>
+      <h3>A topic summary in place of a signature.</h3>
+      <p>Online meetings have no one to sign in person. Residents describe what the meeting covered instead, and that summary is what appears on the record.</p>
+      <ul class="list">
+        <li>Clearly marked as online on every report</li>
+        <li>Topic summary required before the check-in saves</li>
+        <li>Counts alongside in-person meetings in the same weekly total</li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<!-- YOUR PROGRAM, YOUR WAY -->
-<section class="features">
-  <div class="section-eyebrow">Built around your program</div>
-  <h1 style="font-size:30px;text-align:center;max-width:460px;margin:0 auto 14px">Your house rules.<br><em>Not ours.</em></h1>
-  <p class="hero-sub" style="max-width:440px;margin:0 auto 28px">No two recovery residences run the same way. InStep is set up around how <em>your</em> program works &mdash; and it changes when you do, without a new contract or a waiting list.</p>
-  <div class="cfg">
-    <div class="cfg-head"><span>&#9881;&#65039; Your settings</span><span class="cfg-org">yourhouse.instepapp.com</span></div>
-    <div class="cfg-row"><div><div class="fn">Your name, logo &amp; colors</div><div class="fd">Residents see your brand at your own web address.</div></div><span class="cfg-val">Yours</span></div>
-    <div class="cfg-row"><div><div class="fn">What you call it</div><div class="fd">House, home, apartment, unit &mdash; your word everywhere.</div></div><span class="cfg-val">&ldquo;House&rdquo;</span></div>
-    <div class="cfg-row"><div><div class="fn">Meetings required each week</div><div class="fd">Set the number that fits your program.</div></div><span class="cfg-val">3</span></div>
-    <div class="cfg-row"><div><div class="fn">Curfew sign in / out</div><div class="fd">With curfew times set by phase.</div></div><span class="sw on" aria-label="On"></span></div>
-    <div class="cfg-row"><div><div class="fn">Chores</div></div><span class="sw on" aria-label="On"></span></div>
-    <div class="cfg-row"><div><div class="fn">Send screenings to a lab</div><div class="fd">All tests, positives only, or not at all.</div></div><span class="cfg-val">Positives</span></div>
-    <div class="cfg-row"><div><div class="fn">Medication tracking</div></div><span class="sw" aria-label="Off"></span></div>
-    <div class="cfg-row"><div><div class="fn">Your own documents</div><div class="fd">Upload your agreements and policies; residents sign on their phone.</div></div><span class="cfg-val">Yours</span></div>
+<!-- COST -->
+<section class="cost">
+  <div class="wrap">
+    <div class="sec-label">What paper costs</div>
+    <h2>Compiling records by hand is a job.</h2>
+    <div class="cost-grid">
+      <div class="cost-item"><div class="cost-num">$15.16</div><div class="cost-lab">Colorado minimum wage per hour in 2026</div></div>
+      <div class="cost-item"><div class="cost-num">$7,900&ndash;$11,800</div><div class="cost-lab">A year for one person spending 10 to 15 hours a week on attendance and curfew paperwork</div></div>
+      <div class="cost-item"><div class="cost-num">$36,000+</div><div class="cost-lab">A year for a full-time clerk, with payroll taxes and standard employer costs</div></div>
+    </div>
+    <p class="cost-note">Wage figures are base estimates at minimum wage. Actual staffing costs are usually higher.</p>
   </div>
-  <p class="demo-caption" style="margin-top:20px;color:var(--soft)">Tell us how your program runs. We set InStep up to match &mdash; you don&rsquo;t configure software.</p>
 </section>
 
-<!-- SECURITY -->
-<section class="features" style="background:var(--ink)">
-  <div class="section-eyebrow">Your data is protected</div>
-  <h1 style="font-size:30px;text-align:center;max-width:460px;margin:0 auto 14px">Private by design.</h1>
-  <p class="hero-sub" style="max-width:440px;margin:0 auto 32px">Recovery records are sensitive. InStep is built so only the right people can ever see them.</p>
-  <div class="feature-list">
-    <div class="feature"><div class="fi">&#128274;</div><div><div class="fn">Login-gated</div><div class="fd">Nothing is visible without signing in. There is no public page that exposes a resident&rsquo;s information.</div></div></div>
-    <div class="feature"><div class="fi">&#129521;</div><div><div class="fn">Walled off per house &amp; organization</div><div class="fd">Each house&rsquo;s data is isolated from every other house and every other organization &mdash; enforced by the database itself, not just hidden in the app.</div></div></div>
-    <div class="feature"><div class="fi">&#128273;</div><div><div class="fn">PINs are scrambled</div><div class="fd">Sign-in PINs are stored as one-way hashes, never as plain text.</div></div></div>
-    <div class="feature"><div class="fi">&#128737;&#65039;</div><div><div class="fn">Encrypted in transit</div><div class="fd">Everything travels over HTTPS, the same encryption your bank&rsquo;s website uses.</div></div></div>
-    <div class="feature"><div class="fi">&#128221;</div><div><div class="fn">Every change, on the record</div><div class="fd">A running record of who changed or removed what &mdash; so you can always answer an audit, or a question.</div></div></div>
-    <div class="feature"><div class="fi">&#128194;</div><div><div class="fn">Your data is yours</div><div class="fd">Export your records any time, and have them deleted on request. No lock-in.</div></div></div>
+<!-- YOUR PROGRAM -->
+<section id="program">
+  <div class="wrap cfg-grid">
+    <div>
+      <div class="sec-label">Built around your program</div>
+      <h2>Your house rules. Not ours.</h2>
+      <p class="sec-sub" style="margin-bottom:0">No two recovery residences run the same way. Every InStep feature switches on or off, so your team only sees what your program uses, and it changes when you do. Tell us how your program runs and we set InStep up to match. You don&rsquo;t configure software.</p>
+      <p class="note-strong">Need something that isn&rsquo;t here? Tell us. We build for real programs.</p>
+    </div>
+    <div class="cfg">
+      <div class="cfg-head"><span>Your settings</span><span class="cfg-org">yourhouse.instepapp.com</span></div>
+      <div class="cfg-row"><div><div class="n">Your name, logo &amp; colors</div><div class="d">At your own web address</div></div><span class="cfg-val">Yours</span></div>
+      <div class="cfg-row"><div><div class="n">What you call it</div><div class="d">House, home, apartment, unit</div></div><span class="cfg-val">&ldquo;House&rdquo;</span></div>
+      <div class="cfg-row"><div><div class="n">Meetings required each week</div></div><span class="cfg-val">3</span></div>
+      <div class="cfg-row"><div><div class="n">Curfew sign in / out</div><div class="d">Curfew times set by phase</div></div><span class="sw on" aria-label="On"></span></div>
+      <div class="cfg-row"><div><div class="n">Chores</div></div><span class="sw on" aria-label="On"></span></div>
+      <div class="cfg-row"><div><div class="n">Screenings</div></div><span class="sw on" aria-label="On"></span></div>
+      <div class="cfg-row"><div><div class="n">Incident log</div></div><span class="sw on" aria-label="On"></span></div>
+      <div class="cfg-row"><div><div class="n">Events &amp; announcements</div></div><span class="sw on" aria-label="On"></span></div>
+      <div class="cfg-row"><div><div class="n">Medication tracking</div><div class="d">Residents see only their own</div></div><span class="sw" aria-label="Off"></span></div>
+      <div class="cfg-row"><div><div class="n">Send screenings to a lab</div></div><span class="cfg-val">Positives</span></div>
+      <div class="cfg-row cfg-always"><div><div class="n">Always on</div><div class="d">Meeting check-ins, and a resident&rsquo;s right to raise a concern through the grievance process</div></div></div>
+    </div>
   </div>
-  <p class="demo-caption" style="margin-top:24px;color:var(--soft)">Questions about how your data is handled? Read the <a href="/privacy.html" style="color:var(--teal)">Privacy Policy</a> or email <a href="mailto:hello@beeconworks.com" style="color:var(--teal)">hello@beeconworks.com</a>.</p>
+</section>
+
+<!-- ALSO -->
+<section class="tint">
+  <div class="wrap">
+    <div class="sec-label">Also included</div>
+    <h2>The rest of the paperwork, in the same place.</h2>
+    <p class="sec-sub">Meeting check-ins and curfew are the core. The records around them are covered too.</p>
+    <div class="also">
+      <div><h4>Screenings</h4><p>Urine and breathalyzer results logged with dual signatures and printable records.</p></div>
+      <div><h4>Document signing</h4><p>House rules and intake forms signed on the resident&rsquo;s phone and countersigned by staff.</p></div>
+      <div><h4>Incident reports</h4><p>Dated, signable incident records, built around the NARR Standard.</p></div>
+      <div><h4>Grievances &amp; discharge</h4><p>Resident concerns tracked to resolution; discharge notices that include the right to appeal.</p></div>
+      <div><h4>Medication tracking<span class="tag">Optional</span></h4><p>Staff keep each resident&rsquo;s list; residents mark doses taken. Each resident sees only their own.</p></div>
+      <div><h4>Multi-house dashboard</h4><p>Owners see every house at a glance, with reports for each.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
+<section>
+  <div class="wrap">
+    <div class="sec-label">Your data is protected</div>
+    <h2>Recovery records are sensitive. We treat them that way.</h2>
+    <p class="sec-sub">InStep is built so only the right people can see a resident&rsquo;s information.</p>
+    <div class="priv">
+      <div><h4>Login-gated</h4><p>Nothing is visible without signing in. No public page exposes a resident&rsquo;s information.</p></div>
+      <div><h4>Walled off per house</h4><p>Each house and organization is isolated from every other, enforced by the database itself.</p></div>
+      <div><h4>PINs are scrambled</h4><p>Sign-in PINs are stored as one-way hashes, never as plain text.</p></div>
+      <div><h4>Encrypted in transit</h4><p>Everything travels over HTTPS, the same encryption your bank&rsquo;s website uses.</p></div>
+      <div><h4>Every change on the record</h4><p>A running log of who changed or removed what, by name.</p></div>
+      <div><h4>Your data is yours</h4><p>Export your records any time, and have them deleted on request. No lock-in.</p></div>
+    </div>
+    <p class="demo-note" style="margin-top:24px">Questions about how data is handled? Read the <a href="/privacy.html" style="color:var(--gold-ink)">Privacy Policy</a>.</p>
+  </div>
 </section>
 
 <!-- PRICING -->
-<section class="pricing">
-  <div class="price-card">
-    <div class="price-num">$99</div>
-    <div class="price-per">per house / month</div>
-    <ul class="price-list">
-      <li><span class="ck">&#10003;</span>Unlimited residents</li>
-      <li><span class="ck">&#10003;</span>All features included</li>
-      <li><span class="ck">&#10003;</span>Your own URL — yourhouse.instepapp.com</li>
-      <li><span class="ck">&#10003;</span>No contract, cancel anytime</li>
-    </ul>
-    <p class="price-note">Multiple houses? Each additional house is $99/month.</p>
-    <p class="price-note">Built around the NARR Standard for recovery residences.</p>
+<section id="pricing" class="tint">
+  <div class="wrap price-grid">
+    <div>
+      <div class="sec-label">Pricing</div>
+      <h2>One price per house.</h2>
+      <p class="sec-sub" style="margin-bottom:0">Every feature is included. No per-resident fees, no setup charge, and no contract to sign.</p>
+    </div>
+    <div class="price-card">
+      <div class="price-num">$99</div>
+      <div class="price-per">per house, per month</div>
+      <ul class="list" style="margin:26px 0 20px">
+        <li>Unlimited residents</li>
+        <li>All features included</li>
+        <li>Your own address: yourhouse.instepapp.com</li>
+        <li>No contract, cancel anytime</li>
+      </ul>
+      <p class="price-note">Running more than one house? Each additional house is $99 a month.</p>
+    </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta" id="contact">
-  <h2>Ready to get started?</h2>
-  <p>We'll get your house set up and walk you through everything. Here's what that looks like.</p>
-
-  <div class="onboarding-steps">
-    <div class="step"><span class="step-num">1</span><div><div class="step-title">Setup</div><div class="step-desc">We configure your house, phases, curfews, and branding &mdash; usually within a day of your first call.</div></div></div>
-    <div class="step"><span class="step-num">2</span><div><div class="step-title">Training</div><div class="step-desc">A short walkthrough for your managers and residents, live or recorded, whatever fits your schedule.</div></div></div>
-    <div class="step"><span class="step-num">3</span><div><div class="step-title">Launch</div><div class="step-desc">Go live, typically within a week &mdash; with support while your team gets comfortable.</div></div></div>
+<!-- ABOUT -->
+<section>
+  <div class="wrap about">
+    <svg width="72" height="72" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.5 5.2 2.3 8 10.5 10.5-8.2 2.5-10 5.3-10.5 10.5-.5-5.2-2.3-8-10.5-10.5C9.7 9.5 11.5 6.7 12 1.5z" fill="#E8B24A"/></svg>
+    <div>
+      <div class="sec-label">Who builds it</div>
+      <p class="pull">&ldquo;Less time managing the logistics, more time spent as a community. The nights sitting with a resident, not a spreadsheet.&rdquo;</p>
+      <p>InStep started with meeting slips: lost, signed on a napkin, turned in a week late, and a house manager trying to piece together who actually went. It was built by Casey, a working house manager who has lived in recovery and sober living, not designed from the outside. Every feature exists because a resident, a manager, or an owner needed it on an ordinary Tuesday.</p>
+      <p class="small">InStep is a product of Beecon Works LLC, based in Denver, Colorado.</p>
+    </div>
   </div>
-
-  <form class="lead-form" id="lead-form">
-    <input type="text" name="name" placeholder="Your name" required>
-    <input type="text" name="house" placeholder="House / organization name" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <textarea name="message" rows="3" placeholder="Anything we should know? (optional)"></textarea>
-    <button type="submit">Book a demo</button>
-  </form>
-  <p class="lead-note">This opens a pre-filled email to hello@beeconworks.com &mdash; we reply within one business day.</p>
-  <p class="cta-note">Prefer email? Write us directly at <a href="mailto:hello@beeconworks.com" style="color:var(--teal)">hello@beeconworks.com</a></p>
 </section>
 
-<!-- FOOTER -->
+<!-- CONTACT -->
+<section id="contact" class="tint">
+  <div class="wrap contact">
+    <div>
+      <div class="sec-label">Get started</div>
+      <h2>Ready when you are.</h2>
+      <p class="sec-sub" style="margin-bottom:28px">We set your house up and walk you through everything.</p>
+      <ol class="onb">
+        <li><div><b>Setup</b><span>We configure your house, phases, curfews, features, and branding, usually within a day of your first call.</span></div></li>
+        <li><div><b>Training</b><span>A short walkthrough for your managers and residents, live or recorded.</span></div></li>
+        <li><div><b>Launch</b><span>Go live, typically within a week, with support while your team gets comfortable.</span></div></li>
+      </ol>
+    </div>
+    <form class="lead-form" id="lead-form">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="text" name="house" placeholder="House or organization name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <textarea name="message" rows="3" placeholder="Anything we should know? (optional)"></textarea>
+      <button class="btn btn-full" type="submit">Book a demo</button>
+      <p class="demo-note" style="margin-top:0">Opens a pre-filled email to <a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a>. We reply within one business day.</p>
+    </form>
+  </div>
+</section>
+
 <footer>
-  <div class="foot-logo">
-    <svg width="20" height="16" viewBox="0 0 92 100" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="lg5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BD4D4"/><stop offset="1" stop-color="#9B6FD4"/></linearGradient></defs>
-      <rect x="8" y="62" width="20" height="38" rx="5" fill="rgba(255,255,255,0.35)"/>
-      <rect x="36" y="40" width="20" height="60" rx="5" fill="url(#lg5)"/>
-      <rect x="64" y="14" width="20" height="86" rx="5" fill="url(#lg5)"/>
-    </svg>
-    <span class="foot-wm">In<span>Step</span></span>
-  </div>
-  <a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a>
-  <p class="foot-copy">&copy; 2026 Beecon Works LLC &mdash; Denver, CO &middot; <a href="/compare.html" style="color:var(--teal)">Compare</a> &middot; <a href="/help.html" style="color:var(--teal)">Help</a> &middot; <a href="/privacy.html" style="color:var(--teal)">Privacy Policy</a></p>
-  <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--softest)">
-    <p style="font-size:10px;color:var(--soft);margin:0 0 10px;letter-spacing:1.5px;text-transform:uppercase">Powered by</p>
-    <img src="/beecon-wordmark-light.png" alt="Beecon" style="height:30px;width:auto;display:block;margin:0 auto" loading="lazy">
+  <div class="wrap foot">
+    <div>&copy; 2026 Beecon Works LLC &middot; Denver, Colorado</div>
+    <div class="foot-links"><a href="/compare.html">Compare</a><a href="/help.html">Help</a><a href="/privacy.html">Privacy</a><a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a></div>
+    <div class="powered">Powered by <img src="/beecon-wordmark.png" alt="Beecon" style="height:20px;width:auto" loading="lazy"></div>
   </div>
 </footer>
 
+<div class="video-modal" id="video-modal" onclick="if(event.target===this)closeWalkthrough()"><div class="video-box" id="video-box"><button class="video-close" onclick="closeWalkthrough()" aria-label="Close">&times;</button></div></div>
+
 <script>
-const captions = {
-  resident: 'Residents track recovery, sign in and out, check in to meetings, and complete chores — all on their phone.',
-  manager: 'Managers see real-time curfew status for every resident, track weekly meetings, and take action instantly.',
-  owner: 'Owners see every house at a glance — residents, meetings, screenings, and late arrivals across the whole operation.'
+var captions = {
+  resident: 'Residents track recovery, sign in and out, check in to meetings, and complete chores, all from their phone.',
+  manager: 'Managers see real-time curfew status for every resident, track weekly meetings, and act on the spot.',
+  owner: 'Owners see every house at a glance: residents, meetings, screenings, and late sign-ins across the whole operation.'
 };
-
+var currentRole = 'resident';
 function setRole(role, btn) {
-  // Update buttons visually
-  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
-  // Update static preview screens
-  document.querySelectorAll('.demo-screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.demo-screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById('screen-' + role).classList.add('active');
-  // Update caption
   document.getElementById('demo-caption').textContent = captions[role];
+  document.getElementById('launch-btn').textContent = 'Open the full demo as ' + role.charAt(0).toUpperCase() + role.slice(1);
 }
-
+function launchDemo() { window.location.href = 'https://demo.instepapp.com?demo=' + currentRole; }
 function playWalkthrough() {
-  var f = document.getElementById('video-frame');
-  if (f.querySelector('iframe')) return;
-  f.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/H_YwzaWbeEo?autoplay=1&rel=0" title="InStep in 80 seconds" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  var box = document.getElementById('video-box');
+  if (!box.querySelector('iframe')) box.insertAdjacentHTML('beforeend', '<iframe src="https://www.youtube-nocookie.com/embed/H_YwzaWbeEo?autoplay=1&rel=0" title="InStep in 80 seconds" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>');
+  document.getElementById('video-modal').classList.add('open');
 }
-function launchDemo(role) {
-  window.location.href = 'https://demo.instepapp.com?demo=' + role;
+function closeWalkthrough() {
+  var f = document.querySelector('#video-box iframe'); if (f) f.remove();
+  document.getElementById('video-modal').classList.remove('open');
 }
-
 document.getElementById('lead-form').addEventListener('submit', function(e){
   e.preventDefault();
   var f = e.target;
-  var name = f.name.value.trim();
-  var house = f.house.value.trim();
-  var email = f.email.value.trim();
-  var message = f.message.value.trim();
-  var subject = 'Demo request — ' + house;
-  var body = 'Name: ' + name + '\nHouse/Org: ' + house + '\nEmail: ' + email + (message ? ('\n\n' + message) : '');
+  var subject = 'Demo request: ' + f.house.value.trim();
+  var body = 'Name: ' + f.name.value.trim() + '\nHouse/Org: ' + f.house.value.trim() + '\nEmail: ' + f.email.value.trim() + (f.message.value.trim() ? ('\n\n' + f.message.value.trim()) : '');
   window.location.href = 'mailto:hello@beeconworks.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 });
 </script>
-
 </body></html>

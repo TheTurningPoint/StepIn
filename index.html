@@ -1218,6 +1218,10 @@ const featMeetingOnly=()=>!!(cachedSettings&&cachedSettings.meeting_only);
 // Per-org feature config (default ON / "House" so behavior is unchanged before the migration runs).
 const featCurfew=()=>!featMeetingOnly()&&(!cachedSettings||cachedSettings.feature_curfew!==false);
 const featChores=()=>!featMeetingOnly()&&(!cachedSettings||cachedSettings.feature_chores!==false);
+// Every other optional feature has its own switch too (32_feature_switches.sql); all default ON.
+// Meeting check-ins and the grievance process are intentionally not switchable.
+const featOn=k=>!featMeetingOnly()&&(!cachedSettings||cachedSettings['feature_'+k]!==false);
+const featScreenings=()=>featOn('screenings'),featIncidents=()=>featOn('incidents'),featDocs=()=>featOn('documents'),featEvents=()=>featOn('events'),featAnnouncements=()=>featOn('announcements');
 const unitLabel=()=>(cachedSettings&&cachedSettings.unit_label)||'House';
 const unitLabelPlural=()=>{const u=unitLabel();return /s$/i.test(u)?u:u+'s';};
 // Show/hide feature surfaces + apply the unit label per the current org's settings. Safe to call any
@@ -1232,9 +1236,15 @@ function applyFeatureFlags(){
   ['res-nav-chores','mgr-chores-card'].forEach(id=>show(id,ch));
   // Meeting-only mode: hide every other feature surface (residents keep check-in, the Meetings finder
   // tab, and the Me tab; managers keep resident management and the attendance report).
-  ['res-nav-calendar','res-docs-card','res-upcoming-events-card','res-docs-signed-block','res-screening-block'].forEach(id=>show(id,!mo));
-  ['mgr-screening-card','mgr-incident-card','mgr-events-card','mgr-note-card','owner-docs-card'].forEach(id=>show(id,!mo));
-  ['report-tab-drugtests','report-tab-incidents','report-tab-grievances','report-tab-documents'].forEach(id=>show(id,!mo));
+  // Per-feature switches (each also off in meeting-only mode).
+  ['res-screening-block','mgr-screening-card','report-tab-drugtests'].forEach(id=>show(id,featScreenings()));
+  ['mgr-incident-card','report-tab-incidents'].forEach(id=>show(id,featIncidents()));
+  ['res-docs-card','res-docs-signed-block','owner-docs-card','report-tab-documents'].forEach(id=>show(id,featDocs()));
+  ['res-nav-calendar','res-upcoming-events-card','mgr-events-card'].forEach(id=>show(id,featEvents()));
+  show('mgr-note-card',featAnnouncements());
+  // Pinned notes only hide when announcements are explicitly switched off (meeting-only mode leaves them as before).
+  ['res-sticky-note','dash-sticky-note'].forEach(id=>show(id,!(cachedSettings&&cachedSettings.feature_announcements===false)));
+  show('report-tab-grievances',!mo);
   // Unit label on static elements
   const u=unitLabel(),up=unitLabelPlural();
   const setTxt=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
@@ -2774,10 +2784,10 @@ function gotoAwaySignin(house){try{if(isOwner()&&!selectedHouse&&house){selectHo
 function renderDashAttention(){
   const el=document.getElementById('dash-attention');if(!el)return;
   const openGrv=isStaff()?(cachedGrievances||[]).filter(g=>g.status!=='resolved').length:0;
-  const pending=featMeetingOnly()?[]:(typeof cachedResidentDocs!=='undefined'?cachedResidentDocs:[]).filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
+  const pending=!featDocs()?[]:(typeof cachedResidentDocs!=='undefined'?cachedResidentDocs:[]).filter(d=>d.status==='resident_signed'&&residents().some(r=>r.id===d.resident_id));
   const labPolicy=cachedSettings.lab_policy||'all';
   let unsentLab=0;
-  if(isStaff()&&!featMeetingOnly()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
+  if(isStaff()&&featScreenings()&&labPolicy!=='off'){const resIds=new Set(residents().map(r=>r.id));const cutoff=Date.now()-7*86400000;unsentLab=(cachedDrugTests||[]).filter(t=>resIds.has(t.resident_id)&&labSendable(t)&&!t.lab_sent_date&&new Date(t.test_date).getTime()>=cutoff&&(labPolicy==='all'||t.result==='fail')).length;}
   let awaySignins=0,awayHouse='';
   if(isStaff()&&featCurfew()){const cutoff=Date.now()-7*86400000;const awl=(curfewLog()||[]).filter(l=>l.action==='in'&&new Date(l.ts).getTime()>=cutoff&&signInAwayMi(l)).sort((a,b)=>new Date(b.ts)-new Date(a.ts));awaySignins=awl.length;awayHouse=awl[0]?(awl[0].house||''):'';}
   if(!openGrv&&!pending.length&&!unsentLab&&!awaySignins){
