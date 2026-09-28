@@ -24,7 +24,7 @@ Tap **Launch demo** (or open `instepapp.com/?demo=resident`).
 
 **3. Owner view** (`?demo=owner`) — multi-house dashboard, Activity log, reports
 > "Across every house you see everything, and pull an audit-ready report in seconds. There's a
-> tamper-evident log of who changed what, by name. Built around the NARR documentation standard."
+> protected log of who changed what, by name. Built around the NARR documentation standard."
 
 **4. Close**
 > "It's live today. Your house could be running on it this week."

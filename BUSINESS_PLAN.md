@@ -40,7 +40,7 @@ InStep is the whole house on a phone — no install, a branded web address (`you
 
 - **Residents:** recovery-day counter, GPS + witness-signed meeting check-ins that count toward the weekly requirement, curfew sign in/out with location, document e-signing, anonymous grievance filing. Deliberately a daily companion, not a surveillance tool. No smartphone? Staff can do everything on a resident's behalf.
 - **Managers:** a "needs attention" home screen (open grievances, screenings awaiting lab results, documents to countersign, away-from-house sign-ins), a live in/out board, screening logs (urine and/or breathalyzer, dual signatures, split-result flagging, lab follow-up), incidents, chores, events, announcements — and one-tap PDF or CSV compliance reports for attendance, screening, incidents, and grievances.
-- **Owners:** multi-house roll-up, org branding and settings, manager administration, a tamper-evident activity log, and an app-errors view.
+- **Owners:** multi-house roll-up, org branding and settings, manager administration, a protected activity log (who changed what, by name), and an app-errors view.
 
 Behind the scenes: daily reminder emails to residents, a weekly summary email to staff, per-org feature flags (e.g., curfew off, "Building" instead of "House" for complexes).
 
