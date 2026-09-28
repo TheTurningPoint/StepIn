@@ -39,7 +39,7 @@ II–III residence needs to stay certified:
 - **Resident records & signed agreements** → Administrative domain
 - **Attendance / meeting check-ins, chores, curfew** → Recovery Support
 - **Screening (drug-test) logs, incident reports, grievance tracking** → Recovery Support + resident rights / ethics
-- **Tamper-evident activity log, discharge records** → operational integrity & records retention
+- **Protected activity log (who changed or removed what), discharge records** → operational integrity & records retention
 
 So when NARR comes up: *"I built to the NARR domains — I know the documentation because I engineered
 the workflows for it."* True, and stronger than rote memorization.
@@ -81,7 +81,7 @@ testing whether you're punitive.*
 > "I'm a Colorado-certified QMAP with behavioral-health documentation experience, and I founded
 > InStep — a live platform built around the NARR documentation workflow: resident records and signed
 > agreements, meeting attendance, screening logs, incident and grievance tracking, discharge records,
-> and a tamper-evident activity log. I didn't just use these workflows — I engineered them, so I
+> and a protected activity log of who changed what. I didn't just use these workflows — I engineered them, so I
 > understand what accurate, defensible records require."
 
 **6. "How do you balance support with accountability?"**

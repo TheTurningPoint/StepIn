@@ -1,4 +1,4 @@
--- 18_audit_log.sql  —  tamper-evident activity log (who changed/deleted what)
+-- 18_audit_log.sql  —  protected activity log (who changed/deleted what)
 --
 -- A database trigger records every insert/update/delete on the compliance-sensitive tables
 -- (drug_tests, incidents, grievances, residents, resident_documents) into `audit_log`, capturing the

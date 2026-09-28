@@ -41,7 +41,7 @@ and NARR-ready reports — on any phone, no install."*
 - **Org settings & branding** — org name (shown on app, reports, emails), weekly meeting requirement,
   lab policy, each house's check-in location.
 - **Managers** — add a house/manager, reset a manager's PIN, remove a manager.
-- **Activity log** — tamper-evident record of who changed or removed what.
+- **Activity log** — protected record of who changed or removed what (the app can read it but never edit it).
 - **App errors** — owner-only view if anything technical ever breaks.
 
 ### Behind the scenes (say it only if asked)
