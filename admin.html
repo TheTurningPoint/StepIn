@@ -52,7 +52,13 @@ a{color:var(--teal);}
   <label>Features</label>
   <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_curfew" checked style="width:18px;height:18px"> Curfew sign in / out</label>
   <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_chores" checked style="width:18px;height:18px"> Chores</label>
-  <div class="hint">Uncheck features this facility doesn't use. Screenings, incidents, meetings, and documents are always on.</div>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_screenings" checked style="width:18px;height:18px"> Screenings</label>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_incidents" checked style="width:18px;height:18px"> Incident log</label>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_documents" checked style="width:18px;height:18px"> Document signing</label>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_events" checked style="width:18px;height:18px"> Events calendar</label>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_announcements" checked style="width:18px;height:18px"> Announcements &amp; pinned notes</label>
+  <label style="display:flex;align-items:center;gap:10px;font-size:15px;text-transform:none;letter-spacing:0;margin:8px 0;font-weight:500;color:var(--white)"><input type="checkbox" id="feature_meds" style="width:18px;height:18px"> Medication tracking</label>
+  <div class="hint">Switch on only what this program uses. Meeting check-ins and the resident grievance process are always on.</div>
 
   <button id="go" onclick="provision()">Create customer</button>
   <div id="out"></div>
@@ -64,7 +70,7 @@ const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 function val(id){return document.getElementById(id).value.trim();}
 async function provision(){
   const out=document.getElementById('out');const btn=document.getElementById('go');
-  const body={secret:val('secret'),subdomain:val('subdomain'),org_name:val('org_name'),owner_name:val('owner_name'),owner_pin:val('owner_pin'),owner_email:val('owner_email'),unit_label:val('unit_label')||'House',feature_curfew:document.getElementById('feature_curfew').checked,feature_chores:document.getElementById('feature_chores').checked};
+  const body={secret:val('secret'),subdomain:val('subdomain'),org_name:val('org_name'),owner_name:val('owner_name'),owner_pin:val('owner_pin'),owner_email:val('owner_email'),unit_label:val('unit_label')||'House',...Object.fromEntries(['feature_curfew','feature_chores','feature_screenings','feature_incidents','feature_documents','feature_events','feature_announcements','feature_meds'].map(k=>[k,document.getElementById(k).checked]))};
   out.style.display='none';btn.disabled=true;btn.textContent='Creating…';
   try{
     const res=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON,'Authorization':'Bearer '+ANON},body:JSON.stringify(body)});

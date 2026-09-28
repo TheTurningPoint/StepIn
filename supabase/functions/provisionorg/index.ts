@@ -49,8 +49,14 @@ Deno.serve(async (req) => {
   const ownerEmail = (b.owner_email ?? "").trim();
   // Facility config (set once at provisioning, not exposed in owner Settings). Default to a full house.
   const unitLabel = ((b.unit_label as string) ?? "").trim() || "House";
-  const featureCurfew = b.feature_curfew !== false;
-  const featureChores = b.feature_chores !== false;
+  // One switch per optional feature; all default ON except medication tracking (default OFF).
+  const on = (k: string) => b[k] !== false;
+  const features = {
+    feature_curfew: on("feature_curfew"), feature_chores: on("feature_chores"),
+    feature_screenings: on("feature_screenings"), feature_incidents: on("feature_incidents"),
+    feature_documents: on("feature_documents"), feature_events: on("feature_events"),
+    feature_announcements: on("feature_announcements"), feature_meds: b.feature_meds === true,
+  };
 
   if (!/^[a-z0-9-]{2,}$/.test(subdomain)) return json({ error: "Subdomain must be lowercase letters, numbers, or dashes." }, 400);
   if (!orgName) return json({ error: "Organization name is required." }, 400);
@@ -83,7 +89,7 @@ Deno.serve(async (req) => {
 
   await admin.from("settings").upsert(
     { org: subdomain, house_name: orgName, required: 3, lab_policy: "all",
-      unit_label: unitLabel, feature_curfew: featureCurfew, feature_chores: featureChores },
+      unit_label: unitLabel, ...features },
     { onConflict: "org" },
   );
 
