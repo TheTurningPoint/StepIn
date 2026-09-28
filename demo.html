@@ -139,6 +139,11 @@ h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;-web
 
 /* ── FEATURES ── */
 .features{padding:56px 24px;background:var(--ink-mid);}
+.video-wrap{max-width:640px;margin:0 auto;}
+.video-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border);background:#000 center/cover no-repeat;box-shadow:0 24px 60px rgba(0,0,0,0.45);cursor:pointer;}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.video-play{position:absolute;inset:0;margin:auto;width:72px;height:72px;border-radius:50%;border:none;background:var(--grad);color:var(--white);font-size:26px;padding-left:5px;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.5);}
+.video-frame:hover .video-play{transform:scale(1.06);}
 .section-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:28px;text-align:center;}
 .feature-list{display:flex;flex-direction:column;gap:14px;max-width:420px;margin:0 auto;}
 .feature{display:flex;gap:14px;align-items:flex-start;padding:14px;background:var(--softest);border-radius:var(--radius);border:1px solid var(--border);}
@@ -406,6 +411,18 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
   <p class="tap-hint">&#8593; Interactive demo &mdash; tap the role buttons to switch views</p>
 </section>
 
+<!-- VIDEO WALKTHROUGH -->
+<section class="features" id="walkthrough" style="background:var(--ink)">
+  <div class="section-eyebrow">See it in action</div>
+  <p class="hero-sub" style="max-width:420px;margin:0 auto 28px;text-align:center">InStep in 80 seconds &mdash; what your residents, managers, and owners actually see.</p>
+  <div class="video-wrap">
+    <div class="video-frame" id="video-frame" style="background-image:url('https://i.ytimg.com/vi/H_YwzaWbeEo/hqdefault.jpg')" onclick="playWalkthrough()" role="button" aria-label="Play the 80-second InStep overview">
+      <button class="video-play" type="button" aria-hidden="true" tabindex="-1">&#9654;</button>
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:14px;font-weight:600"><a href="https://youtu.be/QPPwd5g37zA" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">&#9654; Watch the full 3-minute demo &rsaquo;</a></p>
+  </div>
+</section>
+
 <!-- WHY IT MATTERS -->
 <section class="features" style="background:var(--ink)">
   <div class="section-eyebrow">Why it matters</div>
@@ -533,6 +550,11 @@ function setRole(role, btn) {
   document.getElementById('demo-caption').textContent = captions[role];
 }
 
+function playWalkthrough() {
+  var f = document.getElementById('video-frame');
+  if (f.querySelector('iframe')) return;
+  f.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/H_YwzaWbeEo?autoplay=1&rel=0" title="InStep in 80 seconds" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+}
 function launchDemo(role) {
   window.location.href = 'https://demo.instepapp.com?demo=' + role;
 }
