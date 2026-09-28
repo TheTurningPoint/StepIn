@@ -97,6 +97,37 @@ Sign in/out and excused entries.
 | `destination` | text or null (sign-out) |
 | `house` | scoping |
 
+## `medications`
+
+Optional (settings.`feature_meds`, off by default). A resident's medication list, kept by staff.
+RLS: a resident reads only their own rows; staff read/write their house (owners: org). See
+`supabase/security/31_medications.sql`.
+
+| Column | Notes |
+| --- | --- |
+| `id` | `med-…` |
+| `resident_id`, `resident_name` | whose list (FK to `residents`, cascade delete) |
+| `name`, `dose` | medication and dose |
+| `times` | text[] of `'HH:MM'` local times; empty = as needed |
+| `instructions` | optional |
+| `active` | false = stopped (kept on record) |
+| `created_by`, `created_at`, `org`, `house` | |
+
+## `med_logs`
+
+One row per dose logged. Residents can insert their own (`logged_by='resident'`); only staff edit/delete.
+
+| Column | Notes |
+| --- | --- |
+| `id` | `ml-…` |
+| `resident_id`, `resident_name`, `medication_id`, `med_name`, `dose` | |
+| `dose_date` | resident's local date |
+| `scheduled_time` | `'HH:MM'`, or null for an as-needed dose |
+| `status` | `'taken'` \| `'not_taken'` |
+| `logged_by` | `'resident'` \| `'staff'` |
+| `witness_name` | staff member who logged/observed it |
+| `notes`, `ts`, `org`, `house` | |
+
 ## `chores`
 
 Weekly chore assignments.
