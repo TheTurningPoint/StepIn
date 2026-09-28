@@ -182,6 +182,17 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
 .diff li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--softest);border:1px solid var(--border);border-radius:var(--radius-sm);}
 .diff .fi{color:var(--teal);font-weight:800;}
 .diff-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin:0 auto 12px;}
+.opt-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:20px;background:var(--teal-dim);color:var(--teal);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;vertical-align:2px;}
+.cfg{max-width:440px;margin:0 auto;background:var(--ink-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-align:left;}
+.cfg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;}
+.cfg-org{font-size:11px;font-weight:600;color:var(--teal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cfg-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.cfg-row:last-child{border-bottom:none;}
+.cfg-val{flex-shrink:0;font-size:12px;font-weight:700;color:var(--white);background:var(--softest);border:1px solid var(--border);border-radius:8px;padding:5px 10px;}
+.sw{flex-shrink:0;position:relative;width:40px;height:23px;border-radius:12px;background:rgba(255,255,255,0.16);}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .2s;}
+.sw.on{background:var(--teal);}
+.sw.on::after{left:20px;}
 .hero-cta{display:inline-block;margin:0 auto 32px;padding:12px 28px;border-radius:50px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.18);color:#fff;font-size:13px;font-weight:700;text-decoration:none;}
 
 /* ── ONBOARDING STEPS ── */
@@ -465,10 +476,30 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
     <div class="feature"><div class="fi">&#129309;</div><div><div class="fn">Meeting check-ins</div><div class="fd">Witness-signed after every meeting, with a GPS location stamp. Recorded, timestamped, signed.</div></div></div>
     <div class="feature"><div class="fi">&#127968;</div><div><div class="fn">Curfew tracking</div><div class="fd">Residents sign in and out. See real-time status across every house at a glance.</div></div></div>
     <div class="feature"><div class="fi">&#128137;</div><div><div class="fn">Screenings</div><div class="fd">Log urine and breathalyzer results with dual signatures. Print-ready PDF every time.</div></div></div>
+    <div class="feature"><div class="fi">&#128138;</div><div><div class="fn">Medication tracking <span class="opt-tag">optional</span></div><div class="fd">Staff keep each resident&rsquo;s medication list; residents mark doses taken on their phone, or staff log observed doses. A resident sees only their own &mdash; enforced by the database, not just hidden. Off unless you turn it on.</div></div></div>
     <div class="feature"><div class="fi">&#128196;</div><div><div class="fn">Document signing</div><div class="fd">House rules, intake forms — residents sign on their phone, you countersign. You get one audit-ready PDF: your original plus a signature page — the same approach e-sign tools like DocuSign use.</div></div></div>
     <div class="feature"><div class="fi">&#128488;&#65039;</div><div><div class="fn">Incident &amp; grievance logs</div><div class="fd">Document incidents and resident grievances, track them to resolution, and print a confidential log for audits.</div></div></div>
     <div class="feature"><div class="fi">&#128202;</div><div><div class="fn">Compliance reports</div><div class="fd">Attendance, screening, incident, and grievance reports ready to print. Built around the NARR Standard.</div></div></div>
   </div>
+</section>
+
+<!-- YOUR PROGRAM, YOUR WAY -->
+<section class="features">
+  <div class="section-eyebrow">Built around your program</div>
+  <h1 style="font-size:30px;text-align:center;max-width:460px;margin:0 auto 14px">Your house rules.<br><em>Not ours.</em></h1>
+  <p class="hero-sub" style="max-width:440px;margin:0 auto 28px">No two recovery residences run the same way. InStep is set up around how <em>your</em> program works &mdash; and it changes when you do, without a new contract or a waiting list.</p>
+  <div class="cfg">
+    <div class="cfg-head"><span>&#9881;&#65039; Your settings</span><span class="cfg-org">yourhouse.instepapp.com</span></div>
+    <div class="cfg-row"><div><div class="fn">Your name, logo &amp; colors</div><div class="fd">Residents see your brand at your own web address.</div></div><span class="cfg-val">Yours</span></div>
+    <div class="cfg-row"><div><div class="fn">What you call it</div><div class="fd">House, home, apartment, unit &mdash; your word everywhere.</div></div><span class="cfg-val">&ldquo;House&rdquo;</span></div>
+    <div class="cfg-row"><div><div class="fn">Meetings required each week</div><div class="fd">Set the number that fits your program.</div></div><span class="cfg-val">3</span></div>
+    <div class="cfg-row"><div><div class="fn">Curfew sign in / out</div><div class="fd">With curfew times set by phase.</div></div><span class="sw on" aria-label="On"></span></div>
+    <div class="cfg-row"><div><div class="fn">Chores</div></div><span class="sw on" aria-label="On"></span></div>
+    <div class="cfg-row"><div><div class="fn">Send screenings to a lab</div><div class="fd">All tests, positives only, or not at all.</div></div><span class="cfg-val">Positives</span></div>
+    <div class="cfg-row"><div><div class="fn">Medication tracking</div></div><span class="sw" aria-label="Off"></span></div>
+    <div class="cfg-row"><div><div class="fn">Your own documents</div><div class="fd">Upload your agreements and policies; residents sign on their phone.</div></div><span class="cfg-val">Yours</span></div>
+  </div>
+  <p class="demo-caption" style="margin-top:20px;color:var(--soft)">Tell us how your program runs. We set InStep up to match &mdash; you don&rsquo;t configure software.</p>
 </section>
 
 <!-- SECURITY -->
@@ -537,7 +568,7 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
     <span class="foot-wm">In<span>Step</span></span>
   </div>
   <a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a>
-  <p class="foot-copy">&copy; 2026 InStep Solutions &mdash; Denver, CO &middot; <a href="/compare.html" style="color:var(--teal)">Compare</a> &middot; <a href="/help.html" style="color:var(--teal)">Help</a> &middot; <a href="/privacy.html" style="color:var(--teal)">Privacy Policy</a></p>
+  <p class="foot-copy">&copy; 2026 Beecon Works LLC &mdash; Denver, CO &middot; <a href="/compare.html" style="color:var(--teal)">Compare</a> &middot; <a href="/help.html" style="color:var(--teal)">Help</a> &middot; <a href="/privacy.html" style="color:var(--teal)">Privacy Policy</a></p>
   <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--softest)">
     <p style="font-size:10px;color:var(--soft);margin:0 0 10px;letter-spacing:1.5px;text-transform:uppercase">Powered by</p>
     <img src="/beecon-wordmark-light.png" alt="Beecon" style="height:30px;width:auto;display:block;margin:0 auto" loading="lazy">
