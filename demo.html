@@ -414,11 +414,12 @@ footer a{color:var(--teal);text-decoration:none;font-size:13px;font-weight:600;}
 <!-- VIDEO WALKTHROUGH -->
 <section class="features" id="walkthrough" style="background:var(--ink)">
   <div class="section-eyebrow">See it in action</div>
-  <p class="hero-sub" style="max-width:420px;margin:0 auto 28px;text-align:center">A quick video tour of InStep &mdash; what your residents, managers, and owners actually see.</p>
+  <p class="hero-sub" style="max-width:420px;margin:0 auto 28px;text-align:center">InStep in 80 seconds &mdash; what your residents, managers, and owners actually see.</p>
   <div class="video-wrap">
-    <div class="video-frame" id="video-frame" style="background-image:url('https://i.ytimg.com/vi/QPPwd5g37zA/hqdefault.jpg')" onclick="playWalkthrough()" role="button" aria-label="Play the InStep video walkthrough">
+    <div class="video-frame" id="video-frame" style="background-image:url('https://i.ytimg.com/vi/H_YwzaWbeEo/hqdefault.jpg')" onclick="playWalkthrough()" role="button" aria-label="Play the 80-second InStep overview">
       <button class="video-play" type="button" aria-hidden="true" tabindex="-1">&#9654;</button>
     </div>
+    <p style="text-align:center;margin-top:16px;font-size:14px;font-weight:600"><a href="https://youtu.be/QPPwd5g37zA" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">&#9654; Watch the full 3-minute demo &rsaquo;</a></p>
   </div>
 </section>
 
@@ -552,7 +553,7 @@ function setRole(role, btn) {
 function playWalkthrough() {
   var f = document.getElementById('video-frame');
   if (f.querySelector('iframe')) return;
-  f.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/QPPwd5g37zA?autoplay=1&rel=0" title="InStep video walkthrough" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  f.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/H_YwzaWbeEo?autoplay=1&rel=0" title="InStep in 80 seconds" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
 }
 function launchDemo(role) {
   window.location.href = 'https://demo.instepapp.com?demo=' + role;
