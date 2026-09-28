@@ -1296,6 +1296,8 @@ function getMyStatus(){const today=new Date().toDateString();const logs=allCurfe
 const ORG_THEMES={theturningpoint:{primary:'#D43C8E'}}; // her logo's magenta-pink; topbar stays default black. Add {subdomain:{primary,topbar}} for other houses.
 function _shade(hex,p){hex=(hex||'').replace('#','');if(hex.length!==6)return'#'+hex;const n=parseInt(hex,16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;if(p>=0){const f=p/100;r=Math.round(r+(255-r)*f);g=Math.round(g+(255-g)*f);b=Math.round(b+(255-b)*f);}else{const f=1+p/100;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function _hexRgb(hex){hex=(hex||'').replace('#','');const n=parseInt(hex,16);return((n>>16)&255)+','+((n>>8)&255)+','+(n&255);}
+// The demo (demo.instepapp.com and ?demo=) is shown in Beecon colors; each real org keeps its own theme.
+function applyBeeconTheme(){applyOrgTheme('#9A6B14','#241C15');const st=document.documentElement.style;[['--app-bg','#F5F1EA'],['--cream','#F5F1EA'],['--sand','#E6DFD3'],['--mid','#6E6356'],['--soft','#6E6356']].forEach(([k,v])=>st.setProperty(k,v));if(document.body)document.body.style.background='#F5F1EA';}
 function applyOrgTheme(primary,topbar){const s=document.documentElement.style;if(primary){s.setProperty('--pink',primary);s.setProperty('--pink-light',_shade(primary,28));s.setProperty('--pink-dark',_shade(primary,-32));s.setProperty('--pink-rgb',_hexRgb(primary));s.setProperty('--pink-dark-rgb',_hexRgb(_shade(primary,-32)));s.setProperty('--pink-glow','rgba('+_hexRgb(primary)+',0.10)');}if(topbar)s.setProperty('--topbar',topbar);}
 async function detectAndApplyOrg(){
   try{
@@ -1345,7 +1347,7 @@ async function detectAndApplyOrg(){
     }
     // Apply per-org theme (primary + topbar colors); fall back to a known-org palette.
     const theme=ORG_THEMES[subdomain]||{};
-    applyOrgTheme(data.primary_color||theme.primary,data.accent_color||theme.topbar);
+    if(subdomain==='demo')applyBeeconTheme();else applyOrgTheme(data.primary_color||theme.primary,data.accent_color||theme.topbar);
     // Store for use elsewhere
     window.currentOrg=data;
     // Hide demo buttons on real org subdomains ONLY (keep them on the demo org)
@@ -1380,6 +1382,7 @@ window.onload=async()=>{
   }
   // On demo subdomain with no param: show demo login picker with generic InStep branding
   window._isDemoSubdomain=(_sub==='demo');
+  if(window._isDemoSubdomain||_demoRole)applyBeeconTheme();
   // ── ORG DETECTION ──
   await detectAndApplyOrg();
   // ── DEMO URL PARAM ──
@@ -2713,7 +2716,7 @@ const DEMO_DATA={
 
 function loadDemoData(){allResidents=DEMO_RESIDENTS;allCheckins=makeDemoCheckins();allCurfewLog=makeDemoCurfew();allChores=DEMO_DATA.chores;allEvents=DEMO_DATA.events;cachedDrugTests=makeDemoDrugTests();cachedSettings={...DEMO_DATA.settings,feature_meds:true};(()=>{const dm=DEMO_MEDS();cachedMeds=dm.m;cachedMedLogs=dm.logs;})();cachedAnnouncement=DEMO_DATA.announcement;cachedAcks=[{announcement_id:'ann-demo',resident_id:'d2',resident_name:'Maria S.'},{announcement_id:'ann-demo',resident_id:'d4',resident_name:'Angela M.'}];allManagers=DEMO_DATA.managers;allOwners=[DEMO_DATA.owner];selectedHouse=null;cachedIncidents=DEMO_DATA.incidents||[];cachedGrievances=DEMO_DATA.grievances||[];cachedDocTemplates=DEMO_DATA.docTemplates||[];cachedResidentDocs=DEMO_DATA.residentDocs.map(d=>({...d,resident_sig:d.resident_sig==='DEMO_SIG'?DEMO_SIG:d.resident_sig,manager_sig:d.manager_sig==='DEMO_SIG'?DEMO_SIG:d.manager_sig}))||[];document.querySelectorAll('.topbar-house-name').forEach(el=>el.textContent=orgName());}
 
-function enterDemo(role){isDemoMode=true;role=role||'manager';if(role==='manager')currentUser=DEMO_DATA.manager;else if(role==='owner')currentUser=DEMO_DATA.owner;else currentUser=DEMO_DATA.resident;loadDemoData();applyOrgTheme('#9A6B14','#241C15');/* demo shows Beecon colors; each real org gets its own via orgs.primary_color / ORG_THEMES */(()=>{const st=document.documentElement.style;[['--app-bg','#F5F1EA'],['--cream','#F5F1EA'],['--sand','#E6DFD3'],['--mid','#6E6356'],['--soft','#6E6356']].forEach(([k,v])=>st.setProperty(k,v));document.body.style.background='#F5F1EA';})();hideLoading();enterApp();}
+function enterDemo(role){isDemoMode=true;role=role||'manager';if(role==='manager')currentUser=DEMO_DATA.manager;else if(role==='owner')currentUser=DEMO_DATA.owner;else currentUser=DEMO_DATA.resident;loadDemoData();applyBeeconTheme();hideLoading();enterApp();}
 
 const _sbFrom=sb.from.bind(sb);sb.from=function(table){if(!isDemoMode)return _sbFrom(table);const mock={select:function(){return mock;},insert:function(){return Promise.resolve({data:null,error:null});},upsert:function(){return Promise.resolve({data:null,error:null});},update:function(){return mock;},delete:function(){return mock;},eq:function(){return mock;},or:function(){return mock;},gte:function(){return mock;},order:function(){return mock;},limit:function(){return mock;},single:function(){return Promise.resolve({data:null,error:null});},then:function(cb){return Promise.resolve({data:[],error:null}).then(cb);}};return mock;};
 

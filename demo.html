@@ -186,6 +186,34 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 .foot-links{display:flex;gap:22px;flex-wrap:wrap;}
 .powered{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;}
 
+/* NAV: anchors, active state, mobile menu */
+header[id],section[id]{scroll-margin-top:72px;}
+.nav-links a{position:relative;padding:4px 0;}
+.nav-links a.active{color:var(--ink);}
+.nav-links a.active:after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--gold);}
+.nav-toggle{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:4px;background:var(--paper);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+.nav-toggle span{display:block;width:18px;height:2px;background:var(--ink);transition:transform .2s,opacity .2s;}
+.nav-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-open .nav-toggle span:nth-child(2){opacity:0;}
+.nav-open .nav-toggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+/* FOOTER COLUMNS */
+.foot-cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:32px;margin-bottom:24px;border-bottom:1px solid var(--line);}
+.foot-cols h5{font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink);margin-bottom:12px;}
+.foot-cols a{display:block;font-size:14px;color:var(--body);text-decoration:none;padding:4px 0;}
+.foot-cols a:hover{color:var(--ink);}
+.foot-brand p{font-size:14px;color:var(--muted);max-width:280px;margin-bottom:10px;}
+@media(max-width:900px){
+  .nav-toggle{display:flex;}
+  .nav-right{gap:10px;}
+  .nav-links{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;gap:0;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 18px 30px -18px rgba(36,28,21,0.35);padding:6px 18px 12px;}
+  .nav-open .nav-links{display:flex;}
+  .nav-links a{padding:14px 4px;font-size:16px;border-bottom:1px solid var(--line);}
+  .nav-links a:last-child{border-bottom:none;}
+  .nav-links a.active:after{display:none;}
+  .nav-links a.active{color:var(--gold-ink);font-weight:600;}
+  .foot-cols{grid-template-columns:1fr 1fr;gap:28px;}
+  .foot-brand{grid-column:1/-1;}
+}
 /* ── PHONE FRAME ── */
 .phone-wrap{max-width:340px;margin:0 auto;}
 .phone{background:#1C1712;border-radius:36px;border:1.5px solid #2E261E;overflow:hidden;box-shadow:0 36px 70px -28px rgba(36,28,21,0.5),0 0 0 1px rgba(36,28,21,0.08);}
@@ -283,7 +311,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
   .also > div{border-right:none !important;border-bottom:1px solid var(--line) !important;}
   .also > div:last-child{border-bottom:none !important;}
   .about{grid-template-columns:1fr;gap:18px;}
-  .brand-by,.nav-links{display:none;}
+  .brand-by{display:none;}
   section{padding:64px 0;}
   .demo-copy{max-width:none;}
   .price-card{padding:30px;} .price-num{font-size:60px;}
@@ -291,14 +319,15 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 @media(max-width:480px){ .wrap{padding-left:18px;padding-right:18px;} .steps{grid-template-columns:1fr;} .nav-in .btn{padding:10px 14px;} }
 </style>
 </head>
-<body>
+<body id="top">
 
 <nav>
   <div class="wrap nav-in">
     <a class="brand" href="#"><svg width="28" height="24" viewBox="0 0 92 100" aria-hidden="true"><rect x="8" y="62" width="20" height="38" rx="4" fill="#CFC6B8"/><rect x="36" y="40" width="20" height="60" rx="4" fill="#241C15"/><rect x="64" y="14" width="20" height="86" rx="4" fill="#E8B24A"/></svg><span class="brand-word">InStep</span><span class="brand-by">A Beecon Works product</span></a>
     <div class="nav-right">
-      <div class="nav-links"><a href="#demo">Demo</a><a href="#how">How it works</a><a href="#program">Your program</a><a href="#pricing">Pricing</a></div>
-      <a class="btn" href="#contact">Book a demo</a>
+      <div class="nav-links" id="nav-links"><a href="#demo">Demo</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#program">Your program</a><a href="#privacy">Privacy</a><a href="#pricing">Pricing</a><a href="#about">About</a></div>
+      <a class="btn nav-cta" href="#contact">Book a demo</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
     </div>
   </div>
 </nav>
@@ -547,7 +576,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <!-- CURFEW + ONLINE -->
-<section>
+<section id="curfew">
   <div class="wrap two">
     <div>
       <div class="sec-label">Curfew</div>
@@ -573,7 +602,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <!-- COST -->
-<section class="cost">
+<section id="cost" class="cost">
   <div class="wrap">
     <div class="sec-label">What paper costs</div>
     <h2>Compiling records by hand is a job.</h2>
@@ -613,7 +642,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <!-- ALSO -->
-<section class="tint">
+<section id="features" class="tint">
   <div class="wrap">
     <div class="sec-label">Also included</div>
     <h2>The rest of the paperwork, in the same place.</h2>
@@ -630,7 +659,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <!-- PRIVACY -->
-<section>
+<section id="privacy">
   <div class="wrap">
     <div class="sec-label">Your data is protected</div>
     <h2>Recovery records are sensitive. We treat them that way.</h2>
@@ -670,7 +699,7 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <!-- ABOUT -->
-<section>
+<section id="about">
   <div class="wrap about">
     <svg width="72" height="72" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.5 5.2 2.3 8 10.5 10.5-8.2 2.5-10 5.3-10.5 10.5-.5-5.2-2.3-8-10.5-10.5C9.7 9.5 11.5 6.7 12 1.5z" fill="#E8B24A"/></svg>
     <div>
@@ -707,10 +736,21 @@ footer{border-top:1px solid var(--line);padding:40px 0;background:var(--cream);}
 </section>
 
 <footer>
-  <div class="wrap foot">
-    <div>&copy; 2026 Beecon Works LLC &middot; Denver, Colorado</div>
-    <div class="foot-links"><a href="/compare.html">Compare</a><a href="/help.html">Help</a><a href="/privacy.html">Privacy</a><a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a></div>
-    <div class="powered">Powered by <img src="/beecon-wordmark.png" alt="Beecon" style="height:20px;width:auto" loading="lazy"></div>
+  <div class="wrap">
+    <div class="foot-cols">
+      <div class="foot-brand">
+        <a class="brand" href="#top" style="margin-bottom:12px"><svg width="24" height="20" viewBox="0 0 92 100" aria-hidden="true"><rect x="8" y="62" width="20" height="38" rx="4" fill="#CFC6B8"/><rect x="36" y="40" width="20" height="60" rx="4" fill="#241C15"/><rect x="64" y="14" width="20" height="86" rx="4" fill="#E8B24A"/></svg><span class="brand-word" style="font-size:20px">InStep</span></a>
+        <p>Meeting check-ins, curfew, and compliance records for recovery residences.</p>
+        <a href="mailto:hello@beeconworks.com">hello@beeconworks.com</a>
+      </div>
+      <div><h5>Product</h5><a href="#demo">Try the demo</a><a href="#how">How it works</a><a href="#curfew">Curfew &amp; online meetings</a><a href="#features">Features</a><a href="#program">Your program</a><a href="#pricing">Pricing</a></div>
+      <div><h5>Company</h5><a href="#about">About</a><a href="#contact">Book a demo</a><a href="https://beeconworks.com">Beecon Works</a><a href="https://ccg.beeconworks.com">Continuum Compliance Group</a></div>
+      <div><h5>Resources</h5><a href="/help.html">Help</a><a href="/compare.html">Compare</a><a href="#privacy">How we protect data</a><a href="/privacy.html">Privacy Policy</a></div>
+    </div>
+    <div class="foot">
+      <div>&copy; 2026 Beecon Works LLC &middot; Denver, Colorado</div>
+      <div class="powered">Powered by <img src="/beecon-wordmark.png" alt="Beecon" style="height:20px;width:auto" loading="lazy"></div>
+    </div>
   </div>
 </footer>
 
@@ -732,6 +772,18 @@ function setRole(role, btn) {
   document.getElementById('demo-caption').textContent = captions[role];
   document.getElementById('launch-btn').textContent = 'Open the full demo as ' + role.charAt(0).toUpperCase() + role.slice(1);
 }
+// Mobile menu + highlight the section you're reading.
+(function(){
+  var nav=document.querySelector('nav'),btn=document.getElementById('nav-toggle'),links=document.querySelectorAll('#nav-links a');
+  function setOpen(o){nav.classList.toggle('nav-open',o);btn.setAttribute('aria-expanded',o?'true':'false');}
+  btn.addEventListener('click',function(){setOpen(!nav.classList.contains('nav-open'));});
+  links.forEach(function(a){a.addEventListener('click',function(){setOpen(false);});});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+  if(!('IntersectionObserver' in window))return;
+  var byId={};links.forEach(function(a){byId[a.getAttribute('href').slice(1)]=a;});
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(en){if(!en.isIntersecting)return;var a=byId[en.target.id];if(!a)return;links.forEach(function(l){l.classList.remove('active');});a.classList.add('active');});},{rootMargin:'-45% 0px -50% 0px'});
+  Object.keys(byId).forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el);});
+})();
 function launchDemo() { window.location.href = 'https://demo.instepapp.com?demo=' + currentRole; }
 function playWalkthrough() {
   var box = document.getElementById('video-box');
