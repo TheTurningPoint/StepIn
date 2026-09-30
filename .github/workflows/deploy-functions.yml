@@ -42,6 +42,10 @@ jobs:
       # x-cron-secret header (CRON_SECRET); RESEND_API_KEY to send (else dry-run).
       - run: supabase functions deploy weeklyreport --project-ref "$PROJECT_ID" --no-verify-jwt
 
+      # inquiry: public website contact form (beeconworks.com/inquire.html). Stores the inquiry
+      # (RLS-locked table) and emails hello@beeconworks.com via RESEND_API_KEY (else dry-run).
+      - run: supabase functions deploy inquiry --project-ref "$PROJECT_ID" --no-verify-jwt
+
       # Health check: a deliberately-wrong login. Expect HTTP 401 ("not found"),
       # which proves the function runs, reaches the DB, and the rate-limit table
       # exists. A 500 means something's missing (table or secret).
