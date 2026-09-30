@@ -1,0 +1,7 @@
+# Cache rules for Cloudflare static assets. Images are cached for a week; pages must always pick up new releases.
+/*.png
+  Cache-Control: public, max-age=604800
+/*.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
