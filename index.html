@@ -1216,7 +1216,16 @@ const SUPABASE_URL='https://vhxswxilkuwsxwpsdjxl.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
 let SI_TOKEN=localStorage.getItem('si_token')||null;
 function siStub(){return {rpc:function(){return Promise.resolve({data:null,error:null});},from:function(){const m={select:function(){return m;},insert:function(){return Promise.resolve({data:null,error:null});},upsert:function(){return Promise.resolve({data:null,error:null});},update:function(){return m;},delete:function(){return m;},eq:function(){return m;},or:function(){return m;},gte:function(){return m;},order:function(){return m;},limit:function(){return m;},single:function(){return Promise.resolve({data:null,error:null});},maybeSingle:function(){return Promise.resolve({data:null,error:null});}};return m;}};}
-function siMakeClient(){if(typeof supabase==='undefined'||!supabase.createClient)return siStub();const opts=SI_TOKEN?{global:{headers:{Authorization:'Bearer '+SI_TOKEN}}}:{};return supabase.createClient(SUPABASE_URL,SUPABASE_KEY,opts);}
+// Sign-ins last 30 days (login2). An expired token makes every DB call fail with "JWT expired", so we
+// detect it (on app open, and on any 401 from the database) and send the person back to sign in,
+// keeping any check-in they were saving.
+function siTokenExp(t){try{const p=JSON.parse(atob((t||'').split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return p.exp?p.exp*1000:0;}catch(e){return 0;}}
+function siTokenExpired(t){const e=siTokenExp(t);return !!e&&Date.now()>=e-60000;}
+function siIsAuthError(err){const m=String((err&&(err.message||err.code))||err||'');return /jwt expired|invalid jwt|jwt|PGRST30[0-3]/i.test(m);}
+let siExpiredShown=false;
+function siSessionExpired(){if(siExpiredShown||isDemoMode)return;siExpiredShown=true;const nm=currentUser&&currentUser.name;try{resetState();}catch(e){}localStorage.removeItem('si_user');siSetToken(null);try{hideLoading();}catch(e){}show('screen-login');const n=document.getElementById('login-name');if(n&&nm)n.value=nm;const er=document.getElementById('login-error');if(er){er.textContent='Your sign-in expired. Please enter your PIN to sign in again. Anything you saved will send automatically.';er.style.color='var(--charcoal)';er.style.display='block';}const pin=document.getElementById('login-pin');if(pin){pin.value='';setTimeout(()=>{try{pin.focus();}catch(e){}},50);}}
+function siFetch(input,init){return fetch(input,init).then(r=>{if(r.status===401&&SI_TOKEN&&!isDemoMode){r.clone().text().then(t=>{if(/jwt expired|invalid jwt|PGRST30/i.test(t)){const ci=document.getElementById('screen-checkin');if(!(ci&&ci.classList.contains('active')))siSessionExpired();}}).catch(()=>{});}return r;});}
+function siMakeClient(){if(typeof supabase==='undefined'||!supabase.createClient)return siStub();const opts=SI_TOKEN?{global:{headers:{Authorization:'Bearer '+SI_TOKEN},fetch:siFetch}}:{global:{fetch:siFetch}};return supabase.createClient(SUPABASE_URL,SUPABASE_KEY,opts);}
 let sb=siMakeClient();
 // Store/clear the login token and rebuild the client so every DB call carries it.
 function siSetToken(t){SI_TOKEN=t||null;if(SI_TOKEN)localStorage.setItem('si_token',SI_TOKEN);else localStorage.removeItem('si_token');sb=siMakeClient();}
@@ -1432,7 +1441,7 @@ window.onload=async()=>{
   await detectAndApplyOrg();
   // ── DEMO URL PARAM ──
   if(_demoRole&&['resident','manager','owner'].includes(_demoRole)){hideLoading();enterDemo(_demoRole);return;}
-  try{const s=localStorage.getItem('si_user');if(s&&SI_TOKEN){currentUser=JSON.parse(s);await loadAllData();enterApp();}else{if(s&&!SI_TOKEN)localStorage.removeItem('si_user');hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
+  try{const s=localStorage.getItem('si_user');if(s&&SI_TOKEN&&siTokenExpired(SI_TOKEN)){currentUser=JSON.parse(s);siSessionExpired();return;}if(s&&SI_TOKEN){currentUser=JSON.parse(s);await loadAllData();if(siExpiredShown||!currentUser)return;enterApp();}else{if(s&&!SI_TOKEN)localStorage.removeItem('si_user');hideLoading();show('screen-login');}}catch(e){hideLoading();show('screen-login');}
 };
 
 async function loadAllData(){const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),15000));try{await Promise.race([loadAllDataInner(),timeout]);}catch(e){console.log('load err',e.message);}}
@@ -1498,7 +1507,7 @@ async function doLogin(){
     // Hash-only login via login2. No plaintext fallback (that would accept a stale
     // plaintext PIN), and we keep the token (RLS now requires it).
     if(res.ok&&data&&data.user&&data.token){
-      currentUser=data.user;siSetToken(data.token);
+      currentUser=data.user;siSetToken(data.token);siExpiredShown=false;{const er=document.getElementById('login-error');if(er){er.style.display='none';er.style.color='var(--danger)';}}
     }else{
       const msg=res.status===429?'Too many attempts. Please wait 15 minutes, or ask your manager to reset your PIN.':(data.message||data.error||'Name or PIN not found. Check spelling and try again.');
       showErr(err,msg);btn.textContent='Sign in';btn.classList.remove('btn-disabled');return;
@@ -1513,7 +1522,7 @@ function showErr(el,msg){el.textContent=msg;el.style.display='block';}
 function resetState(){currentUser=null;selectedHouse=null;allResidents=[];allManagers=[];allOwners=[];allCheckins=[];allCurfewLog=[];allChores=[];allEvents=[];cachedDrugTests=[];cachedIncidents=[];cachedGrievances=[];myGrievances=[];cachedResidentDocs=[];cachedDocTemplates=[];cachedAnnouncement=null;cachedAcks=[];cachedMeds=[];cachedMedLogs=[];cachedSettings={required:3,house_name:'',feature_curfew:true,feature_chores:true,unit_label:'House'};}
 function exitDemo(){isDemoMode=false;resetState();localStorage.removeItem('si_user');siSetToken(null);const b=document.getElementById('demo-banner');if(b)b.remove();show('screen-login');}
 function logout(){if(isDemoMode){window.location.href=window.location.origin+window.location.pathname;return;}resetState();localStorage.removeItem('si_user');siSetToken(null);document.getElementById('login-name').value='';document.getElementById('login-pin').value='';document.getElementById('login-error').style.display='none';show('screen-login');}
-function enterApp(){hideLoading();if(isStaff())enterManager();else enterResident();}
+function enterApp(){hideLoading();if(siExpiredShown||!currentUser)return;if(isStaff())enterManager();else enterResident();}
 // ── RESIDENT ──
 async function enterResident(){
   show('screen-resident');
@@ -1526,6 +1535,7 @@ async function enterResident(){
   const homeBtn=document.getElementById('res-nav-home');if(homeBtn)homeBtn.classList.add('active');
   ['home','chores','calendar','meetings','pin'].forEach(t=>{const el=document.getElementById('res-tab-'+t);if(el)el.style.display=t==='home'?'block':'none';});
   if(!isDemoMode){try{await loadAllData();}catch(e){toast('Could not load data.',true);}}
+  if(siExpiredShown||!currentUser)return;
   renderResidentHome();
   if(!isDemoMode){
     ciSyncPending();
@@ -1886,6 +1896,7 @@ async function ciSaveRecord(record,done,durationMinutes){
     const{error:e2}=await saveRace;
     ciSaveErr=e2;
   }catch(e){queueForLater();return;}
+  if(ciSaveErr&&siIsAuthError(ciSaveErr)){await ciQueueAdd(record);ciClearProgress();done();toast('Your check-in is saved on your phone. Sign in again and it will send automatically.');siSessionExpired();return;}
   if(ciSaveErr){toast(ciSaveErr.message||'Save failed. Check your connection.',true);done();return;}
   ciClearProgress();
   allCheckins.unshift(record);
