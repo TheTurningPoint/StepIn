@@ -63,7 +63,7 @@ Per-tenant branding/config, keyed by subdomain. Loaded via
 
 ## `checkins`
 
-Meeting check-ins with witness signature.
+Meeting check-ins with witness signature (or, for online meetings, a topic description; or, for staff-verified meetings, who verified it and how).
 
 | Column | Notes |
 | --- | --- |
@@ -78,6 +78,9 @@ Meeting check-ins with witness signature.
 | `duration_minutes` | minutes from finishing meeting details to witness signature submitted (nullable; null on rows recorded before this was added) |
 | `is_online` | `true` for an online meeting (no witness signature; default `false`) |
 | `topic_description` | resident's description of what an online meeting covered (min 10 chars; null for in-person) |
+| `verified_by_id`, `verified_by_name` | staff member who recorded a meeting they verified for the resident (no phone, dead battery…); null on resident check-ins |
+| `verification_note` | how staff verified it (e.g. `Paper sign-in sheet — …`); null on resident check-ins |
+| `verified_at` | set by a DB trigger when a staff-verified row is inserted; null on resident check-ins |
 | `house` | scoping |
 
 ## `curfew_log`
