@@ -407,6 +407,23 @@ h3.section-head{font-size:17px;font-weight:800;margin-bottom:6px;letter-spacing:
   <!-- LOG section label -->
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--mid);padding:14px 2px 8px">Log</div>
 
+  <!-- Meeting attendance — staff-verified meeting for a resident who couldn't check in -->
+  <div id="mgr-meeting-card" style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
+    <div style="background:var(--success);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:white">Meeting attendance</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:1px">Add a meeting you verified</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="mgrTab('report',document.getElementById('mgr-tab-report'));switchReportTab('attendance')" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.2);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);font-size:12px;padding:7px 12px">History</button>
+        <button class="btn btn-sm" onclick="openStaffMeeting()" style="background:white;color:var(--success);border:none;box-shadow:0 1px 3px rgba(0,0,0,0.2);font-size:12px;padding:7px 12px">+ Add</button>
+      </div>
+    </div>
+    <div style="background:white;padding:10px 16px">
+      <div style="font-size:12px;color:var(--mid)">For a resident who couldn&#8217;t check in &#8212; no phone, dead battery, and so on.</div>
+    </div>
+  </div>
+
   <!-- Screening — two-tone tool card -->
   <div id="mgr-screening-card" style="border-radius:12px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(var(--pink-rgb),0.12);box-shadow:0 1px 3px rgba(0,0,0,0.07)">
     <div style="background:var(--pink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between">
