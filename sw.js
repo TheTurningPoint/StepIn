@@ -5,11 +5,11 @@
 // Supabase API calls: those must hit the real network so the app can tell "saved" from "queued
 // locally, will sync later" (see ciSubmit/ciSyncPending in index.html). Bump CACHE_NAME on any
 // shell change so old caches get evicted on the next visit.
-const CACHE_NAME = 'instep-shell-v2';
+const CACHE_NAME = 'instep-shell-v3';
 const SHELL_URLS = [
   './',
   './index.html',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2',
 ];
 
 self.addEventListener('install', (event) => {
