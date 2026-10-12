@@ -33,6 +33,33 @@ function effResult(t: { result?: string; lab_result?: string; lab_sent_date?: st
   return t.result;
 }
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
+
+// Read every row, 1,000 at a time (the API returns at most 1,000 rows per request), and keep long
+// id lists in batches so the request URL stays short. Needed once many orgs share these tables.
+// deno-lint-ignore no-explicit-any
+async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
+  // deno-lint-ignore no-explicit-any
+  const out: any[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await make().range(from, from + 999);
+    if (error) return { data: out, error };
+    out.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  return { data: out, error: null };
+}
+// deno-lint-ignore no-explicit-any
+async function allRowsIn(ids: string[], make: (chunk: string[]) => any): Promise<{ data: any[]; error: any }> {
+  // deno-lint-ignore no-explicit-any
+  const out: any[] = [];
+  for (let i = 0; i < ids.length; i += 150) {
+    const r = await allRows(() => make(ids.slice(i, i + 150)));
+    if (r.error) return { data: out, error: r.error };
+    out.push(...r.data);
+  }
+  return { data: out, error: null };
+}
+
 const esc = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function row(label: string, value: string) {
@@ -85,30 +112,31 @@ Deno.serve(async (req) => {
   const rangeLabel = `${sinceDate} – ${runRef}`;
 
   // Recipients: active owners/managers with an email.
-  const { data: staff, error: sErr } = await admin
+  const { data: staff, error: sErr } = await allRows(() => admin
     .from("residents").select("id,name,email,role,house,org")
-    .in("role", ["owner", "manager"]).eq("status", "active");
+    .in("role", ["owner", "manager"]).eq("status", "active").order("id"));
   if (sErr) return json({ error: sErr.message }, 500);
   const recipients = (staff ?? []).filter((r) => r.email && String(r.email).includes("@"));
   if (!recipients.length) return json({ ok: true, dryRun, sent: 0, note: "no owner/manager with an email" });
 
   // Reference data + the week's activity (all orgs; grouped in memory).
   const orgs = [...new Set(recipients.map((r) => r.org))];
-  const { data: settings } = await admin.from("settings").select("org,house_name,required");
+  const { data: settings } = await allRows(() => admin.from("settings").select("org,house_name,required").order("org"));
   const orgInfo: Record<string, { name: string; required: number }> = {};
   for (const s of settings ?? []) orgInfo[s.org as string] = { name: (s.house_name as string) || "your residence", required: (s.required as number) || 3 };
 
-  const { data: residents } = await admin.from("residents").select("id,house,org,status,role").eq("status", "active").eq("role", "resident");
-  const { data: checkins } = await admin.from("checkins").select("resident_id,house,org,ts").gte("ts", since);
-  const { data: drugs } = await admin.from("drug_tests").select("result,lab_result,lab_sent_date,house,org,test_date").gte("test_date", sinceDate);
-  const { data: incidents } = await admin.from("incidents").select("house,org,incident_date").gte("incident_date", sinceDate);
-  const { data: curfew } = await admin.from("curfew_log").select("late,action,house,org,ts").gte("ts", since);
-  const { data: grievances } = await admin.from("grievances").select("status,house,org,grievance_date");
+  const { data: residents } = await allRows(() => admin.from("residents").select("id,house,org,status,role").eq("status", "active").eq("role", "resident").order("id"));
+  const { data: checkins } = await allRows(() => admin.from("checkins").select("id,resident_id,house,org,ts").gte("ts", since).order("id"));
+  const { data: drugs } = await allRows(() => admin.from("drug_tests").select("id,result,lab_result,lab_sent_date,house,org,test_date").gte("test_date", sinceDate).order("id"));
+  const { data: incidents } = await allRows(() => admin.from("incidents").select("id,house,org,incident_date").gte("incident_date", sinceDate).order("id"));
+  const { data: curfew } = await allRows(() => admin.from("curfew_log").select("id,late,action,house,org,ts").gte("ts", since).order("id"));
+  const { data: grievances } = await allRows(() => admin.from("grievances").select("id,status,house,org,grievance_date").order("id"));
 
   // Already sent this ISO week? Match ref >= this week's Monday (ISO dates sort chronologically) so it
   // also catches rows written earlier this week under the old run-date key — no double-send at the
   // deploy boundary — while next week's later Monday still triggers a fresh send.
-  const { data: sentLog } = await admin.from("reminders_log").select("resident_id").eq("kind", "weekly").gte("ref", weekRef);
+  const { data: sentLog, error: sentErr } = await allRows(() => admin.from("reminders_log").select("resident_id").eq("kind", "weekly").gte("ref", weekRef).order("resident_id").order("ref"));
+  if (sentErr) return json({ error: sentErr.message }, 500); // can't de-dupe safely
   const alreadySent = new Set((sentLog ?? []).map((x) => x.resident_id));
 
   const inScope = (r: { org: string; house?: string | null }, rec: { org: string; role: string; house?: string | null }) =>

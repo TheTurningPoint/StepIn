@@ -13,7 +13,7 @@
 //   JWT_SECRET = your project's JWT secret (Settings -> API -> JWT Settings).
 // Auto-provided by Supabase: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 
-// deploy trigger: v4
+// deploy trigger: v5
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 
@@ -37,7 +37,8 @@ const json = (body: unknown, status = 200) =>
     headers: { ...cors, "Content-Type": "application/json" },
   });
 
-// Per-name lockout: max 8 attempts per rolling 15-minute window.
+// Per-person lockout: max 8 attempts per rolling 15-minute window, keyed on org + name so a
+// wrong PIN typed for "Mike" in one org can't lock out a "Mike" in another.
 // Uses a tiny table `login_attempts` (created via SQL before deploy).
 const LOCK_WINDOW_MS = 15 * 60 * 1000;
 const LOCK_MAX_ATTEMPTS = 8;
@@ -105,7 +106,8 @@ Deno.serve(async (req) => {
   if (!name || !pin) return json({ error: "Name and PIN required" }, 400);
   if (!org) return json({ error: "Missing organization" }, 400); // an empty org would match across tenants
 
-  if (await rateLimited(name.toLowerCase())) {
+  const lockKey = `${org.toLowerCase()}:${name.toLowerCase().replace(/\s+/g, " ")}`;
+  if (await rateLimited(lockKey)) {
     return json({ message: "Too many attempts. Please wait 15 minutes, or ask your manager to reset your PIN." }, 429);
   }
 
@@ -126,7 +128,7 @@ Deno.serve(async (req) => {
   }
 
   // Success: clear the attempt counter and hand back the user + token.
-  await admin.from("login_attempts").delete().eq("name", name.toLowerCase());
+  await admin.from("login_attempts").delete().eq("name", lockKey);
   const token = await signToken(user);
   // Never return secrets to the client.
   delete (user as Record<string, unknown>).pin;

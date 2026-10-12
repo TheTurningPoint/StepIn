@@ -169,6 +169,17 @@ email (MX/SPF/DKIM/DMARC) for the domain live in Cloudflare; the registrar is IO
 - **RLS is the security boundary.** Data tables are locked to logged-in (token-bearing)
   users via Supabase RLS; `login2` issues the token (claims `urole`/`house`). Don't
   loosen policies back to anonymous. See `supabase/security/*.sql`.
+- **Access is role-aware (`35_role_based_rls.sql`).** Policies read the caller's role and
+  house from `residents` via `si_role()`/`si_house()` (not from the token), so an archived
+  or discharged account loses access immediately. Residents see and write only their own
+  rows; staff see their house (owner: whole org); deleting compliance records is owner-only
+  (restrictive policies). Guard triggers (`si_guard`) limit which columns a resident may
+  change and stamp curfew sign-ins server-side (late = org curfew settings + `timezone`).
+  When adding a new feature that residents write to, add a matching policy; when adding a
+  **`residents` column, add it to the column grants** in that file or the app can't see it
+  (`pin_hash` is deliberately not granted).
+- **Staff loads page past 1,000 rows** with `sbAll(query)` (the API caps each request at
+  1,000). Use it for any list that grows over time.
 
 ## Language standard (recovery-sensitive copy)
 
