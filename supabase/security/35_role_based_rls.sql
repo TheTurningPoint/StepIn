@@ -22,7 +22,9 @@
 --      `timesheets` table, and tightens set_pin (managers can reset residents only).
 --
 -- Compatible with the app build already live: every read/write the current index.html performs
--- for each role is still allowed. Re-runnable. Revert: 35_revert.sql (restores 14_org_rls policies).
+-- for each role is still allowed. Re-runnable, and written without DROP statements: existing policies
+-- are tightened in place (ALTER POLICY), resident permissions are added as extra policies, and
+-- owner-only deletes are RESTRICTIVE policies (they AND with everything else). Revert: 35_revert.sql.
 
 -- ---------------------------------------------------------------- helpers
 create or replace function public.si_role() returns text
@@ -37,13 +39,8 @@ language sql stable security definer set search_path = public as $$
   where r.id = (auth.jwt()->>'sub') and r.org = (auth.jwt()->>'org')
     and r.status is distinct from 'discharged'
 $$;
--- true when the caller is active staff with authority over rows of house h (owner: any house).
-create or replace function public.si_staff_for(h text) returns boolean
-language sql stable security definer set search_path = public as $$
-  select coalesce(public.si_role() = 'owner' or (public.si_role() = 'manager' and h = public.si_house()), false)
-$$;
-revoke all on function public.si_role(), public.si_house(), public.si_staff_for(text) from public, anon;
-grant execute on function public.si_role(), public.si_house(), public.si_staff_for(text) to authenticated, service_role;
+revoke all on function public.si_role(), public.si_house() from public, anon;
+grant execute on function public.si_role(), public.si_house() to authenticated, service_role;
 
 -- ---------------------------------------------------------------- curfew settings (per org)
 alter table public.settings
@@ -121,8 +118,7 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists si_guard on public.residents;
-create trigger si_guard before insert or update on public.residents for each row execute function public.si_guard_residents();
+create or replace trigger si_guard before insert or update on public.residents for each row execute function public.si_guard_residents();
 
 create or replace function public.si_guard_resident_rows() returns trigger
 language plpgsql set search_path = public as $$
@@ -154,247 +150,213 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists si_guard on public.chores;
-create trigger si_guard before update on public.chores for each row execute function public.si_guard_resident_rows();
-drop trigger if exists si_guard on public.resident_documents;
-create trigger si_guard before update on public.resident_documents for each row execute function public.si_guard_resident_rows();
-drop trigger if exists si_guard on public.curfew_log;
-create trigger si_guard before insert on public.curfew_log for each row execute function public.si_guard_resident_rows();
-drop trigger if exists si_guard on public.checkins;
-create trigger si_guard before insert on public.checkins for each row execute function public.si_guard_resident_rows();
+create or replace trigger si_guard before update on public.chores for each row execute function public.si_guard_resident_rows();
+create or replace trigger si_guard before update on public.resident_documents for each row execute function public.si_guard_resident_rows();
+create or replace trigger si_guard before insert on public.curfew_log for each row execute function public.si_guard_resident_rows();
+create or replace trigger si_guard before insert on public.checkins for each row execute function public.si_guard_resident_rows();
 
 -- ---------------------------------------------------------------- policies
--- Shorthands used below:  ORG  = (auth.jwt()->>'org') = org
--- STAFF = owner, or manager of the row's house.   ME = resident_id = (auth.jwt()->>'sub')
--- (select ...) wrappers let Postgres evaluate the helper once per query instead of once per row.
+-- STAFF = owner, or manager of the row's house. Role/house are read from residents once per query.
 
--- residents
-drop policy if exists residents_auth on public.residents;
-drop policy if exists residents_read on public.residents;
-drop policy if exists residents_insert on public.residents;
-drop policy if exists residents_update on public.residents;
-drop policy if exists residents_delete on public.residents;
-create policy residents_read on public.residents for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy residents_insert on public.residents for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy residents_update on public.residents for update to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)))
-  with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy residents_delete on public.residents for delete to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- checkins: residents insert/read their own; staff read/insert for their house; owner corrects/deletes
-drop policy if exists checkins_auth on public.checkins;
-drop policy if exists checkins_read on public.checkins;
-drop policy if exists checkins_insert on public.checkins;
-drop policy if exists checkins_owner on public.checkins;
-drop policy if exists checkins_owner_delete on public.checkins;
-create policy checkins_read on public.checkins for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy checkins_insert on public.checkins for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house())))
-    or ((select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub') and house is not distinct from (select public.si_house()))));
-create policy checkins_owner on public.checkins for update to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-create policy checkins_owner_delete on public.checkins for delete to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- curfew_log: same shape as checkins
-drop policy if exists curfew_log_auth on public.curfew_log;
-drop policy if exists curfew_read on public.curfew_log;
-drop policy if exists curfew_insert on public.curfew_log;
-drop policy if exists curfew_owner on public.curfew_log;
-drop policy if exists curfew_owner_delete on public.curfew_log;
-create policy curfew_read on public.curfew_log for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy curfew_insert on public.curfew_log for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house())))
-    or ((select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub') and house is not distinct from (select public.si_house()))));
-create policy curfew_owner on public.curfew_log for update to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-create policy curfew_owner_delete on public.curfew_log for delete to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- chores: residents see their house's chores and mark their own done; staff manage
-drop policy if exists chores_auth on public.chores;
-drop policy if exists chores_read on public.chores;
-drop policy if exists chores_staff on public.chores;
-drop policy if exists chores_resident_done on public.chores;
-create policy chores_read on public.chores for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or ((select public.si_role()) = 'resident' and house = (select public.si_house()))));
-create policy chores_staff on public.chores for all to authenticated
+-- ---- residents: staff manage their house (owner: all); self read/update (trigger limits columns); owner-only delete
+alter policy residents_auth on public.residents
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy chores_resident_done on public.chores for update to authenticated
+do $$ begin
+create policy residents_self_read on public.residents for select to authenticated
+  using ((auth.jwt()->>'org') = org and (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy residents_self_update on public.residents for update to authenticated
+  using ((auth.jwt()->>'org') = org and (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null))
+  with check ((auth.jwt()->>'org') = org and (id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy residents_owner_delete on public.residents as restrictive for delete to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
+exception when duplicate_object then null; end $$;
+-- ---- checkins: staff for their house; resident reads + inserts own; corrections/deletes owner-only
+alter policy checkins_auth on public.checkins
+  using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
+  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
+do $$ begin
+create policy checkins_self_read on public.checkins for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy checkins_self_insert on public.checkins for insert to authenticated
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub') and house is not distinct from (select public.si_house()));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy checkins_owner_update on public.checkins as restrictive for update to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy checkins_owner_delete on public.checkins as restrictive for delete to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
+exception when duplicate_object then null; end $$;
+-- ---- curfew_log: staff for their house; resident reads + inserts own; corrections/deletes owner-only
+alter policy curfew_log_auth on public.curfew_log
+  using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
+  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
+do $$ begin
+create policy curfew_log_self_read on public.curfew_log for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy curfew_log_self_insert on public.curfew_log for insert to authenticated
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub') and house is not distinct from (select public.si_house()));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy curfew_log_owner_update on public.curfew_log as restrictive for update to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy curfew_log_owner_delete on public.curfew_log as restrictive for delete to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
+exception when duplicate_object then null; end $$;
+-- ---- chores: staff manage; residents see their house's chores and mark their own done
+alter policy chores_auth on public.chores
+  using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
+  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
+do $$ begin
+create policy chores_house_read on public.chores for select to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and house = (select public.si_house()));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy chores_self_done on public.chores for update to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub'))
   with check ((auth.jwt()->>'org') = org and resident_id = (auth.jwt()->>'sub'));
-
--- drug_tests (screenings): resident reads own; staff record/update; owner deletes
-drop policy if exists drug_tests_auth on public.drug_tests;
-drop policy if exists drug_tests_read on public.drug_tests;
-drop policy if exists drug_tests_staff_insert on public.drug_tests;
-drop policy if exists drug_tests_staff_update on public.drug_tests;
-drop policy if exists drug_tests_owner_delete on public.drug_tests;
-create policy drug_tests_read on public.drug_tests for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy drug_tests_staff_insert on public.drug_tests for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy drug_tests_staff_update on public.drug_tests for update to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- drug_tests (screenings): staff record/update; resident reads own; owner-only delete
+alter policy drug_tests_auth on public.drug_tests
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy drug_tests_owner_delete on public.drug_tests for delete to authenticated
+do $$ begin
+create policy drug_tests_self_read on public.drug_tests for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy drug_tests_owner_delete on public.drug_tests as restrictive for delete to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- incidents: staff only; owner deletes
-drop policy if exists incidents_auth on public.incidents;
-drop policy if exists incidents_staff on public.incidents;
-drop policy if exists incidents_staff_insert on public.incidents;
-drop policy if exists incidents_staff_update on public.incidents;
-drop policy if exists incidents_owner_delete on public.incidents;
-create policy incidents_staff on public.incidents for select to authenticated
-  using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy incidents_staff_insert on public.incidents for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy incidents_staff_update on public.incidents for update to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- incidents: staff only; owner-only delete
+alter policy incidents_auth on public.incidents
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy incidents_owner_delete on public.incidents for delete to authenticated
+do $$ begin
+create policy incidents_owner_delete on public.incidents as restrictive for delete to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- grievances: resident files (named or anonymous) for their own house and reads their own named ones;
--- staff read/resolve; only an owner can delete (a manager can't remove a grievance about themselves).
-drop policy if exists grievances_auth on public.grievances;
-drop policy if exists grievances_read on public.grievances;
-drop policy if exists grievances_insert on public.grievances;
-drop policy if exists grievances_staff_update on public.grievances;
-drop policy if exists grievances_owner_delete on public.grievances;
-create policy grievances_read on public.grievances for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy grievances_insert on public.grievances for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house())))
-    or ((select public.si_role()) = 'resident' and house is not distinct from (select public.si_house())
-        and (resident_id is null or resident_id = (auth.jwt()->>'sub')) and coalesce(status, 'open') = 'open')));
-create policy grievances_staff_update on public.grievances for update to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- grievances: resident files (named/anonymous) for own house, reads own; staff resolve; owner-only delete
+alter policy grievances_auth on public.grievances
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy grievances_owner_delete on public.grievances for delete to authenticated
+do $$ begin
+create policy grievances_self_read on public.grievances for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy grievances_self_insert on public.grievances for insert to authenticated
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and house is not distinct from (select public.si_house()) and (resident_id is null or resident_id = (auth.jwt()->>'sub')) and coalesce(status,'open') = 'open');
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy grievances_owner_delete on public.grievances as restrictive for delete to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- resident_documents: resident reads + signs own; staff send/countersign; owner deletes
-drop policy if exists resident_documents_auth on public.resident_documents;
-drop policy if exists resdocs_read on public.resident_documents;
-drop policy if exists resdocs_staff_insert on public.resident_documents;
-drop policy if exists resdocs_update on public.resident_documents;
-drop policy if exists resdocs_owner_delete on public.resident_documents;
-create policy resdocs_read on public.resident_documents for select to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy resdocs_staff_insert on public.resident_documents for insert to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- resident_documents: staff send/countersign; resident reads + signs own (trigger limits columns); owner-only delete
+alter policy resident_documents_auth on public.resident_documents
+  using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-create policy resdocs_update on public.resident_documents for update to authenticated
-  using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or ((select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub'))))
-  with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or ((select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub'))));
-create policy resdocs_owner_delete on public.resident_documents for delete to authenticated
+do $$ begin
+create policy resident_documents_self_read on public.resident_documents for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy resident_documents_self_sign on public.resident_documents for update to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub'))
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub'));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy resident_documents_owner_delete on public.resident_documents as restrictive for delete to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
-
--- events: everyone active reads their house + org-wide; staff manage
-drop policy if exists events_authenticated on public.events;
-drop policy if exists events_read on public.events;
-drop policy if exists events_staff on public.events;
-create policy events_read on public.events for select to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null
-         and ((select public.si_role()) = 'owner' or house = (select public.si_house()) or house is null));
-create policy events_staff on public.events for all to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- events: staff manage their house + org-wide; everyone active reads own house + org-wide
+alter policy events_authenticated on public.events
   using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (house is null and (select public.si_role()) in ('owner','manager'))))
   with check ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (house is null and (select public.si_role()) in ('owner','manager'))));
-
--- announcements (sticky notes): read own house + org-wide; staff post/archive
-drop policy if exists announcements_auth on public.announcements;
-drop policy if exists announcements_read on public.announcements;
-drop policy if exists announcements_staff on public.announcements;
-create policy announcements_read on public.announcements for select to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null
-         and ((select public.si_role()) = 'owner' or house = (select public.si_house()) or is_global = true));
-create policy announcements_staff on public.announcements for all to authenticated
+do $$ begin
+create policy events_read on public.events for select to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null and ((select public.si_role()) = 'owner' or house = (select public.si_house()) or house is null));
+exception when duplicate_object then null; end $$;
+-- ---- announcements (sticky notes): staff post/archive; everyone active reads own house + org-wide
+alter policy announcements_auth on public.announcements
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-
--- announcement_acks: resident acks for themselves and sees their own; staff see all and clear
-drop policy if exists announcement_acks_auth on public.announcement_acks;
-drop policy if exists acks_read on public.announcement_acks;
-drop policy if exists acks_insert on public.announcement_acks;
-drop policy if exists acks_staff_delete on public.announcement_acks;
-create policy acks_read on public.announcement_acks for select to authenticated
-  using ((auth.jwt()->>'org') = org and ((select public.si_role()) in ('owner','manager')
-         or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy acks_insert on public.announcement_acks for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null);
-create policy acks_staff_delete on public.announcement_acks for delete to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
-
--- settings + document templates: everyone active reads their org's; staff change them
-drop policy if exists settings_auth on public.settings;
-drop policy if exists settings_read on public.settings;
-drop policy if exists settings_staff on public.settings;
+do $$ begin
+create policy announcements_read on public.announcements for select to authenticated
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null and ((select public.si_role()) = 'owner' or house = (select public.si_house()) or is_global = true));
+exception when duplicate_object then null; end $$;
+-- ---- announcement_acks: staff see/clear; resident acks for self and sees own
+alter policy announcement_acks_auth on public.announcement_acks
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'))
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
+do $$ begin
+create policy announcement_acks_self_read on public.announcement_acks for select to authenticated
+  using ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+do $$ begin
+create policy announcement_acks_self_insert on public.announcement_acks for insert to authenticated
+  with check ((auth.jwt()->>'org') = org and (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null));
+exception when duplicate_object then null; end $$;
+-- ---- settings: staff change; everyone active reads their org's
+alter policy settings_auth on public.settings
+  using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'))
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
+do $$ begin
 create policy settings_read on public.settings for select to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null);
-create policy settings_staff on public.settings for all to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- document_templates: staff change; everyone active reads their org's
+alter policy document_templates_auth on public.document_templates
   using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'))
   with check ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
-
-drop policy if exists document_templates_auth on public.document_templates;
-drop policy if exists templates_read on public.document_templates;
-drop policy if exists templates_staff on public.document_templates;
-create policy templates_read on public.document_templates for select to authenticated
+do $$ begin
+create policy document_templates_read on public.document_templates for select to authenticated
   using ((auth.jwt()->>'org') = org and (select public.si_role()) is not null);
-create policy templates_staff on public.document_templates for all to authenticated
-  using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'))
-  with check ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
-
--- medications / med_logs: same rules as 31_medications.sql, but role/house from the table (revocable)
-drop policy if exists medications_read on public.medications;
-drop policy if exists medications_staff_write on public.medications;
-create policy medications_read on public.medications for select to authenticated
+exception when duplicate_object then null; end $$;
+-- ---- medications / med_logs: same rules as 31_medications.sql, role/house now from the table (revocable)
+alter policy medications_read on public.medications
   using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy medications_staff_write on public.medications for all to authenticated
+alter policy medications_staff_write on public.medications
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-drop policy if exists med_logs_read on public.med_logs;
-drop policy if exists med_logs_self_insert on public.med_logs;
-drop policy if exists med_logs_staff_write on public.med_logs;
-create policy med_logs_read on public.med_logs for select to authenticated
+alter policy med_logs_read on public.med_logs
   using ((auth.jwt()->>'org') = org and (((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))) or (resident_id = (auth.jwt()->>'sub') and (select public.si_role()) is not null)));
-create policy med_logs_self_insert on public.med_logs for insert to authenticated
-  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub')
-              and house is not distinct from (select public.si_house()) and logged_by = 'resident');
-create policy med_logs_staff_write on public.med_logs for all to authenticated
+alter policy med_logs_self_insert on public.med_logs
+  with check ((auth.jwt()->>'org') = org and (select public.si_role()) = 'resident' and resident_id = (auth.jwt()->>'sub') and house is not distinct from (select public.si_house()) and logged_by = 'resident');
+alter policy med_logs_staff_write on public.med_logs
   using ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))))
   with check ((auth.jwt()->>'org') = org and ((select public.si_role()) = 'owner' or ((select public.si_role()) = 'manager' and house = (select public.si_house()))));
-
--- audit log + error log: active staff only (was: any token claiming manager/owner)
-drop policy if exists audit_log_read on public.audit_log;
-create policy audit_log_read on public.audit_log for select to authenticated
+-- ---- audit + error logs: active staff only (was: any token claiming the role)
+alter policy audit_log_read on public.audit_log
   using ((auth.jwt()->>'org') = org and (select public.si_role()) in ('owner','manager'));
-drop policy if exists app_errors_read on public.app_errors;
-create policy app_errors_read on public.app_errors for select to authenticated
+alter policy app_errors_read on public.app_errors
   using ((auth.jwt()->>'org') = org and (select public.si_role()) = 'owner');
 
 -- ---------------------------------------------------------------- document files (storage)
 -- Staff: any file in their org. Residents: only template files and their own signed documents.
-drop policy if exists documents_read on storage.objects;
-create policy documents_read on storage.objects for select to authenticated
+alter policy documents_read on storage.objects
   using (bucket_id = 'documents' and (storage.foldername(name))[1] = (auth.jwt()->>'org')
     and ((select public.si_role()) in ('owner','manager')
       or ((select public.si_role()) = 'resident' and (
             exists (select 1 from public.document_templates t where t.org = (auth.jwt()->>'org') and t.file_path = storage.objects.name)
          or exists (select 1 from public.resident_documents d where d.resident_id = (auth.jwt()->>'sub')
                       and storage.objects.name in (d.template_file_path, d.signed_file_path))))));
-drop policy if exists documents_write on storage.objects;
-create policy documents_write on storage.objects for insert to authenticated
+alter policy documents_write on storage.objects
   with check (bucket_id = 'documents' and (storage.foldername(name))[1] = (auth.jwt()->>'org')
     and (select public.si_role()) in ('owner','manager'));
-drop policy if exists documents_delete on storage.objects;
-create policy documents_delete on storage.objects for delete to authenticated
+alter policy documents_delete on storage.objects
   using (bucket_id = 'documents' and (storage.foldername(name))[1] = (auth.jwt()->>'org')
     and (select public.si_role()) in ('owner','manager'));
 
@@ -426,7 +388,9 @@ revoke all on function public.set_pin(text,text,text) from public, anon;
 grant execute on function public.set_pin(text,text,text) to authenticated;
 
 -- ---------------------------------------------------------------- housekeeping
-drop table if exists public.timesheets;          -- unused, was readable/writable by anyone
+-- timesheets: unused and was readable/writable by anyone. Locked shut here (0 rows; drop by hand later).
+revoke all on public.timesheets from anon, authenticated;
+alter policy anon_all_timesheets on public.timesheets using (false) with check (false);
 revoke execute on function public.audit_row() from public, anon, authenticated;
 alter function public.checkins_set_verified_at() set search_path = public;
 revoke execute on function public.si_guard_residents(), public.si_guard_resident_rows() from public, anon;
