@@ -38,6 +38,32 @@ const json = (body: unknown, status = 200) =>
     headers: { "Content-Type": "application/json" },
   });
 
+// Read every row, 1,000 at a time (the API returns at most 1,000 rows per request), and keep long
+// id lists in batches so the request URL stays short. Needed once many orgs share these tables.
+// deno-lint-ignore no-explicit-any
+async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
+  // deno-lint-ignore no-explicit-any
+  const out: any[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await make().range(from, from + 999);
+    if (error) return { data: out, error };
+    out.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  return { data: out, error: null };
+}
+// deno-lint-ignore no-explicit-any
+async function allRowsIn(ids: string[], make: (chunk: string[]) => any): Promise<{ data: any[]; error: any }> {
+  // deno-lint-ignore no-explicit-any
+  const out: any[] = [];
+  for (let i = 0; i < ids.length; i += 150) {
+    const r = await allRows(() => make(ids.slice(i, i + 150)));
+    if (r.error) return { data: out, error: r.error };
+    out.push(...r.data);
+  }
+  return { data: out, error: null };
+}
+
 const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -86,19 +112,20 @@ Deno.serve(async (req) => {
   const dryRun = !RESEND_API_KEY;
 
   // Org display name per tenant (org -> house_name), for the email greeting/footer.
-  const { data: settingsRows } = await admin.from("settings").select("org,house_name");
+  const { data: settingsRows } = await allRows(() => admin.from("settings").select("org,house_name").order("org"));
   const orgNames: Record<string, string> = {};
   for (const s of settingsRows ?? []) {
     if (s.org && s.house_name) orgNames[s.org as string] = s.house_name as string;
   }
 
   // Opted-in, active residents with an email on file.
-  const { data: residents, error: rErr } = await admin
+  const { data: residents, error: rErr } = await allRows(() => admin
     .from("residents")
     .select("id,name,email,house,notify_opt_in,status,role,org")
     .eq("role", "resident")
     .eq("status", "active")
-    .eq("notify_opt_in", true);
+    .eq("notify_opt_in", true)
+    .order("id"));
   if (rErr) return json({ error: rErr.message }, 500);
 
   const withEmail = (residents ?? []).filter((r) => r.email && r.email.includes("@"));
@@ -108,35 +135,41 @@ Deno.serve(async (req) => {
   const ids = withEmail.map((r) => r.id);
 
   // Pending documents.
-  const { data: docs, error: dErr } = await admin
+  const { data: docs, error: dErr } = await allRowsIn(ids, (chunk) => admin
     .from("resident_documents")
     .select("*")
-    .in("resident_id", ids)
-    .eq("status", "pending");
+    .in("resident_id", chunk)
+    .eq("status", "pending")
+    .order("id"));
   if (dErr) return json({ error: dErr.message }, 500);
 
   // Active (recent) announcements + this set of residents' acknowledgements.
   const annSince = new Date(Date.now() - ANN_MAX_AGE_DAYS * 86400000).toISOString();
-  const { data: anns, error: aErr } = await admin
+  const { data: anns, error: aErr } = await allRows(() => admin
     .from("announcements")
     .select("id,message,house,is_global,created_at,archived,org")
     .eq("archived", false)
-    .gte("created_at", annSince);
+    .gte("created_at", annSince)
+    .order("id"));
   if (aErr) return json({ error: aErr.message }, 500);
-  const { data: acks } = await admin
+  const { data: acks } = await allRowsIn(ids, (chunk) => admin
     .from("announcement_acks")
     .select("announcement_id,resident_id")
-    .in("resident_id", ids);
+    .in("resident_id", chunk)
+    .order("id"));
   const acked = new Set((acks ?? []).map((x) => `${x.resident_id}|${x.announcement_id}`));
 
   // De-dupe against recent reminders (per-kind window).
   const docSince = new Date(Date.now() - DOC_DEDUPE_DAYS * 86400000).toISOString();
   const annDedupeSince = new Date(Date.now() - ANN_DEDUPE_DAYS * 86400000).toISOString();
   const earliest = docSince < annDedupeSince ? docSince : annDedupeSince;
-  const { data: recent } = await admin
+  const { data: recent, error: recentErr } = await allRows(() => admin
     .from("reminders_log")
     .select("resident_id,kind,ref,sent_at")
-    .gte("sent_at", earliest);
+    .gte("sent_at", earliest)
+    .order("sent_at").order("resident_id").order("kind").order("ref"));
+  // Without the sent-log we can't de-dupe, so stop rather than risk emailing people twice.
+  if (recentErr) return json({ error: recentErr.message }, 500);
   const remindedDoc = new Set<string>();
   const remindedAnn = new Set<string>();
   for (const x of recent ?? []) {
