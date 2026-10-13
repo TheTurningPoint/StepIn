@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InStep&trade; — Provision a customer</title>
+<title>InStep&trade; — Vendor admin</title>
 <style>
 :root{--ink:#0D1017;--ink-card:#1C2235;--teal:#E8B24A;--white:#fff;--soft:rgba(255,255,255,0.6);--border:rgba(255,255,255,0.12);--pink:#C0397A;--danger:#E0556E;--success:#37C871;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -19,10 +19,38 @@ button:disabled{opacity:0.5;}
 #out.ok{display:block;background:rgba(55,200,113,0.12);border:1px solid var(--success);}
 #out.err{display:block;background:rgba(224,85,110,0.12);border:1px solid var(--danger);}
 a{color:var(--teal);}
+.tabs{display:flex;gap:6px;margin-bottom:22px;background:var(--ink-card);border-radius:12px;padding:4px;}
+.tabs button{margin:0;padding:10px;font-size:14px;background:transparent;color:var(--soft);border-radius:9px;}
+.tabs button.on{background:var(--teal);color:#04222a;}
+.wrap.wide{max-width:820px;}
+select,textarea{width:100%;background:var(--ink-card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--white);font-size:15px;font-family:inherit;}
+.tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0;}
+.tot div{background:var(--ink-card);border-radius:10px;padding:12px 6px;text-align:center;}
+.tot b{display:block;font-size:22px;}
+.tot span{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:0.4px;}
+.acct{background:var(--ink-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.acct h3{font-size:17px;display:flex;justify-content:space-between;gap:8px;align-items:center;}
+.chip{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.h-healthy{background:rgba(55,200,113,0.18);color:var(--success);}
+.h-setting{background:rgba(232,178,74,0.18);color:var(--teal);}
+.h-bad{background:rgba(224,85,110,0.18);color:var(--danger);}
+.h-off{background:rgba(255,255,255,0.1);color:var(--soft);}
+.meta{font-size:13px;color:var(--soft);margin-top:4px;}
+.stats{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin:10px 0;}
+.miss{font-size:12px;color:var(--teal);margin-top:4px;}
+.bill{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.bill label{margin:0 0 3px;}
+.bill button{margin-top:0;grid-column:1/-1;padding:10px;font-size:14px;}
+table.reps{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 18px;}
+table.reps td,table.reps th{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left;}
+table.reps th{color:var(--soft);font-weight:600;}
+.small-btn{width:auto;margin:0;padding:8px 14px;font-size:13px;}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap">
+  <div class="tabs"><button class="on" id="tab-new" onclick="tab('new')">New customer</button><button id="tab-acc" onclick="tab('acc')">Accounts</button></div>
+  <div id="pane-new">
   <h1>Provision a customer</h1>
   <p class="sub">Vendor tool. Creates the org, its first owner, and settings. You still add the subdomain in Cloudflare afterward.</p>
 
@@ -45,6 +73,13 @@ a{color:var(--teal);}
   <label>Owner email (optional, for reminders / PIN reset)</label>
   <input type="email" id="owner_email" placeholder="owner@example.com" autocapitalize="off">
 
+  <label>Sales rep (for commission)</label>
+  <input type="text" id="sales_rep" placeholder="Who closed this account" autocapitalize="words">
+
+  <label>Monthly rate per house ($)</label>
+  <input type="text" id="rate_per_house" inputmode="decimal" placeholder="99" value="99">
+  <div class="hint">Stored only in your vendor records. The customer never sees the rep or rate here.</div>
+
   <label>What residents call a location</label>
   <input type="text" id="unit_label" placeholder="House" value="House" autocapitalize="off">
   <div class="hint">Singular noun used through the app &mdash; e.g. House, Building, Unit, Wing.</div>
@@ -62,15 +97,57 @@ a{color:var(--teal);}
 
   <button id="go" onclick="provision()">Create customer</button>
   <div id="out"></div>
+  </div>
+
+  <div id="pane-acc" style="display:none">
+    <h1>Accounts</h1>
+    <p class="sub">Every customer: size, activity, setup progress, and billing. Counts only &mdash; no resident records.</p>
+    <label>Admin secret</label>
+    <input type="password" id="secret2" placeholder="ADMIN_SECRET" autocomplete="off">
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="small-btn" onclick="loadAccounts()" id="load-btn">Load accounts</button><button class="small-btn" onclick="exportCsv()" style="background:var(--ink-card);color:var(--white)">Export CSV</button></div>
+    <div id="acc-out"></div>
+  </div>
   <p style="text-align:center;font-size:11px;color:var(--soft);margin-top:28px">&copy; 2026 Beecon Works LLC</p>
 </div>
 <script>
 const FN='https://vhxswxilkuwsxwpsdjxl.supabase.co/functions/v1/provisionorg';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoeHN3eGlsa3V3c3h3cHNkanhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzM3MzgsImV4cCI6MjA5NzE0OTczOH0.2aSbvhbkgJyO3GXAbD7o9osqGZWtuco0XRAlVXALr8M';
+const ACC='https://vhxswxilkuwsxwpsdjxl.supabase.co/functions/v1/accounts';
 function val(id){return document.getElementById(id).value.trim();}
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function tab(t){document.getElementById('pane-new').style.display=t==='new'?'':'none';document.getElementById('pane-acc').style.display=t==='acc'?'':'none';document.getElementById('tab-new').classList.toggle('on',t==='new');document.getElementById('tab-acc').classList.toggle('on',t==='acc');document.getElementById('wrap').classList.toggle('wide',t==='acc');const s1=document.getElementById('secret'),s2=document.getElementById('secret2');if(t==='acc'&&!s2.value)s2.value=s1.value;if(t==='new'&&!s1.value)s1.value=s2.value;}
+async function accCall(body){const res=await fetch(ACC,{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON,'Authorization':'Bearer '+ANON},body:JSON.stringify({secret:val('secret2'),...body})});const d=await res.json().catch(()=>({}));if(!res.ok||!d.ok)throw new Error(d.error||('HTTP '+res.status));return d;}
+let ACCOUNTS=null;
+const money=n=>'$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:0});
+const SETUP_LABELS={owner_email:'owner email',manager_added:'a manager',residents_added:'residents',time_zone_set:'time zone (save Settings)',house_location_set:'house location',documents_added:'house documents',first_check_in:'a first check-in'};
+function healthChip(h){const c=h==='healthy'?'h-healthy':h==='setting up'?'h-setting':(h==='stalled setup'||h==='gone quiet')?'h-bad':'h-off';return '<span class="chip '+c+'">'+esc(h)+'</span>';}
+function ago(ts){if(!ts)return 'never';const d=Math.floor((Date.now()-new Date(ts).getTime())/86400000);return d<=0?'today':d===1?'yesterday':d+' days ago';}
+async function loadAccounts(){const out=document.getElementById('acc-out');const btn=document.getElementById('load-btn');btn.disabled=true;btn.textContent='Loading…';try{const d=await accCall({});ACCOUNTS=d;renderAccounts();}catch(e){out.innerHTML='<div id="out" class="err" style="display:block">✕ '+esc(e.message==='Unauthorized'?'Wrong admin secret.':e.message)+'</div>';}btn.disabled=false;btn.textContent='Refresh';}
+function renderAccounts(){const d=ACCOUNTS;const t=d.totals;const order={'stalled setup':0,'gone quiet':1,'setting up':2,'healthy':3,'paused':4,'cancelled':5};
+ const reps=Object.entries(t.by_rep||{}).sort((a,b)=>b[1].monthly-a[1].monthly);
+ let h='<div class="tot"><div><b>'+t.active+'</b><span>Active</span></div><div><b>'+t.houses_billed+'</b><span>Houses billed</span></div><div><b>'+money(t.monthly)+'</b><span>Monthly</span></div><div><b style="color:'+(t.needs_attention?'var(--danger)':'var(--success)')+'">'+t.needs_attention+'</b><span>Need a call</span></div></div>';
+ if(reps.length){h+='<table class="reps"><tr><th>Sales rep</th><th>Active accounts</th><th>Houses</th><th>Monthly</th></tr>'+reps.map(([r,v])=>'<tr><td>'+esc(r)+'</td><td>'+v.accounts+'</td><td>'+v.houses+'</td><td>'+money(v.monthly)+'</td></tr>').join('')+'</table>';}
+ const list=[...d.accounts].sort((a,b)=>(order[a.health]??9)-(order[b.health]??9)||a.name.localeCompare(b.name));
+ h+=list.map(a=>{const miss=Object.entries(a.setup).filter(([k,v])=>!v).map(([k])=>SETUP_LABELS[k]||k);
+  return '<div class="acct"><h3><span>'+esc(a.name)+'</span>'+healthChip(a.health)+'</h3>'+
+  '<div class="meta">'+esc(a.org)+'.instepapp.com &middot; customer for '+a.age_days+' days &middot; last activity '+ago(a.last_activity)+'</div>'+
+  '<div class="stats"><span><b>'+a.house_count+'</b> house'+(a.house_count===1?'':'s')+(a.houses.length?' ('+esc(a.houses.join(', '))+')':'')+'</span><span><b>'+a.residents+'</b> resident'+(a.residents===1?'':'s')+'</span><span><b>'+a.managers+'</b> manager'+(a.managers===1?'':'s')+'</span><span><b>'+a.check_ins_7d+'</b> check-ins this week</span><span><b>'+a.curfew_7d+'</b> curfew entries</span><span><b>'+a.screenings_30d+'</b> screenings (30d)</span></div>'+
+  '<div class="meta">Setup '+a.setup_done+' of '+a.setup_total+(miss.length?'</div><div class="miss">Missing: '+esc(miss.join(', ')):'')+'</div>'+
+  '<div class="bill" data-org="'+esc(a.org)+'">'+
+   '<div><label>Status</label><select data-k="status">'+['trial','active','paused','cancelled'].map(s=>'<option'+(s===a.status?' selected':'')+'>'+s+'</option>').join('')+'</select></div>'+
+   '<div><label>Sales rep</label><input data-k="sales_rep" value="'+esc(a.sales_rep||'')+'"></div>'+
+   '<div><label>Rate / house ($)</label><input data-k="rate_per_house" inputmode="decimal" value="'+esc(a.rate_per_house)+'"></div>'+
+   '<div><label>Stripe ref</label><input data-k="billing_ref" placeholder="sub_… / cus_…" value="'+esc(a.billing_ref||'')+'"></div>'+
+   '<div style="grid-column:1/-1"><label>Notes</label><input data-k="notes" value="'+esc(a.notes||'')+'"></div>'+
+   '<div style="grid-column:1/-1;font-size:13px;color:var(--soft)">Bill: <b style="color:var(--white)">'+a.house_count+' &times; '+money(a.rate_per_house)+' = '+money(a.house_count*a.rate_per_house)+'/mo</b>'+(a.status!=='active'?' (not billed while '+esc(a.status)+')':'')+'</div>'+
+   '<button onclick="saveAcct(this)">Save billing</button></div></div>';}).join('');
+ h+='<p class="hint" style="margin-top:10px">Generated '+new Date(d.generated_at).toLocaleString()+'. A billable house is a house name with at least one active resident or manager. Set the Stripe subscription quantity to the house count.</p>';
+ document.getElementById('acc-out').innerHTML=h;}
+async function saveAcct(btn){const box=btn.closest('.bill');const body={action:'update',org:box.dataset.org};box.querySelectorAll('[data-k]').forEach(el=>body[el.dataset.k]=el.value);btn.disabled=true;btn.textContent='Saving…';try{await accCall(body);btn.textContent='Saved ✓';setTimeout(loadAccounts,600);}catch(e){btn.textContent='✕ '+e.message;}setTimeout(()=>{btn.disabled=false;},800);}
+function exportCsv(){if(!ACCOUNTS){alert('Load accounts first.');return;}const cols=['name','org','status','sales_rep','house_count','rate_per_house','monthly','residents','managers','check_ins_7d','last_activity','health','setup_done','billing_ref','signed_on','notes'];const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';const csv=[cols.join(',')].concat(ACCOUNTS.accounts.map(a=>cols.map(c=>q(a[c])).join(','))).join('\n');const el=document.createElement('a');el.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));el.download='instep-accounts-'+new Date().toISOString().slice(0,10)+'.csv';el.click();}
 async function provision(){
   const out=document.getElementById('out');const btn=document.getElementById('go');
-  const body={secret:val('secret'),subdomain:val('subdomain'),org_name:val('org_name'),owner_name:val('owner_name'),owner_pin:val('owner_pin'),owner_email:val('owner_email'),unit_label:val('unit_label')||'House',...Object.fromEntries(['feature_curfew','feature_chores','feature_screenings','feature_incidents','feature_documents','feature_events','feature_announcements','feature_meds'].map(k=>[k,document.getElementById(k).checked]))};
+  const body={secret:val('secret'),subdomain:val('subdomain'),org_name:val('org_name'),owner_name:val('owner_name'),owner_pin:val('owner_pin'),owner_email:val('owner_email'),sales_rep:val('sales_rep'),rate_per_house:val('rate_per_house'),unit_label:val('unit_label')||'House',...Object.fromEntries(['feature_curfew','feature_chores','feature_screenings','feature_incidents','feature_documents','feature_events','feature_announcements','feature_meds'].map(k=>[k,document.getElementById(k).checked]))};
   out.style.display='none';btn.disabled=true;btn.textContent='Creating…';
   try{
     const res=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','apikey':ANON,'Authorization':'Bearer '+ANON},body:JSON.stringify(body)});
