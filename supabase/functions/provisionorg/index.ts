@@ -1,7 +1,8 @@
 // provisionorg — vendor-only tool to stand up a new customer org from a form (no hand-run SQL).
 //
-// POST { secret, subdomain, org_name, owner_name, owner_pin, owner_email? }
-//   -> creates the orgs row, the first owner in residents (with a hashed PIN), and the settings row.
+// POST { secret, subdomain, org_name, owner_name, owner_pin, owner_email?, sales_rep?, rate_per_house? }
+//   -> creates the orgs row, the first owner in residents (with a hashed PIN), the settings row, and the
+//      vendor-only vendor_accounts row (sales rep + per-house rate, status "trial").
 //
 // Secret-gated: the caller must send the ADMIN_SECRET. This can create owner accounts, so it is NOT
 // for end users — only the vendor with the secret. Generic 401 on a bad/missing secret.
@@ -90,6 +91,15 @@ Deno.serve(async (req) => {
   await admin.from("settings").upsert(
     { org: subdomain, house_name: orgName, required: 3, lab_policy: "all",
       unit_label: unitLabel, ...features },
+    { onConflict: "org" },
+  );
+
+  // Vendor bookkeeping (not visible to the customer): who sold it and the per-house rate.
+  const rate = Number(b.rate_per_house);
+  await admin.from("vendor_accounts").upsert(
+    { org: subdomain, sales_rep: ((b.sales_rep as string) ?? "").trim() || null,
+      rate_per_house: rate >= 0 && rate < 10000 && String(b.rate_per_house ?? "").trim() !== "" ? rate : 99,
+      status: "trial", signed_on: new Date().toISOString().slice(0, 10) },
     { onConflict: "org" },
   );
 
