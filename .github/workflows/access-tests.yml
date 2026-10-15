@@ -1,0 +1,33 @@
+name: Access rules tests
+
+# Builds a replica of the live schema and security rules in a throwaway Postgres, applies the
+# migrations in supabase/security/, and checks who can read/write what (resident, manager,
+# owner, archived accounts). Fails the PR if a change opens a hole or breaks a normal action.
+on:
+  pull_request:
+    paths: ["supabase/security/**", "supabase/tests/**", ".github/workflows/access-tests.yml"]
+  push:
+    branches: [main]
+    paths: ["supabase/security/**", "supabase/tests/**"]
+  workflow_dispatch:
+
+jobs:
+  access-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash supabase/tests/access_tests.sh
