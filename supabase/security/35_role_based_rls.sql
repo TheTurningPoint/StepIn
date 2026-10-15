@@ -123,7 +123,7 @@ create or replace trigger si_guard before insert or update on public.residents f
 create or replace function public.si_guard_resident_rows() returns trigger
 language plpgsql set search_path = public as $$
 -- Resident-side writes on chores / resident_documents / curfew_log / checkins.
-declare r text := public.si_role(); s public.settings; ph int;
+declare r text := public.si_role(); s public.settings; ph int; t timestamptz;
 begin
   if current_user <> 'authenticated' or r is distinct from 'resident' then return new; end if;
   if tg_table_name = 'chores' then
@@ -138,11 +138,14 @@ begin
     if old.status <> 'pending' and (new.resident_sig is distinct from old.resident_sig or new.resident_signed_at is distinct from old.resident_signed_at)
       then raise exception 'Document already signed'; end if;
   elsif tg_table_name = 'curfew_log' then
-    new.ts := now(); new.server_ts := now(); new.excused := false; new.excused_reason := null;
+    -- Keep the phone's time only if it's recent (an entry queued during a signal drop and sent within
+    -- 20 minutes); otherwise use the server clock, so a sign-in can't be backdated.
+    t := case when new.ts between now() - interval '20 minutes' and now() + interval '2 minutes' then new.ts else now() end;
+    new.ts := t; new.server_ts := now(); new.excused := false; new.excused_reason := null;
     if new.action = 'in' then
       select * into s from public.settings where org = new.org;
       select phase into ph from public.residents where id = new.resident_id;
-      if s.timezone is not null then new.late := coalesce(public.si_curfew_late(s, ph, now()), new.late); end if;
+      if s.timezone is not null then new.late := coalesce(public.si_curfew_late(s, ph, t), new.late); end if;
     else new.late := false; end if;
   elsif tg_table_name = 'checkins' then
     new.server_ts := now();
